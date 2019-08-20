@@ -37,7 +37,7 @@
             <h1>Course Blueprint Builder</h1>
             <hr>
         </div>
-        <div class="container-fluid">
+        <div class="container-fluid" :class="{'container': (modules == '')}">
             <div class="row">
                 <div class="col">
 
@@ -86,11 +86,14 @@
                         <label for="objectives">Objectives (each on a new line)</label> <br>
                         <textarea v-model="objectives" id="objectives" name="objectives" cols="40" rows="10"
                             class="form-control"></textarea>
-                        {{objectiveList}}
+
+                        <!-- for debug purposes -->
+                        <!-- {{objectiveList}}
                         <hr>
                         {{moduleTitles}} <br>
                         {{topics}} <br>
-                        <hr>
+                        {{backup}} <br>
+                        <hr> -->
                     </div>
                 </div>
                 <div v-if="modules != ''" class="col">
@@ -101,7 +104,7 @@
                                 <div class="card">
                                     <div class="card-header" id="headingOne">
                                         <h2 class="mb-0">
-                                            <button class="btn btn-link"
+                                            <button class="btn btn-link collapsed"
                                                 :class="{'collapsed':(index!= moduleTitles.length-1)}" type="button"
                                                 data-toggle="collapse" :data-target="'#m'+index" aria-expanded="true"
                                                 :aria-controls="'m'+index">
@@ -144,63 +147,73 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="modules != ''"  class="col-sm-6 far-right">
+                <div v-if="modules != ''" class="col-md-6 far-right">
                     <div class="module" v-for="(module,index_module) in moduleTitles">
-                        <div v-if="(index_module < topics.length && topicTitles(index_module) != '')" class="topic formform">
-                            <strong> Module {{index_module+1}} {{module}}</strong>
+                        <div v-if="(index_module < topics.length && topicTitles(index_module) != '')"
+                            class="topic formform">
+                            <h2> Module {{index_module+1}} {{module}}</h2>
                             <div class="topic" v-for="(topic,index_topic) in topicTitles(index_module)">
-                                
-                                    <div v-if="(topic !='')" class="topicform">
-                                {{topic}}
-                                <div class="form-group">
-                                    <textarea id="topic_slide_text" name="topic_slide_text" cols="40" rows="3"
-                                        aria-describedby="topic_slide_textHelpBlock" class="form-control"></textarea>
-                                    <span id="topic_slide_textHelpBlock" class="form-text text-muted">Topic Slide
-                                        Text</span>
-                                </div>
-                                <div class="form-group">
-                                    <textarea id="topic_participant_notes" name="topic_participant_notes" cols="40"
-                                        rows="3" aria-describedby="topic_participant_notesHelpBlock"
-                                        class="form-control"></textarea>
-                                    <span id="topic_participant_notesHelpBlock" class="form-text text-muted">Topic
-                                        Participant
-                                        Notes</span>
-                                </div>
-                                <div class="form-group">
-                                    <textarea id="topic_instructor_notes" name="topic_instructor_notes" cols="40"
-                                        rows="3" aria-describedby="topic_instructor_notesHelpBlock"
-                                        class="form-control"></textarea>
-                                    <span id="topic_instructor_notesHelpBlock" class="form-text text-muted">Topic
-                                        Instructor
-                                        Notes</span>
-                                </div>
-                                <div class="form-group">
-                                    <select id="id_objective" name="id_objective"
-                                        aria-describedby="id_objectiveHelpBlock" class="form-control">
-                                        <option selected value="">Please select objective</option>
-                                        <option v-for="(objective,index_objective) in objectiveList" :value="objective">
-                                            {{index_objective +1}}. {{objective.substring(0,40)}}...</option> 
-                                    </select>
-                                    <span id="id_objectiveHelpBlock" class="form-text text-muted">Objective</span>
-                                </div>
-                                <div class="form-group">
+
+                                <div v-if="(topic !='')" class="topicform">
+                                    <h3> {{topic}}</h3>
+                                    <div class="form-group">
+                                        <textarea id="topic_slide_text" name="topic_slide_text" cols="40" rows="3"
+                                            aria-describedby="topic_slide_textHelpBlock"
+                                            class="form-control"></textarea>
+                                        <span id="topic_slide_textHelpBlock" class="form-text text-muted">Topic Slide
+                                            Text</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea id="topic_participant_notes" name="topic_participant_notes" cols="40"
+                                            rows="3" aria-describedby="topic_participant_notesHelpBlock"
+                                            class="form-control"></textarea>
+                                        <span id="topic_participant_notesHelpBlock" class="form-text text-muted">Topic
+                                            Participant
+                                            Notes</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea id="topic_instructor_notes" name="topic_instructor_notes" cols="40"
+                                            rows="3" aria-describedby="topic_instructor_notesHelpBlock"
+                                            class="form-control"></textarea>
+                                        <span id="topic_instructor_notesHelpBlock" class="form-text text-muted">Topic
+                                            Instructor
+                                            Notes</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <select id="id_objective" name="id_objective"
+                                            aria-describedby="id_objectiveHelpBlock" class="form-control">
+                                            <option selected value="">Please select objective</option>
+                                            <option v-for="(objective,index_objective) in objectiveList"
+                                                :value="objective">
+                                                {{index_objective +1}}. {{objective.substring(0,40)}}...</option>
+                                        </select>
+                                        <span id="id_objectiveHelpBlock" class="form-text text-muted">Objective</span>
+                                    </div>
+                                    <div class="form-group">
                                         <div>
-                                          <div class="form-check form-check-inline">
-                                            <input name="topic_media" id="topic_media_0" type="checkbox" class="form-check-input" value="graphic" aria-describedby="topic_mediaHelpBlock"> 
-                                            <label for="topic_media_0" class="form-check-label">Graphic</label>
-                                          </div>
-                                          <div class="form-check form-check-inline">
-                                            <input name="topic_media" id="topic_media_1" type="checkbox" class="form-check-input" value="video" aria-describedby="topic_mediaHelpBlock"> 
-                                            <label for="topic_media_1" class="form-check-label">Video</label>
-                                          </div>
-                                          <div class="form-check form-check-inline">
-                                            <input name="topic_media" id="topic_media_2" type="checkbox" class="form-check-input" value="animation" aria-describedby="topic_mediaHelpBlock"> 
-                                            <label for="topic_media_2" class="form-check-label">Animation</label>
-                                          </div> 
-                                          <span id="topic_mediaHelpBlock" class="form-text text-muted">Media Required</span>
+                                            <div class="form-check form-check-inline">
+                                                <input name="topic_media" id="topic_media_0" type="checkbox"
+                                                    class="form-check-input" value="graphic"
+                                                    aria-describedby="topic_mediaHelpBlock">
+                                                <label for="topic_media_0" class="form-check-label">Graphic</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input name="topic_media" id="topic_media_1" type="checkbox"
+                                                    class="form-check-input" value="video"
+                                                    aria-describedby="topic_mediaHelpBlock">
+                                                <label for="topic_media_1" class="form-check-label">Video</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input name="topic_media" id="topic_media_2" type="checkbox"
+                                                    class="form-check-input" value="animation"
+                                                    aria-describedby="topic_mediaHelpBlock">
+                                                <label for="topic_media_2" class="form-check-label">Animation</label>
+                                            </div>
+                                            <span id="topic_mediaHelpBlock" class="form-text text-muted">Media
+                                                Required</span>
                                         </div>
-                                      </div>
-                                <hr>
+                                    </div>
+                                    <hr>
                                 </div>
                             </div>
                         </div>
@@ -215,10 +228,21 @@
         el: '#app',
         data: {
             courseTitle: "",
-            mods: [{title: '', subtitle: '', moduleDuration: '', topics: [{topicSlideText: '', topicPGNotes: '', topicIGNotes:'', topicObj: '', mediaReq:[]}] }],
+            mods: [{
+                title: '',
+                subtitle: '',
+                moduleDuration: '',
+                topics: [{
+                    topicSlideText: '',
+                    topicPGNotes: '',
+                    topicIGNotes: '',
+                    topicObj: '',
+                    mediaReq: []
+                }]
+            }],
             courseClient: "",
             courseDuration: "",
-            modules: "", 
+            modules: "",
             objectives: "Introduction of the module.",
             topics: [], // array location indicates module number in modules text string - 1
             // courseTitle: "Advanced Nuclear Something",
@@ -240,13 +264,28 @@
             objectiveList: function () {
                 return this.objectives.split(/\r|\n/)
             },
-            backup: function (){
-
+            backup: function () {
+                var jsonBackup = {}
+                let that = this
+                jsonBackup.course_title = this.courseTitle
+                jsonBackup.modules = []
+                this.moduleTitles.forEach(function (mod, module_index) {
+                    jsonBackup.modules.push({
+                        module_title: mod
+                    })
+                });
+                return jsonBackup
             }
         },
         methods: {
             topicTitles: function (index) {
-                return this.topics[index].split(/\r|\n/)
+                let topicTitle = ''
+                if (this.topics[index]) {
+                    return this.topics[index].split(/\r|\n/)
+                } else {
+                    return ""
+                }
+
             }
         }
     })
