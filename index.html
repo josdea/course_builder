@@ -83,18 +83,45 @@
 
                     <div class="module" v-for="(module,index) in moduleTitles">
                         <div v-if="(module!='')" class="moduleform">
-                            <h2>Module {{index+1}} {{module}}</h2>
-                            <div class="form-group">
-                                <input id="module_subtitle" name="module_subtitle"
-                                    placeholder="Optional Module Subtitle" type="text" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <input id="module_instructor" name="module_instructor" placeholder="Module Instructor"
-                                    type="text" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <input id="module_duration" name="module_duration" placeholder="Module Duration"
-                                    type="text" class="form-control">
+
+
+                            <div class="accordion" id="accordionExample">
+                                <div class="card">
+                                    <div class="card-header" id="headingOne">
+                                        <h2 class="mb-0">
+                                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                                :data-target="'#m'+index" aria-expanded="true"
+                                                :aria-controls="'m'+index">
+                                                Module {{index+1}} {{module}}
+                                            </button>
+                                        </h2>
+                                    </div>
+
+                                    <div :id="'m'+index" class="collapse" aria-labelledby="headingOne"
+                                        data-parent="#accordionExample">
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <input id="module_subtitle" name="module_subtitle"
+                                                    placeholder="Optional Module Subtitle" type="text"
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <input id="module_instructor" name="module_instructor"
+                                                    placeholder="Module Instructor" type="text" class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <input id="module_duration" name="module_duration"
+                                                    placeholder="Module Duration" type="text" class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="topic_titles">Topic (Slide) Titles</label> <br>
+                                                <textarea v-model="topics[index]" :id="'topic_titles'+index" name="topic_titles"
+                                                    cols="40" rows="5" class="form-control"></textarea>
+                                            </div>
+                                            {{topics}}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -176,7 +203,9 @@
         el: '#app',
         data: {
             message: 'Hello Vue!',
-            modules: "Introduction \nRisk Equation"
+            modules: "Introduction\nRisk Equation",
+            topics: [],
+            objectives: "Objective"
         },
         computed: {
             moduleTitles: function () {
