@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Course Builder</title>
-
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -28,7 +27,6 @@
             height: 1000px;
         }
     </style>
-
 </head>
 
 <body>
@@ -40,7 +38,6 @@
         <div class="container-fluid" :class="{'container': (modules == '')}">
             <div class="row">
                 <div class="col">
-
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -86,7 +83,6 @@
                         <label for="objectives">Objectives (each on a new line)</label> <br>
                         <textarea v-model="objectives" id="objectives" name="objectives" cols="40" rows="10"
                             class="form-control"></textarea>
-
                         <!-- for debug purposes -->
                         <!-- {{objectiveList}}
                         <hr>
@@ -97,7 +93,6 @@
                     </div>
                 </div>
                 <div v-if="modules != ''" class="col">
-
                     <div class="module" v-for="(module,index) in moduleTitles">
                         <div v-if="(module!='')" class="moduleform">
                             <div class="accordion" id="accordionExample">
@@ -112,7 +107,6 @@
                                             </button>
                                         </h2>
                                     </div>
-
                                     <div :id="'m'+index" class="collapse"
                                         :class="{'show': (index == moduleTitles.length-1)}" aria-labelledby="headingOne"
                                         data-parent="#accordionExample">
@@ -153,7 +147,6 @@
                             class="topic formform">
                             <h2> Module {{index_module+1}} {{module}}</h2>
                             <div class="topic" v-for="(topic,index_topic) in topicTitles(index_module)">
-
                                 <div v-if="(topic !='')" class="topicform">
                                     <h3> {{topic}}</h3>
                                     <div class="form-group">
@@ -285,7 +278,6 @@
                 } else {
                     return ""
                 }
-
             }
         }
     })
