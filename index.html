@@ -22,6 +22,10 @@
             /* height: 100px; */
             resize: none;
         }
+        .far-right{
+            overflow-y: scroll; 
+            height:1000px;
+        }
     </style>
 
 </head>
@@ -35,7 +39,7 @@
 
         <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-4">
+                <div class="col-sm-3">
 
                     <div class="form-group">
                         <div class="input-group">
@@ -75,11 +79,18 @@
                     </div>
                     <div class="form-group">
                         <label for="module_titles">Module Titles</label> <br>
-                        <textarea v-model="modules" id="module_titles" name="module_titles" cols="40" rows="5"
+                        <textarea v-model="modules" id="module_titles" name="module_titles" cols="40" rows="10"
                             class="form-control"></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="objectives">Objectives</label> <br>
+                        <textarea v-model="objectives" id="objectives" name="objectives" cols="40" rows="10"
+                            class="form-control"></textarea>
+                            {{objectiveList}}
+                            {{demoModules}}
+                    </div>
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
 
                     <div class="module" v-for="(module,index) in moduleTitles">
                         <div v-if="(module!='')" class="moduleform">
@@ -89,7 +100,7 @@
                                 <div class="card">
                                     <div class="card-header" id="headingOne">
                                         <h2 class="mb-0">
-                                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                            <button class="btn btn-link" :class="{'collapsed':(index!= moduleTitles.length-1)}" type="button" data-toggle="collapse"
                                                 :data-target="'#m'+index" aria-expanded="true"
                                                 :aria-controls="'m'+index">
                                                 Module {{index+1}} {{module}}
@@ -97,7 +108,7 @@
                                         </h2>
                                     </div>
 
-                                    <div :id="'m'+index" class="collapse" aria-labelledby="headingOne"
+                                    <div :id="'m'+index" class="collapse" :class="{'show': (index == moduleTitles.length-1)}" aria-labelledby="headingOne"
                                         data-parent="#accordionExample">
                                         <div class="card-body">
                                             <div class="form-group">
@@ -111,55 +122,105 @@
                                             </div>
                                             <div class="form-group">
                                                 <input id="module_duration" name="module_duration"
-                                                    placeholder="Module Duration" type="text" class="form-control">
+                                                    placeholder="Module Duration (minutes)" type="text"
+                                                    class="form-control">
                                             </div>
                                             <div class="form-group">
                                                 <label for="topic_titles">Topic (Slide) Titles</label> <br>
-                                                <textarea v-model="topics[index]" :id="'topic_titles'+index" name="topic_titles"
-                                                    cols="40" rows="5" class="form-control"></textarea>
+                                                <textarea v-model="topics[index]" :id="'topic_titles'+index"
+                                                    name="topic_titles" cols="40" rows="5"
+                                                    class="form-control"></textarea>
                                             </div>
-                                            {{topics}}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
-
-
                     </div>
-
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-6 far-right">
+                    <hr>
+                    {{moduleTitles}} <br>
+                    {{topics}} <br>
+
+                    <hr>
+
+
+                    <!-- <div v-if="(module!='')" class="topic form"> -->
+                    <div class="module" v-for="(module,index_module) in moduleTitles">
+
+                        <div v-if="(index_module < topics.length)" class="topic formform">
+                            <strong> Module {{index_module+1}} {{module}}</strong>
+                            <div class="topic" v-for="(topic,index_topic) in topicTitles(index_module)">
+                                {{topic}}
+                                <div class="form-group">
+                                        <textarea id="topic_slide_text" name="topic_slide_text" cols="40" rows="3"
+                                            aria-describedby="topic_slide_textHelpBlock" class="form-control"></textarea>
+                                        <span id="topic_slide_textHelpBlock" class="form-text text-muted">Topic Slide Text</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea id="topic_participant_notes" name="topic_participant_notes" cols="40" rows="3"
+                                            aria-describedby="topic_participant_notesHelpBlock" class="form-control"></textarea>
+                                        <span id="topic_participant_notesHelpBlock" class="form-text text-muted">Topic Participant
+                                            Notes</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea id="topic_instructor_notes" name="topic_instructor_notes" cols="40" rows="3"
+                                            aria-describedby="topic_instructor_notesHelpBlock" class="form-control"></textarea>
+                                        <span id="topic_instructor_notesHelpBlock" class="form-text text-muted">Topic Instructor
+                                            Notes</span>
+                                    </div>
+                                    <hr>
+                            </div>
+                            <!-- <hr> -->
+                        </div>
+                    </div>
+                    <!-- <div v-if="(module!='')" class="moduleform">
+                                        <div class="card">
+                                            <div class="card-header" id="headingOne">
+                                                <h2 class="mb-0">
+                                                    <button class="btn btn-link" type="button" data-toggle="collapse"
+                                                        :data-target="'#m'+index" aria-expanded="true"
+                                                        :aria-controls="'m'+index">
+                                                        Module {{index+1}} {{module}}
+                                                    </button>
+                                                </h2>
+                                            </div>
+                                            <div :id="'m'+index" class="collapse" aria-labelledby="headingOne"
+                                                data-parent="#accordionExample">
+                                                <div class="card-body">
+                                                    <div class="form-group">
+                                                        <input id="module_subtitle" name="module_subtitle"
+                                                            placeholder="Optional Module Subtitle" type="text"
+                                                            class="form-control">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input id="module_instructor" name="module_instructor"
+                                                            placeholder="Module Instructor" type="text" class="form-control">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input id="module_duration" name="module_duration"
+                                                            placeholder="Module Duration" type="text" class="form-control">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="topic_titles">Topic (Slide) Titles</label> <br>
+                                                        <textarea v-model="topics[index]" :id="'topic_titles'+index"
+                                                            name="topic_titles" cols="40" rows="5"
+                                                            class="form-control"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div> -->
+
+
+
+                    <!-- here -->
+                    end
                     <form>
 
-                        <div class="form-group">
-                            <label></label>
-                            <input id="topic_title" name="topic_title" placeholder="Topic Title" type="text"
-                                class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label></label>
-                            <textarea id="topic_slide_text" name="topic_slide_text" cols="40" rows="3"
-                                aria-describedby="topic_slide_textHelpBlock" class="form-control"></textarea>
-                            <span id="topic_slide_textHelpBlock" class="form-text text-muted">Topic Slide Text</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="topic_participant_notes"></label>
-                            <textarea id="topic_participant_notes" name="topic_participant_notes" cols="40" rows="3"
-                                aria-describedby="topic_participant_notesHelpBlock" class="form-control"></textarea>
-                            <span id="topic_participant_notesHelpBlock" class="form-text text-muted">Topic Participant
-                                Notes</span>
-                        </div>
-                        <div class="form-group">
-                            <label></label>
-                            <textarea id="topic_instructor_notes" name="topic_instructor_notes" cols="40" rows="3"
-                                aria-describedby="topic_instructor_notesHelpBlock" class="form-control"></textarea>
-                            <span id="topic_instructor_notesHelpBlock" class="form-text text-muted">Topic Instructor
-                                Notes</span>
-                        </div>
-                        <div class="form-group">
+                        
+                        <!-- <div class="form-group">
                             <label></label>
                             <select id="id_module" name="id_module" aria-describedby="id_moduleHelpBlock"
                                 required="required" class="form-control">
@@ -168,14 +229,13 @@
                                 <option value="fish">Mod 3</option>
                             </select>
                             <span id="id_moduleHelpBlock" class="form-text text-muted">Module</span>
-                        </div>
+                        </div> -->
                         <div class="form-group">
                             <label></label>
                             <select id="id_objective" name="id_objective" aria-describedby="id_objectiveHelpBlock"
                                 class="form-control">
-                                <option value="rabbit">Objective 1</option>
-                                <option value="duck">Objective 2</option>
-                                <option value="fish">Objective 3</option>
+                                <option disabled value="">Please select objective</option>
+                                <option v-for="(objective,index_objective) in objectiveList" :value="objective">{{index_objective +1}}. {{objective}}</option>
                             </select>
                             <span id="id_objectiveHelpBlock" class="form-text text-muted">Objective</span>
                         </div>
@@ -203,13 +263,33 @@
         el: '#app',
         data: {
             message: 'Hello Vue!',
-            modules: "Introduction\nRisk Equation",
-            topics: [],
-            objectives: "Objective"
+            modules: "Guidelines\nThe Need for Safety\nRisk",
+            topics: ["topic a\ntopic b", "Mapping Risk\nRecognizing Risk"],
+            objectives: "List guidelines set forth in those books\nIdentify the need for risk analysis",
+            courseTitle: "",
+            client: "",
+            courseDuration: "",
+            demoModules: []
+
         },
         computed: {
             moduleTitles: function () {
                 return this.modules.split(/\r|\n/)
+            },
+            objectiveList: function () {
+                return this.objectives.split(/\r|\n/)
+            }
+            // ,
+            // topicTitles: function (index) {
+            //     // return this.topics[index].split(/\r|\n/)
+            //     return "test"
+            // }
+
+        },
+        methods: {
+            topicTitles: function (index) {
+                return this.topics[index].split(/\r|\n/)
+                // return "te"
             }
         }
     })
