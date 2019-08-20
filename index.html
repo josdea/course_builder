@@ -49,7 +49,7 @@
                                 </div>
                             </div>
                             <input id="course_title" name="course_title" placeholder="Course Title" type="text"
-                                required="required" class="form-control">
+                                required="required" class="form-control" v-model="courseTitle">
                         </div>
                     </div>
                     <div class="form-group">
@@ -60,7 +60,7 @@
                                 </div>
                             </div>
                             <input id="course_client" name="course_client" placeholder="Client" type="text"
-                                class="form-control">
+                                class="form-control" v-model="courseClient">
                         </div>
                     </div>
                     <div class="form-group">
@@ -71,7 +71,7 @@
                                 </div>
                             </div>
                             <input id="course_duration" name="course_duration" placeholder="Course Duration" type="text"
-                                class="form-control">
+                                class="form-control" v-model="courseDuration">
                             <div class="input-group-append">
                                 <div class="input-group-text">Days</div>
                             </div>
@@ -87,7 +87,11 @@
                         <textarea v-model="objectives" id="objectives" name="objectives" cols="40" rows="10"
                             class="form-control"></textarea>
                             {{objectiveList}}
-                            {{demoModules}}
+                            <hr>
+                            {{moduleTitles}} <br>
+                            {{topics}} <br>
+        
+                            <hr>
                     </div>
                 </div>
                 <div class="col-sm-3">
@@ -113,7 +117,7 @@
                                         <div class="card-body">
                                             <div class="form-group">
                                                 <input id="module_subtitle" name="module_subtitle"
-                                                    placeholder="Optional Module Subtitle" type="text"
+                                                    placeholder="Module Subtitle" type="text"
                                                     class="form-control">
                                             </div>
                                             <div class="form-group">
@@ -121,9 +125,12 @@
                                                     placeholder="Module Instructor" type="text" class="form-control">
                                             </div>
                                             <div class="form-group">
-                                                <input id="module_duration" name="module_duration"
-                                                    placeholder="Module Duration (minutes)" type="text"
-                                                    class="form-control">
+                                                    <div class="input-group">
+                                                      <input id="module_duration" name="module_duration" placeholder="Module Duration" type="text" class="form-control"> 
+                                                      <div class="input-group-append">
+                                                        <div class="input-group-text">Minutes</div>
+                                                      </div>
+                                                    </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="topic_titles">Topic (Slide) Titles</label> <br>
@@ -139,11 +146,7 @@
                     </div>
                 </div>
                 <div class="col-sm-6 far-right">
-                    <hr>
-                    {{moduleTitles}} <br>
-                    {{topics}} <br>
-
-                    <hr>
+   
 
 
                     <!-- <div v-if="(module!='')" class="topic form"> -->
@@ -170,6 +173,15 @@
                                         <span id="topic_instructor_notesHelpBlock" class="form-text text-muted">Topic Instructor
                                             Notes</span>
                                     </div>
+                                    <div class="form-group">
+                                            <label></label>
+                                            <select id="id_objective" name="id_objective" aria-describedby="id_objectiveHelpBlock"
+                                                class="form-control">
+                                                <option selected disabled value="">Please select objective</option>
+                                                <option v-for="(objective,index_objective) in objectiveList" :value="objective">{{index_objective +1}}. {{objective}}</option>
+                                            </select>
+                                            <span id="id_objectiveHelpBlock" class="form-text text-muted">Objective</span>
+                                        </div>
                                     <hr>
                             </div>
                             <!-- <hr> -->
@@ -216,8 +228,8 @@
 
 
                     <!-- here -->
-                    end
-                    <form>
+                    <!-- end -->
+                    <!-- <form> -->
 
                         
                         <!-- <div class="form-group">
@@ -230,16 +242,8 @@
                             </select>
                             <span id="id_moduleHelpBlock" class="form-text text-muted">Module</span>
                         </div> -->
-                        <div class="form-group">
-                            <label></label>
-                            <select id="id_objective" name="id_objective" aria-describedby="id_objectiveHelpBlock"
-                                class="form-control">
-                                <option disabled value="">Please select objective</option>
-                                <option v-for="(objective,index_objective) in objectiveList" :value="objective">{{index_objective +1}}. {{objective}}</option>
-                            </select>
-                            <span id="id_objectiveHelpBlock" class="form-text text-muted">Objective</span>
-                        </div>
-                        <div class="form-group">
+
+                        <!-- <div class="form-group">
                             <label for="objective_objective_text"></label>
                             <textarea id="objective_objective_text" name="objective_objective_text" cols="40" rows="3"
                                 aria-describedby="objective_objective_textHelpBlock" class="form-control"></textarea>
@@ -249,7 +253,7 @@
                         <div class="form-group">
                             <button name="submit" type="submit" class="btn btn-primary">Save</button>
                         </div>
-                    </form>
+                    </form> -->
                 </div>
 
             </div>
@@ -264,13 +268,11 @@
         data: {
             message: 'Hello Vue!',
             modules: "Guidelines\nThe Need for Safety\nRisk",
-            topics: ["topic a\ntopic b", "Mapping Risk\nRecognizing Risk"],
+            topics: ["Risk Equation", "Mapping Risk\nRecognizing Risk"],
             objectives: "List guidelines set forth in those books\nIdentify the need for risk analysis",
             courseTitle: "",
-            client: "",
+            courseClient: "",
             courseDuration: "",
-            demoModules: []
-
         },
         computed: {
             moduleTitles: function () {
