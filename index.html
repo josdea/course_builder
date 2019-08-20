@@ -215,7 +215,6 @@
         el: '#app',
         data: {
             courseTitle: "",
-            modtest: [],
             mods: [{title: '', subtitle: '', moduleDuration: '', topics: [{topicSlideText: '', topicPGNotes: '', topicIGNotes:'', topicObj: '', mediaReq:[]}] }],
             courseClient: "",
             courseDuration: "",
@@ -243,17 +242,6 @@
             },
             backup: function (){
 
-            },
-            modArray: {
-                get: function(){
-                    var moduleString = '';
-                        this.modtest.map(function(module){
-                                moduleString += module + ''
-                        });
-                },
-                set: function (moduleString) {
-
-                }
             }
         },
         methods: {
