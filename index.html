@@ -35,7 +35,7 @@
             <h1>Course Blueprint Builder</h1>
             <hr>
         </div>
-        <div class="container-fluid" :class="{'container': (modules == '')}">
+        <div class="container-fluid" :class="{'container': (course.module_titles_string == '')}">
             <div class="row">
                 <div class="col">
                     <div class="form-group">
@@ -46,7 +46,7 @@
                                 </div>
                             </div>
                             <input id="course_title" name="course_title" placeholder="Course Title" type="text"
-                                required="required" class="form-control" v-model="courseTitle">
+                                required="required" class="form-control" v-model="course.course_title">
                         </div>
                     </div>
                     <div class="form-group">
@@ -57,7 +57,7 @@
                                 </div>
                             </div>
                             <input id="course_client" name="course_client" placeholder="Client" type="text"
-                                class="form-control" v-model="courseClient">
+                                class="form-control" v-model="course.course_client">
                         </div>
                     </div>
                     <div class="form-group">
@@ -68,7 +68,7 @@
                                 </div>
                             </div>
                             <input id="course_duration" name="course_duration" placeholder="Course Duration" type="text"
-                                class="form-control" v-model="courseDuration">
+                                class="form-control" v-model="course.course_duration">
                             <div class="input-group-append">
                                 <div class="input-group-text">Days</div>
                             </div>
@@ -76,23 +76,25 @@
                     </div>
                     <div class="form-group">
                         <label for="module_titles">Module Titles (each on a new line)</label> <br>
-                        <textarea v-model="modules" id="module_titles" name="module_titles" cols="40" rows="10"
-                            class="form-control"></textarea>
+                        <textarea v-model="course.module_titles_string" id="module_titles" name="module_titles"
+                            cols="40" rows="10" class="form-control"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="objectives">Objectives (each on a new line)</label> <br>
-                        <textarea v-model="objectives" id="objectives" name="objectives" cols="40" rows="10"
+                        <textarea v-model="course.objectives" id="objectives" name="objectives" cols="40" rows="10"
                             class="form-control"></textarea>
                         <!-- for debug purposes -->
-                        <!-- {{objectiveList}}
+                        <!-- {{objectiveList}} -->
                         <hr>
-                        {{moduleTitles}} <br>
-                        {{topics}} <br>
-                        {{backup}} <br>
-                        <hr> -->
+                        <!-- mod titles {{moduleTitles}} <br> -->
+                        topics {{course.module_topics_array}} <br>
+                        <!-- backup {{backup}} <br> -->
+                        <!-- mods array {{mods}} <br> -->
+                        course: {{course}} <br>
+                        <hr>
                     </div>
                 </div>
-                <div v-if="modules != ''" class="col">
+                <div v-if="course.module_titles_string != ''" class="col">
                     <div class="module" v-for="(module,index) in moduleTitles">
                         <div v-if="(module!='')" class="moduleform">
                             <div class="accordion" id="accordionExample">
@@ -113,35 +115,39 @@
                                         <div class="card-body">
                                             <div class="form-group">
                                                 <input id="module_subtitle" name="module_subtitle"
-                                                    placeholder="Module Subtitle" type="text" class="form-control">
+                                                    placeholder="Module Subtitle" type="text" class="form-control"
+                                                    v-model="course.module_subtitles_array[index]">
                                             </div>
                                             <div class="form-group">
                                                 <input id="module_instructor" name="module_instructor"
-                                                    placeholder="Module Instructor" type="text" class="form-control">
+                                                    placeholder="Module Instructor" type="text" class="form-control" v-model="course.module_instructors_array[index]">
                                             </div>
                                             <div class="form-group">
                                                 <div class="input-group">
                                                     <input id="module_duration" name="module_duration"
-                                                        placeholder="Module Duration" type="text" class="form-control">
+                                                        placeholder="Module Duration" type="text" class="form-control" v-model="course.module_duration_array[index]">
                                                     <div class="input-group-append">
                                                         <div class="input-group-text">Minutes</div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="topic_titles">Topic (Slide) Titles</label> <br>
-                                                <textarea v-model="topics[index]" :id="'topic_titles'+index"
+                                                <label for="topic_titles">Topic (Slide) Titles (each on a new
+                                                    line)</label> <br>
+                                                <textarea v-model="course.module_topics_array[index]" :id="'topic_titles'+index"
                                                     name="topic_titles" cols="40" rows="5"
                                                     class="form-control"></textarea>
                                             </div>
                                             <div class="form-group">
-                                                    <div>
-                                                      <div class="form-check form-check-inline">
-                                                        <input name="has_exercise" id="has_exercise_0" type="checkbox" class="form-check-input" value="true"> 
-                                                        <label for="has_exercise_0" class="form-check-label">Module has Exercise?</label>
-                                                      </div>
+                                                <div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input name="has_exercise" id="has_exercise_0" type="checkbox"
+                                                            class="form-check-input" value="true">
+                                                        <label for="has_exercise_0" class="form-check-label">Module has
+                                                            Exercise?</label>
                                                     </div>
-                                                  </div> 
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -149,14 +155,14 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="modules != ''" class="col-md-6 far-right">
+                <div v-if="course.module_titles_string != ''" class="col-md-6 far-right">
                     <div class="module" v-for="(module,index_module) in moduleTitles">
-                        <div v-if="(index_module < topics.length && topicTitles(index_module) != '')"
+                        <div v-if="(index_module < course.module_topics_array.length && topicTitles(index_module) != '')"
                             class="topic formform">
                             <h2> Module {{index_module+1}} {{module}}</h2>
                             <div class="topic" v-for="(topic,index_topic) in topicTitles(index_module)">
                                 <div v-if="(topic !='')" class="topicform">
-                                    <h3> {{topic}}</h3>
+                                    <h3 :id="'#'+topic"> {{topic}}</h3>
                                     <div class="form-group">
                                         <textarea id="topic_slide_text" name="topic_slide_text" cols="40" rows="3"
                                             aria-describedby="topic_slide_textHelpBlock"
@@ -226,69 +232,59 @@
 </body>
 <script>
     var app = new Vue({
-        el: '#app',
-        data: {
-            courseTitle: "",
-            mods: [{
-                title: '',
-                subtitle: '',
-                moduleDuration: '',
-                topics: [{
-                    topicSlideText: '',
-                    topicPGNotes: '',
-                    topicIGNotes: '',
-                    topicObj: '',
-                    mediaReq: []
-                }]
-            }],
-            courseClient: "",
-            courseDuration: "",
-            modules: "",
-            objectives: "Introduction of the module.",
-            topics: [], // array location indicates module number in modules text string - 1
-            // courseTitle: "Advanced Nuclear Something",
-            // courseClient: "DAW",
-            // courseDuration: "4",
-            // modules: "Guidelines\nThe Need for Safety\nRisk", 
-            // objectives: "List guidelines set forth in those books\nIdentify the need for risk analysis",
-            // topics: ["Risk Equation", "Mapping Risk\nRecognizing Risk"], // array location indicates module number in modules text string - 1
-            topicSlideText: [], // 
-            topicParticipantNotes: [],
-            topicInstructorNotes: [],
-            topicObjective: [],
-            topicMediaRequired: []
-        },
-        computed: {
-            moduleTitles: function () {
-                return this.modules.split(/\r|\n/)
-            },
-            objectiveList: function () {
-                return this.objectives.split(/\r|\n/)
-            },
-            backup: function () {
-                var jsonBackup = {}
-                let that = this
-                jsonBackup.course_title = this.courseTitle
-                jsonBackup.modules = []
-                this.moduleTitles.forEach(function (mod, module_index) {
-                    jsonBackup.modules.push({
-                        module_title: mod
-                    })
-                });
-                return jsonBackup
-            }
-        },
-        methods: {
-            topicTitles: function (index) {
-                let topicTitle = ''
-                if (this.topics[index]) {
-                    return this.topics[index].split(/\r|\n/)
-                } else {
-                    return ""
-                }
-            }
-        }
-    })
+                el: '#app',
+                data: {
+                    course: {
+                        course_title: '',
+                        course_client: '',
+                        course_duration: '',
+                        module_titles_string: '',
+                        module_subtitles_array: [], // array location indicates module number + 1
+                        module_instructors_array: [], // array location indciate module number + 1
+                        module_duration_array: [], // array location indciate module number + 1
+                        module_topics_array: [], // array location indicates module number in modules text string - 1
+                        objectives: "Introduction of the module.",
+                        topicSlideText: [[]], //  TODO 2 dimensional array for module and topic
+                        topicParticipantNotes: [],
+                        topicInstructorNotes: [],
+                        topicObjective: [],
+                        topicMediaRequired: [],
+                        modules: [{
+                                topic_titles_string: ''}]
+                        },
+                       
+                    },
+                    computed: {
+                        moduleTitles: function () {
+                            return this.course.module_titles_string.split(/\r|\n/)
+                        },
+                        objectiveList: function () {
+                            return this.course.objectives.split(/\r|\n/)
+                        },
+                        backup: function () {
+                            var jsonBackup = {}
+                            let that = this
+                            jsonBackup.course_title = this.course.course_title
+                            jsonBackup.modules = []
+                            this.moduleTitles.forEach(function (mod, module_index) {
+                                jsonBackup.modules.push({
+                                    module_title: mod
+                                })
+                            });
+                            return jsonBackup
+                        }
+                    },
+                    methods: {
+                        topicTitles: function (index) {
+                            let topicTitle = ''
+                            if (this.course.module_topics_array[index]) {
+                                return this.course.module_topics_array[index].split(/\r|\n/)
+                            } else {
+                                return ""
+                            }
+                        }
+                    }
+                })
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
