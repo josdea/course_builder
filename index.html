@@ -11,6 +11,10 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
+        .container {
+            margin-top: 1em;
+        }
+
         .col-sm-4,
         .col-sm-3 {
             border-right: 1px solid gray;
@@ -28,12 +32,35 @@
         }
     </style>
 </head>
+<!-- TODO remove navbar expand to always collapse -->
 
 <body>
     <div id="app">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Course Blueprint Builder</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+                aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" v-on:click="saveLoad('launch')">Save / Load</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" v-on:click="saveLoad('reset')">Reset</a>
+                    </li>
+                </ul>
+
+            </div>
+        </nav>
         <div class="container">
-            <h1>Course Blueprint Builder</h1>
-            <hr>
+            <!-- <h1>Course Blueprint Builder</h1> -->
+            <!-- <hr> -->
         </div>
         <div class="container-fluid" :class="{'container': (course.module_titles_string == '')}">
             <div class="row">
@@ -83,15 +110,19 @@
                         <label for="objectives">Objectives (each on a new line)</label> <br>
                         <textarea v-model="course.objectives" id="objectives" name="objectives" cols="40" rows="10"
                             class="form-control"></textarea>
-                        <!-- for debug purposes -->
+                        <!-- Button trigger modal -->
+
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                            Launch demo modal
+                        </button>
                         <!-- {{objectiveList}} -->
-                        <hr>
+                        <!-- <hr> -->
                         <!-- mod titles {{moduleTitles}} <br> -->
                         <!-- topics {{course.module_topics_array}} <br> -->
                         <!-- backup {{backup}} <br> -->
                         <!-- mods array {{mods}} <br> -->
                         <!-- course: {{course}} <br> -->
-                        <hr>
+                        <!-- <hr> -->
                     </div>
                 </div>
                 <div v-if="course.module_titles_string != ''" class="col">
@@ -230,7 +261,6 @@
                                                 Required</span>
                                         </div>
                                     </div>
-                                    <hr>
                                 </div>
                             </div>
                         </div>
@@ -238,12 +268,41 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- Save and load Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Save and Load</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Copy the text below to backup all information on this page. Paste into the box to load
+                            previously copied material.</p>
+                        <!-- TODO save to disk option -->
+                        <!-- TODO make textbox fill modal -->
+                        <textarea name="" id="" cols="50" rows="6" v-model="courseBackupString"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" v-on:click="saveLoad('load')">Load</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of modal -->
     </div>
 </body>
 <script>
     var app = new Vue({
         el: '#app',
         data: {
+            courseBackupString: "",
             course: {
                 course_title: '',
                 course_client: '',
@@ -259,6 +318,7 @@
                 topic_instructor_notes_array: [], //  2D array, first is module, second is topic
                 topic_objective_array: [], //  2D array, first is module, second is topic
                 topic_media_required: [], //  3D array, first is module, second is topic, 3rd is list of selections
+                contentModal: '<hr>'
             },
 
         },
@@ -271,16 +331,19 @@
                 return this.course.objectives.split(/\r|\n/)
             },
             backup: function () {
-                var jsonBackup = {}
-                let that = this
-                jsonBackup.course_title = this.course.course_title
-                jsonBackup.modules = []
-                this.moduleTitles.forEach(function (mod, index_module) {
-                    jsonBackup.modules.push({
-                        module_title: mod
-                    })
-                });
-                return jsonBackup
+                // var jsonBackup = {}
+                // let that = this
+                // jsonBackup.course_title = this.course.course_title
+                // jsonBackup.modules = []
+                // this.moduleTitles.forEach(function (mod, index_module) {
+                //     jsonBackup.modules.push({
+                //         module_title: mod
+                //     })
+                // });
+                // return jsonBackup
+
+                return JSON.stringify(this.course)
+
             },
             outline: function () {
                 let outline = '';
@@ -331,6 +394,20 @@
                 } else {
                     return ""
                 }
+            },
+            saveLoad: function (action) {
+                console.log("in save function " + action)
+                let that = this
+                if (action == "load") {
+                    console.log("in load")
+                    that.course = JSON.parse(that.courseBackupString)
+                } else {
+                    that.courseBackupString = JSON.stringify(that.course)
+                    $('#exampleModal').modal('toggle')
+                }
+
+
+
             }
         }
     })
