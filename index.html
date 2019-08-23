@@ -45,15 +45,35 @@
 
             <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
+                    </li> -->
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="#" v-on:click="saveLoad('launch')">Save / Load</a>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
                         <a class="nav-link" href="#" v-on:click="saveLoad('reset')">Reset</a>
                     </li>
+                    <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Save
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                              <a class="dropdown-item" href="#">Save to Browser</a>
+                              <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Export to disk</a>
+                              <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                            </div>
+                          </li>
+                          <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  Load
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                  <a class="dropdown-item" href="#">Load from Browser</a>
+                                  <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Load from disk</a>
+                                  <a class="dropdown-item" href="#">Load Example Course (coming soon)</a>
+                                </div>
+                              </li>
                 </ul>
 
             </div>
