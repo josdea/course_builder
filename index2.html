@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- <meta http-equiv="refresh" content="5"> -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Course Builder</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <style>
+    h2 {
+      font-size: 1.4rem
+    }
+
+    h3 {
+      font-size: 1.3rem;
+    }
+
+    h4 {
+      font-size: 1.2rem;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Course Blueprint Builder</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+        aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Save
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="#">Save to Browser (coming soon)</a>
+              <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Save to Clipboard</a>
+              <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Save do Disk (coming
+                soon)</a>
+              <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Save do Dropbox.com
+                (coming later)</a>
+              <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Load
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="#">Load from Browser (coming soon)</a>
+              <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Load from Clipboard</a>
+              <a class="dropdown-item" href="#" v-on:click="loadExample()">Load Example Course</a>
+              <a class="dropdown-item" href="#">Load from File (coming soon)</a>
+              <a class="dropdown-item" href="#">Load from PowerPoint Outline (coming later)</a>
+              <a class="dropdown-item" href="#" v-on:click="resetApp">Clear current course</a>
+            </div>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Export
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="#">Export Agenda (coming soon)</a>
+              <a class="dropdown-item" href="#">Export PowerPoint Outline (coming soon)</a>
+              <a class="dropdown-item" href="#">Export Module / Topic Outline (coming soon)</a>
+              <a class="dropdown-item" href="#">Export Export to Excel (coming later)</a>
+              <a class="dropdown-item" href="#">Export Analysis Document (coming soon)</a>
+              <a class="dropdown-item" href="#">Export Design Document (coming soon)</a>
+              <a class="dropdown-item" href="#">Export Objectives Report (coming soon)</a>
+            </div>
+          </li>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3">
+          <!-- Course Info  -->
+          <h2>
+            <a data-toggle="collapse" href="#course_form" role="button" aria-expanded="true" aria-controls="course_form"
+              class="text-body">Course</a></h2>
+          <div id="course_form" class="collapse show">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    <i class="fa fa-book"></i>
+                  </div>
+                </div>
+                <input id="course_title" name="course_title" placeholder="Course Title" type="text" required="required"
+                  class="form-control" v-model="course.course_title">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    <i class="fa fa-user-circle"></i>
+                  </div>
+                </div>
+                <input id="course_client" name="course_client" placeholder="Client" type="text" class="form-control"
+                  v-model="course.course_client">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    <i class="fa fa-calendar-check-o"></i>
+                  </div>
+                </div>
+                <input id="course_duration" name="course_duration" placeholder="Course Duration" type="text"
+                  class="form-control" v-model="course.course_duration">
+                <div class="input-group-append">
+                  <div class="input-group-text">Days</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end of course info -->
+          <!-- Module List -->
+          <h2 class="d-flex justify-content-between align-items-center">Modules
+            <a title="Add Modules" class="btn btn-outline-success btn-sm" role="button" data-toggle="collapse"
+              href="#add_modules_form" aria-expanded="false" aria-controls="add_modules_form"><i
+                class="fa fa-plus"></i></a>
+          </h2>
+          <!-- add modules form -->
+          <div id="add_modules_form" class="form-group collapse">
+            <label class="d-flex justify-content-between align-items-center" for="module_titles">Add Module
+              Titles (each on a new line) <a class="btn btn-success btn-sm" href="#" role="button">Add</a></label>
+            <textarea v-model="addModules" id="module_titles" name="module_titles" cols="40" rows="2"
+              class="form-control"></textarea>
+          </div>
+          <!-- end of add modules form -->
+          <div class="list-group">
+            <a v-for="(module, index_module) in course2.modules" href="#"
+              class="list-group-item d-flex justify-content-between align-items-center">
+              {{index_module+1}}. {{module.title}}
+              <span class="badge badge-primary badge-pill" title="contains this many topics">14</span>
+            </a>
+            <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Dapibus ac
+              facilisis in</a>
+            <!-- <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Morbi leo
+              risus
+              <span class="badge badge-primary badge-pill" title="contains this many topics">14</span>
+            </a>
+            <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Porta ac
+              consectetur ac
+              <span class="badge badge-primary badge-pill" title="contains this many topics">2</span>
+            </a> -->
+          </div>
+          <!-- End of module list -->
+          <br>
+          <!-- Objective List -->
+          <h2 class="d-flex justify-content-between align-items-center">Objectives
+            <a title="Add Objectives" class="btn btn-outline-success btn-sm" role="button" data-toggle="collapse"
+              href="#add_objectives_form" aria-expanded="false" aria-controls="add_objectives_form"><i
+                class="fa fa-plus"></i></a>
+          </h2>
+          <!-- add Objectives form -->
+          <div id="add_objectives_form" class="form-group collapse">
+            <label class="d-flex justify-content-between align-items-center" for="module_titles">Add
+              Objectives (each on a new line) <a class="btn btn-success btn-sm" href="#" role="button">Add</a></label>
+            <textarea v-model="addObjectives" id="objective_text" name="objective_text" cols="40" rows="2"
+              class="form-control"></textarea>
+          </div>
+          <!-- end of add objectives form -->
+          <div class="list-group">
+            <a v-for="(objective, index_objective) in course2.objectives" href="#"
+              class="list-group-item d-flex justify-content-between align-items-center">
+              {{index_objective+1}}. {{objective.objective_text}}
+              <span class="badge badge-primary badge-pill" title="Used in this many topics">2</span>
+
+            </a>
+            <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Dapibus ac
+              facilisis in
+            </a>
+            <!-- <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Morbi leo
+              risus
+              <span class="badge badge-primary badge-pill" title="contains this many topics">14</span>
+            </a>
+            <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Porta ac
+              consectetur ac
+              <span class="badge badge-primary badge-pill" title="contains this many topics">2</span>
+            </a> -->
+          </div>
+          <!-- End of objectives list -->
+          <br>
+        </div>
+        <div class="col-sm-3">
+          <br>
+          <!-- TODO add ability to reorder and delete modules -->
+          <div v-for="(module, index_module) in course2.modules" class="module_form">
+            <h3 class="d-flex justify-content-between align-items-center">
+              <a data-toggle="collapse" :href="'#module_details_form'+index_module" role="button" aria-expanded="true"
+                :aria-controls="'module_details_form'+index_module">Module {{index_module+1}}</a>
+              <div class="module_actions">
+                <!-- <i class="fa fa-pencil"></i> -->
+                <i class="fa fa-arrow-up"></i>
+                <i class="fa fa-arrow-down"></i>
+              </div>
+            </h3>
+            <div :id="'module_details_form'+index_module" class="collapse show">
+              <div class="form-group">
+                <input :id="'module_title'+index_module" name="module_title" placeholder="Module Title" type="text"
+                  class="form-control" v-model="module.title">
+              </div>
+              <!-- TODO check for ids in topics -->
+              <div class="form-group">
+                <input :id="'module_subtitle'+index_module" name="module_subtitle" placeholder="Module Subtitle"
+                  type="text" class="form-control" v-model="module.subtitle">
+              </div>
+              <div class="form-group">
+                <input :id="'module_instructor'+index_module" name="module_instructor" placeholder="Module Instructor"
+                  type="text" class="form-control" v-model="module.instructor">
+              </div>
+              <div class="form-group">
+                <div class="input-group">
+                  <input :id="'module_duration'+index_module" name="module_duration" placeholder="Module Duration"
+                    type="text" class="form-control" v-model="module.duration">
+                  <div class="input-group-append">
+                    <div class="input-group-text">Minutes</div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="topic_titles">Module Description</label> <br>
+                <textarea id="module_description" name="module_description" cols="40" rows="2" class="form-control"
+                  v-model="module.description"></textarea>
+              </div>
+              <!-- Topics List -->
+              <!-- TODO show topics form if there are no topics -->
+              <!-- TODO show objectives form and modules form if there are no objectives or modules -->
+              <h4 class="d-flex justify-content-between align-items-center">Topics
+                <a title="Add Topics" class="btn btn-outline-success btn-sm" role="button" data-toggle="collapse"
+                  href="#add_topics_form" aria-expanded="false" aria-controls="add_topics_form"><i
+                    class="fa fa-plus"></i></a>
+              </h4>
+              <!-- add topics form -->
+              <div id="add_topics_form" class="form-group collapse">
+                <label class="d-flex justify-content-between align-items-center" for="module_titles">Add
+                  Topics (each on a new line) <a class="btn btn-success btn-sm" href="#" role="button">Add</a></label>
+                <textarea v-model="addTopics" id="topic_text" name="objective_text" cols="40" rows="2"
+                  class="form-control"></textarea>
+              </div>
+              <!-- end of add topics form -->
+              <ul class="list-group">
+                <li v-for="(topic, index_topic) in module.topics"
+                  class="list-group-item d-flex justify-content-between align-items-center">
+                  {{topic.title}}
+                  <div class="module_actions">
+                    <i class="fa fa-arrow-up"></i>
+                    <i class="fa fa-arrow-down"></i>
+                  </div>
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-warning">
+                  Morbi leo risus
+                  <div class="module_actions">
+
+                    <i class="fa fa-arrow-up"></i>
+                    <i class="fa fa-arrow-down"></i>
+                  </div>
+                </li>
+                <!-- <li class="list-group-item d-flex justify-content-between align-items-center">Porta ac consectetur ac
+                  <div class="module_actions">
+
+                    <i class="fa fa-arrow-up"></i>
+                    <i class="fa fa-arrow-down"></i>
+                  </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Vestibulum at eros
+                  <div class="module_actions">
+
+                    <i class="fa fa-arrow-up"></i>
+                    <i class="fa fa-arrow-down"></i>
+                  </div>
+                </li> -->
+              </ul>
+              <!-- End of topics list -->
+            </div>
+          </div>
+        </div>
+        <div class="col">col 3</div>
+      </div>
+    </div>
+  </div>
+  <!-- TODO map exercise checkbox to variable -->
+</body>
+<script>
+  var exampleCourse = {
+    "course_title": "",
+    "course_client": "",
+    "course_duration": "",
+    "module_titles_string": "Introduction\nScope and Scale\nUnits and Concepts\n",
+    "module_subtitles_array": [
+      "Sample Module Subtitle",
+      "Sample Module Subtitle",
+      "Sample Module Subtitle"
+    ],
+    "module_instructors_array": [
+      "Kevin",
+      "Sally",
+      "Bill"
+    ],
+    "module_duration_array": [
+      "45",
+      "30",
+      "60"
+    ],
+    "module_topics_array": [
+      "1.1 Topic\n1.2 Topic\n1.3 Topic",
+      "2.1 Topic\n2.2 Topic\n2.3 Topic\n2.4 Topic",
+      "3.1 Topic\n3.2 Topic\n3.3 Topic\n3.4 Topic"
+    ],
+    "objectives": "Introduction of the module.\nIdentify when scope is x,y, and z\nMatch this thing to that thing\nRecognize the need for something\nEstablish the recommended amount of a thing\nCalculate the product of something",
+    "topic_slide_text_array": [
+      [
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nUt non risus ut urna elementum cursus a et ipsum.\nNunc eget ante ac tortor varius porttitor.\nVestibulum suscipit eros sed tincidunt porta.\nNullam nec neque pellentesque, viverra ex quis, pulvinar lorem.",
+        "Praesent eu mauris et justo suscipit maximus vel vel enim.\nSed faucibus tellus nec bibendum congue.\nSed ac ipsum eleifend, rutrum justo et, imperdiet nisi.",
+        "Ut pharetra neque et est \nPharetra ullamcorper et quis velit.\n"
+      ],
+      [
+        "Praesent eu mauris et justo suscipit maximus vel vel enim.\nSed faucibus tellus nec bibendum congue.\nSed ac ipsum eleifend, rutrum justo et, imperdiet nisi.",
+        "Praesent eu mauris et justo suscipit maximus vel vel enim.\nSed faucibus tellus nec bibendum congue.\nSed ac ipsum eleifend, rutrum justo et, imperdiet nisi.",
+        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
+        "Morbi tempus quam sit \namet interdum aliquet.\n"
+      ],
+      [
+        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
+        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nUt non risus ut urna elementum cursus a et ipsum.\nNunc eget ante ac tortor varius porttitor.\nVestibulum suscipit eros sed tincidunt porta.\nNullam nec neque pellentesque, viverra ex quis, pulvinar lorem.",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nUt non risus ut urna elementum cursus a et ipsum.\nNunc eget ante ac tortor varius porttitor.\nVestibulum suscipit eros sed tincidunt porta.\nNullam nec neque pellentesque, viverra ex quis, pulvinar lorem."
+      ],
+      [
+        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
+        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
+        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
+        "Praesent eu mauris et justo suscipit maximus vel vel enim.\nSed faucibus tellus nec bibendum congue.\nSed ac ipsum eleifend, rutrum justo et, imperdiet nisi.",
+        "Praesent eu mauris et justo suscipit maximus vel vel enim.\nSed faucibus tellus nec bibendum congue.\nSed ac ipsum eleifend, rutrum justo et, imperdiet nisi.",
+        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
+        "Nam rhoncus ipsum ac ligula placerat posuere.\nSed rutrum risus in purus convallis eleifend.\nInteger lobortis ipsum ut leo pharetra, sit amet laoreet dui lacinia.\nSed non augue volutpat, viverra ante sed, facilisis tortor.\nCras rhoncus urna eu neque aliquam eleifend."
+      ]
+    ],
+    "topic_participant_notes_array": [
+      [
+        "Nullam fringilla placerat dui eget luctus. Fusce sit amet scelerisque nunc. Nullam condimentum ultrices augue, ac pharetra turpis euismod vel. Vivamus consequat semper sapien, at porta est luctus sit amet. Maecenas fringilla a urna vitae aliquam. Donec ipsum est, aliquam ac mauris non, faucibus malesuada ex. In lacinia laoreet mi, eu gravida augue hendrerit bibendum. Aliquam quis sodales enim. Donec ante lorem, feugiat a convallis quis, egestas sit amet nunc. Suspendisse ac suscipit risus, vitae molestie sapien. Aenean lobortis lacinia ex, ut fermentum ligula pellentesque a. Proin nec nibh nec lacus tempus commodo. In volutpat mauris mi. Sed neque nisi, tincidunt nec dolor a, ullamcorper feugiat lacus. Sed eu semper nulla.",
+        "Nam leo velit, blandit id nisi et, dictum commodo mi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam convallis tempus risus, quis lacinia nibh interdum eu. Ut dictum mi eget turpis mollis pellentesque. Aenean porta lectus vel erat suscipit rhoncus. Aenean dapibus, nisl eu lobortis dignissim, elit sem rhoncus neque, at porta dolor sapien vel nunc. Cras lacinia vel nibh vitae mollis. Curabitur dictum nulla nibh, id posuere velit placerat bibendum. Phasellus vehicula eros sit amet est tempus ultrices. Maecenas sit amet nisi nec justo congue venenatis a sed odio. Praesent sollicitudin purus et vulputate tempus. Sed neque felis, feugiat non purus elementum, vestibulum volutpat tellus.",
+        "Nullam fringilla placerat dui eget luctus. Fusce sit amet scelerisque nunc. Nullam condimentum ultrices augue, ac pharetra turpis euismod vel. Vivamus consequat semper sapien, at porta est luctus sit amet. Maecenas fringilla a urna vitae aliquam. Donec ipsum est, aliquam ac mauris non, faucibus malesuada ex. In lacinia laoreet mi, eu gravida augue hendrerit bibendum. Aliquam quis sodales enim. Donec ante lorem, feugiat a convallis quis, egestas sit amet nunc. Suspendisse ac suscipit risus, vitae molestie sapien. Aenean lobortis lacinia ex, ut fermentum ligula pellentesque a. Proin nec nibh nec lacus tempus commodo. In volutpat mauris mi. Sed neque nisi, tincidunt nec dolor a, ullamcorper feugiat lacus. Sed eu semper nulla."
+      ],
+      [
+        "Morbi cursus convallis maximus. Nunc sagittis est ut purus elementum luctus. Nam vitae libero felis. Curabitur id lorem tincidunt, pharetra neque non, commodo dui. Curabitur lorem ipsum, vulputate et leo id, imperdiet accumsan justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam gravida ac diam eu dignissim. Nam vel leo eleifend, maximus purus id, aliquet mi. Pellentesque odio turpis, facilisis sed risus vitae, tempor venenatis ipsum. Suspendisse potenti. Nunc cursus elit mattis, elementum enim et, ornare nibh. Suspendisse interdum interdum arcu sed hendrerit. Mauris lobortis risus dolor, id malesuada metus sodales quis. Curabitur fermentum efficitur dolor sit amet vestibulum.",
+        "Nullam fringilla placerat dui eget luctus. Fusce sit amet scelerisque nunc. Nullam condimentum ultrices augue, ac pharetra turpis euismod vel. Vivamus consequat semper sapien, at porta est luctus sit amet. Maecenas fringilla a urna vitae aliquam. Donec ipsum est, aliquam ac mauris non, faucibus malesuada ex. In lacinia laoreet mi, eu gravida augue hendrerit bibendum. Aliquam quis sodales enim. Donec ante lorem, feugiat a convallis quis, egestas sit amet nunc. Suspendisse ac suscipit risus, vitae molestie sapien. Aenean lobortis lacinia ex, ut fermentum ligula pellentesque a. Proin nec nibh nec lacus tempus commodo. In volutpat mauris mi. Sed neque nisi, tincidunt nec dolor a, ullamcorper feugiat lacus. Sed eu semper nulla.",
+        "Nam leo velit, blandit id nisi et, dictum commodo mi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam convallis tempus risus, quis lacinia nibh interdum eu. Ut dictum mi eget turpis mollis pellentesque. Aenean porta lectus vel erat suscipit rhoncus. Aenean dapibus, nisl eu lobortis dignissim, elit sem rhoncus neque, at porta dolor sapien vel nunc. Cras lacinia vel nibh vitae mollis. Curabitur dictum nulla nibh, id posuere velit placerat bibendum. Phasellus vehicula eros sit amet est tempus ultrices. Maecenas sit amet nisi nec justo congue venenatis a sed odio. Praesent sollicitudin purus et vulputate tempus. Sed neque felis, feugiat non purus elementum, vestibulum volutpat tellus.",
+        "Nullam fringilla placerat dui eget luctus. Fusce sit amet scelerisque nunc. Nullam condimentum ultrices augue, ac pharetra turpis euismod vel. Vivamus consequat semper sapien, at porta est luctus sit amet. Maecenas fringilla a urna vitae aliquam. Donec ipsum est, aliquam ac mauris non, faucibus malesuada ex. In lacinia laoreet mi, eu gravida augue hendrerit bibendum. Aliquam quis sodales enim. Donec ante lorem, feugiat a convallis quis, egestas sit amet nunc. Suspendisse ac suscipit risus, vitae molestie sapien. Aenean lobortis lacinia ex, ut fermentum ligula pellentesque a. Proin nec nibh nec lacus tempus commodo. In volutpat mauris mi. Sed neque nisi, tincidunt nec dolor a, ullamcorper feugiat lacus. Sed eu semper nulla."
+      ],
+      [
+        "Morbi cursus convallis maximus. Nunc sagittis est ut purus elementum luctus. Nam vitae libero felis. Curabitur id lorem tincidunt, pharetra neque non, commodo dui. Curabitur lorem ipsum, vulputate et leo id, imperdiet accumsan justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam gravida ac diam eu dignissim. Nam vel leo eleifend, maximus purus id, aliquet mi. Pellentesque odio turpis, facilisis sed risus vitae, tempor venenatis ipsum. Suspendisse potenti. Nunc cursus elit mattis, elementum enim et, ornare nibh. Suspendisse interdum interdum arcu sed hendrerit. Mauris lobortis risus dolor, id malesuada metus sodales quis. Curabitur fermentum efficitur dolor sit amet vestibulum.",
+        "Nullam fringilla placerat dui eget luctus. Fusce sit amet scelerisque nunc. Nullam condimentum ultrices augue, ac pharetra turpis euismod vel. Vivamus consequat semper sapien, at porta est luctus sit amet. Maecenas fringilla a urna vitae aliquam. Donec ipsum est, aliquam ac mauris non, faucibus malesuada ex. In lacinia laoreet mi, eu gravida augue hendrerit bibendum. Aliquam quis sodales enim. Donec ante lorem, feugiat a convallis quis, egestas sit amet nunc. Suspendisse ac suscipit risus, vitae molestie sapien. Aenean lobortis lacinia ex, ut fermentum ligula pellentesque a. Proin nec nibh nec lacus tempus commodo. In volutpat mauris mi. Sed neque nisi, tincidunt nec dolor a, ullamcorper feugiat lacus. Sed eu semper nulla.",
+        "Nam leo velit, blandit id nisi et, dictum commodo mi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam convallis tempus risus, quis lacinia nibh interdum eu. Ut dictum mi eget turpis mollis pellentesque. Aenean porta lectus vel erat suscipit rhoncus. Aenean dapibus, nisl eu lobortis dignissim, elit sem rhoncus neque, at porta dolor sapien vel nunc. Cras lacinia vel nibh vitae mollis. Curabitur dictum nulla nibh, id posuere velit placerat bibendum. Phasellus vehicula eros sit amet est tempus ultrices. Maecenas sit amet nisi nec justo congue venenatis a sed odio. Praesent sollicitudin purus et vulputate tempus. Sed neque felis, feugiat non purus elementum, vestibulum volutpat tellus.",
+        "Morbi cursus convallis maximus. Nunc sagittis est ut purus elementum luctus. Nam vitae libero felis. Curabitur id lorem tincidunt, pharetra neque non, commodo dui. Curabitur lorem ipsum, vulputate et leo id, imperdiet accumsan justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam gravida ac diam eu dignissim. Nam vel leo eleifend, maximus purus id, aliquet mi. Pellentesque odio turpis, facilisis sed risus vitae, tempor venenatis ipsum. Suspendisse potenti. Nunc cursus elit mattis, elementum enim et, ornare nibh. Suspendisse interdum interdum arcu sed hendrerit. Mauris lobortis risus dolor, id malesuada metus sodales quis. Curabitur fermentum efficitur dolor sit amet vestibulum."
+      ]
+    ],
+    "topic_instructor_notes_array": [
+      [
+        "Ut pharetra neque et est pharetra ullamcorper et quis velit.\nUt pulvinar diam eu neque laoreet tincidunt.\nSed ultrices nisi eu suscipit lacinia.",
+        "Morbi tempus quam sit amet interdum aliquet.\nSed a mauris nec augue mollis pellentesque.\nVestibulum aliquam massa quis nulla feugiat, ac iaculis sem efficitur.\nQuisque sed tortor at mauris consectetur hendrerit ut id velit.",
+        "Etiam in est gravida turpis tempus efficitur sed sit amet odio.\nInteger in dui nec augue tristique volutpat non ut lacus.\nAenean ornare dolor eget neque ullamcorper sagittis."
+      ],
+      [
+        "Ut pharetra neque et est pharetra ullamcorper et quis velit.\nUt pulvinar diam eu neque laoreet tincidunt.\nSed ultrices nisi eu suscipit lacinia.",
+        "Morbi tempus quam sit amet interdum aliquet.\nSed a mauris nec augue mollis pellentesque.\nVestibulum aliquam massa quis nulla feugiat, ac iaculis sem efficitur.\nQuisque sed tortor at mauris consectetur hendrerit ut id velit.",
+        "Etiam in est gravida turpis tempus efficitur sed sit amet odio.\nInteger in dui nec augue tristique volutpat non ut lacus.\nAenean ornare dolor eget neque ullamcorper sagittis.",
+        "Morbi tempus quam sit amet interdum aliquet.\nSed a mauris nec augue mollis pellentesque.\nVestibulum aliquam massa quis nulla feugiat, ac iaculis sem efficitur.\nQuisque sed tortor at mauris consectetur hendrerit ut id velit."
+      ],
+      [
+        "Etiam in est gravida turpis tempus efficitur sed sit amet odio.\nInteger in dui nec augue tristique volutpat non ut lacus.\nAenean ornare dolor eget neque ullamcorper sagittis.",
+        "Ut pharetra neque et est pharetra ullamcorper et quis velit.\nUt pulvinar diam eu neque laoreet tincidunt.\nSed ultrices nisi eu suscipit lacinia.",
+        "Nullam venenatis ante bibendum placerat gravida.\nAliquam vel nisl eget elit convallis pretium.\nCurabitur blandit est eget justo dignissim luctus.",
+        "Morbi tempus quam sit amet interdum aliquet.\nSed a mauris nec augue mollis pellentesque.\nVestibulum aliquam massa quis nulla feugiat, ac iaculis sem efficitur.\nQuisque sed tortor at mauris consectetur hendrerit ut id velit."
+      ]
+    ],
+    "topic_objective_array": [
+      [
+        3,
+        6,
+        1,
+        4,
+        6
+      ],
+      [
+        4,
+        5,
+        6,
+        2
+      ],
+      [
+        6,
+        2,
+        1,
+        5
+      ]
+    ],
+    "topic_media_required": [
+      [
+        [
+          "graphic"
+        ],
+        [
+          "video",
+          "animation"
+        ],
+        [
+          "graphic"
+        ],
+        [
+          "graphic"
+        ],
+        [
+          "video"
+        ],
+        [
+          "graphic"
+        ],
+        [
+          "graphic"
+        ]
+      ],
+      [
+        [
+          "animation"
+        ],
+        [],
+        [
+          "graphic"
+        ],
+        [],
+        [],
+        [
+          "graphic"
+        ],
+        []
+      ],
+      [
+        [
+          "graphic"
+        ],
+        [],
+        [
+          "graphic"
+        ],
+        [],
+        [
+          "graphic",
+          "animation"
+        ],
+        [],
+        [
+          "animation"
+        ]
+      ]
+    ]
+  };
+  JSON.stringify(course2)
+  var course2b =
+    '{"title":"","client":"","duration":"","modules":[{"title":"","subtitle":"","instructor":"","duration":"","description":"","topics":[{"title":"","slide_text":"","participant_notes":"","instructor_notes":"","id_objective":"","exercises":[{"title":"","description":""}],"graphics":[{"filename":"","citation":"","description":"","type":""}]}]}],"objectives":[{"objective_text":""}]}';
+  var course2 = {
+    title: '',
+    client: '',
+    duration: '',
+    modules: [{
+      title: 'Introduction',
+      subtitle: 'a',
+      instructor: 'b',
+      duration: 'c',
+      description: 'd',
+      topics: [{
+        title: 'e',
+        slide_text: 'f',
+        participant_notes: 'g',
+        instructor_notes: 'h',
+        id_objective: 'i',
+        exercises: [{
+          title: 'j',
+          description: 'k'
+        }],
+        graphics: [{
+          filename: 'l',
+          citation: 'm',
+          description: 'n',
+          type: 'o'
+        }]
+      }]
+    }],
+    objectives: [{
+      objective_text: 'p'
+    }]
+  };
+
+  var courseblank = {
+    title: '',
+    client: '',
+    duration: '',
+    modules: [{
+      title: 'test',
+      subtitle: '',
+      instructor: '',
+      duration: '',
+      description: '',
+      topics: [{
+        title: '',
+        slide_text: '',
+        participant_notes: '',
+        instructor_notes: '',
+        id_objective: '',
+        exercises: [{
+          title: '',
+          description: ''
+        }],
+        graphics: [{
+          filename: '',
+          citation: '',
+          description: '',
+          type: ''
+        }]
+      }]
+    }],
+    objectives: [{
+      objective_text: ''
+    }]
+  };
+  console.log
+  var resetObject =
+    '{"course_title":"","course_client":"","course_duration":"","module_titles_string":"","module_subtitles_array":[],"module_instructors_array":[],"module_duration_array":[],"module_topics_array":[],"objectives":"Introduction of the module.","topic_slide_text_array":[],"topic_participant_notes_array":[],"topic_instructor_notes_array":[],"topic_objective_array":[],"topic_media_required":[]}';
+  var app = new Vue({
+    el: '#app',
+    data: {
+      course2: course2,
+      addModules: 'modddd',
+      addTopics: [],
+      addObjectives: 'obbbbb',
+      courseBackupString: "",
+      course: {
+        course_title: '',
+        course_client: '',
+        course_duration: '',
+        module_titles_string: '',
+        module_subtitles_array: [], // array location indicates module number + 1
+        module_instructors_array: [], // array location indciate module number + 1
+        module_duration_array: [], // array location indciate module number + 1
+        module_topics_array: [], // array location indicates module number in modules text string - 1
+        objectives: "Introduction of the module.",
+        topic_slide_text_array: [], //  2D array, first is module, second is topic
+        topic_participant_notes_array: [], //  2D array, first is module, second is topic
+        topic_instructor_notes_array: [], //  2D array, first is module, second is topic
+        topic_objective_array: [], //  2D array, first is module, second is topic
+        topic_media_required: [], //  3D array, first is module, second is topic, 3rd is list of selections
+      },
+    },
+    computed: {
+      moduleTitles: function () {
+        return this.course.module_titles_string.split(/\r|\n/)
+      },
+      objectiveList: function () {
+        return this.course.objectives.split(/\r|\n/)
+      },
+      backup: function () {
+        // var jsonBackup = {}
+        // let that = this
+        // jsonBackup.course_title = this.course.course_title
+        // jsonBackup.modules = []
+        // this.moduleTitles.forEach(function (mod, index_module) {
+        //     jsonBackup.modules.push({
+        //         module_title: mod
+        //     })
+        // });
+        // return jsonBackup
+        return JSON.stringify(this.course)
+      },
+      outline: function () {
+        let outline = '';
+        let that = this
+        this.moduleTitles.forEach(function (module_title, index_module) {
+          outline += '<h1>' + module_title + '</h1>'
+          let topicList = []
+          if (that.course.module_topics_array[index_module]) {
+            topicList = that.course.module_topics_array[index_module].split(/\r|\n/)
+          }
+          topicList.forEach(function (topic_title, index_topic) {
+            outline += '<h2>' + topic_title + '</h2>'
+          });
+        });
+        return outline
+      }
+    },
+    methods: {
+      topicTitles: function (index) {
+        if (!this.course.topic_slide_text_array[index]) {
+          this.course.topic_slide_text_array.push([])
+        }
+        if (!this.course.topic_participant_notes_array[index]) {
+          this.course.topic_participant_notes_array.push([])
+        }
+        if (!this.course.topic_instructor_notes_array[index]) {
+          this.course.topic_instructor_notes_array.push([])
+        }
+        if (!this.course.topic_objective_array[index]) {
+          this.course.topic_objective_array.push([])
+        }
+        if (!this.course.topic_media_required[index]) {
+          console.log("topic media")
+          this.course.topic_media_required.push([
+            []
+          ])
+        }
+        if (this.course.module_topics_array[index]) {
+          let topicList = []
+          topicList = this.course.module_topics_array[index].split(/\r|\n/)
+          if (!this.course.topic_media_required[index][topicList.length - 1]) {
+            console.log("topic media 2")
+            this.course.topic_media_required[index].push([])
+          }
+          return topicList
+        } else {
+          return ""
+        }
+      },
+      saveLoad: function (action) {
+        console.log("in save function " + action)
+        let that = this
+        if (action == "load") {
+          console.log("in load")
+          if (confirm("This will clear any current course data and load the pasted project.") ==
+            true) {
+            that.course = JSON.parse(that.courseBackupString)
+          }
+          $('#exampleModal').modal('toggle')
+        } else {
+          that.courseBackupString = JSON.stringify(that.course, null, 2)
+          $('#exampleModal').modal('toggle')
+        }
+      },
+      resetApp: function () {
+        if (confirm("This will clear any current course data and reset the app.") == true) {
+          this.course = JSON.parse(resetObject)
+        }
+      },
+      loadExample: function () {
+        if (confirm("This will clear any current course data and load the example course.") ==
+          true) {
+          this.course = exampleCourse;
+        }
+      }
+    }
+  })
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+  integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</html>
