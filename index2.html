@@ -23,6 +23,19 @@
     h4 {
       font-size: 1.2rem;
     }
+
+    .form-group,
+    input {
+      padding: .25rem;
+    }
+
+    .pptoutline h1{
+      font-size: 1rem;
+    }
+    .pptoutline h2{
+      font-size: .9rem;
+    }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 </head>
@@ -72,12 +85,22 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               <a class="dropdown-item" href="#">Export Agenda (coming soon)</a>
-              <a class="dropdown-item" href="#">Export PowerPoint Outline (coming soon)</a>
+              <a class="dropdown-item" href="#" v-on:click="exportPPTOutline">Export PowerPoint Outline (coming
+                soon)</a>
               <a class="dropdown-item" href="#">Export Module / Topic Outline (coming soon)</a>
-              <a class="dropdown-item" href="#">Export Export to Excel (coming later)</a>
+              <a class="dropdown-item" href="#">Export to Excel (coming later)</a>
               <a class="dropdown-item" href="#">Export Analysis Document (coming soon)</a>
               <a class="dropdown-item" href="#">Export Design Document (coming soon)</a>
               <a class="dropdown-item" href="#">Export Objectives Report (coming soon)</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink4" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Settings
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink4">
+              <a class="dropdown-item" href="#" v-on:click="settings('maxMinWords')">Max / Min Words</a>
             </div>
           </li>
           </li>
@@ -100,7 +123,7 @@
                   </div>
                 </div>
                 <input id="course_title" name="course_title" placeholder="Course Title" type="text" required="required"
-                  class="form-control" v-model="course.course_title">
+                  class="form-control" v-model="course2.title">
               </div>
             </div>
             <div class="form-group">
@@ -111,7 +134,7 @@
                   </div>
                 </div>
                 <input id="course_client" name="course_client" placeholder="Client" type="text" class="form-control"
-                  v-model="course.course_client">
+                  v-model="course2.client">
               </div>
             </div>
             <div class="form-group">
@@ -122,7 +145,7 @@
                   </div>
                 </div>
                 <input id="course_duration" name="course_duration" placeholder="Course Duration" type="text"
-                  class="form-control" v-model="course.course_duration">
+                  class="form-control" v-model="course2.duration">
                 <div class="input-group-append">
                   <div class="input-group-text">Days</div>
                 </div>
@@ -137,10 +160,11 @@
                 class="fa fa-plus"></i></a>
           </h2>
           <!-- add modules form -->
-          <div id="add_modules_form" class="form-group collapse">
+          <div id="add_modules_form" class="form-group collapse" :class="{'show':(course2.modules.length==0)}">
             <label class="d-flex justify-content-between align-items-center" for="module_titles">Add Module
-              Titles (each on a new line) <a class="btn btn-success btn-sm" href="#" role="button">Add</a></label>
-            <textarea v-model="addModules" id="module_titles" name="module_titles" cols="40" rows="2"
+              Titles <br> (each on a new line) <a v-if="addModulesText !=''" v-on:click="addModules"
+                class="btn btn-success btn-sm" href="#" role="button">Add</a></label>
+            <textarea v-model="addModulesText" id="module_titles" name="module_titles" cols="40" rows="2"
               class="form-control"></textarea>
           </div>
           <!-- end of add modules form -->
@@ -148,18 +172,9 @@
             <a v-for="(module, index_module) in course2.modules" href="#"
               class="list-group-item d-flex justify-content-between align-items-center">
               {{index_module+1}}. {{module.title}}
-              <span class="badge badge-primary badge-pill" title="contains this many topics">14</span>
+              <span class="badge badge-primary badge-pill"
+                title="contains this many topics">{{module.topics.length}}</span>
             </a>
-            <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Dapibus ac
-              facilisis in</a>
-            <!-- <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Morbi leo
-              risus
-              <span class="badge badge-primary badge-pill" title="contains this many topics">14</span>
-            </a>
-            <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Porta ac
-              consectetur ac
-              <span class="badge badge-primary badge-pill" title="contains this many topics">2</span>
-            </a> -->
           </div>
           <!-- End of module list -->
           <br>
@@ -170,10 +185,11 @@
                 class="fa fa-plus"></i></a>
           </h2>
           <!-- add Objectives form -->
-          <div id="add_objectives_form" class="form-group collapse">
+          <div id="add_objectives_form" class="form-group collapse" :class="{'show':(course2.objectives.length==0)}">
             <label class="d-flex justify-content-between align-items-center" for="module_titles">Add
-              Objectives (each on a new line) <a class="btn btn-success btn-sm" href="#" role="button">Add</a></label>
-            <textarea v-model="addObjectives" id="objective_text" name="objective_text" cols="40" rows="2"
+              Objectives <br> (each on a new line) <button v-on:click="addObjectives" class="btn btn-success btn-sm"
+                role="button">Add</button></label>
+            <textarea v-model="addObjectivesText" id="objective_text" name="objective_text" cols="40" rows="2"
               class="form-control"></textarea>
           </div>
           <!-- end of add objectives form -->
@@ -181,39 +197,32 @@
             <a v-for="(objective, index_objective) in course2.objectives" href="#"
               class="list-group-item d-flex justify-content-between align-items-center">
               {{index_objective+1}}. {{objective.objective_text}}
-              <span class="badge badge-primary badge-pill" title="Used in this many topics">2</span>
-
+              <span class="badge badge-primary badge-pill"
+                title="Used in this many topics">{{objectivesUsage[index_objective]}}</span>
             </a>
-            <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Dapibus ac
-              facilisis in
-            </a>
-            <!-- <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Morbi leo
-              risus
-              <span class="badge badge-primary badge-pill" title="contains this many topics">14</span>
-            </a>
-            <a href="#" class="list-group-item d-flex justify-content-between align-items-center">Porta ac
-              consectetur ac
-              <span class="badge badge-primary badge-pill" title="contains this many topics">2</span>
-            </a> -->
           </div>
           <!-- End of objectives list -->
           <br>
+          <hr>
         </div>
         <div class="col-sm-3">
-          <br>
+          <!-- <br> -->
           <!-- TODO add ability to reorder and delete modules -->
           <div v-for="(module, index_module) in course2.modules" class="module_form">
             <h3 class="d-flex justify-content-between align-items-center">
               <a data-toggle="collapse" :href="'#module_details_form'+index_module" role="button" aria-expanded="true"
                 :aria-controls="'module_details_form'+index_module">Module {{index_module+1}}</a>
               <div class="module_actions">
-                <!-- <i class="fa fa-pencil"></i> -->
-                <i class="fa fa-arrow-up"></i>
-                <i class="fa fa-arrow-down"></i>
+                <small>
+                  <i v-on:click="deleteModule(index_module)" class="fa fa-trash"></i>
+                  <i v-if="index_module != 0" v-on:click="moveModule(index_module, -1)" class="fa fa-arrow-up"></i>
+                  <i v-if="index_module != course2.modules.length-1" v-on:click="moveModule(index_module, 1)"
+                    class="fa fa-arrow-down"></i>
+                </small>
               </div>
             </h3>
             <div :id="'module_details_form'+index_module" class="collapse show">
-              <div class="form-group">
+              <div class="form-group" :class="{'bg-danger text-white':(module.title == '')}">
                 <input :id="'module_title'+index_module" name="module_title" placeholder="Module Title" type="text"
                   class="form-control" v-model="module.title">
               </div>
@@ -245,14 +254,17 @@
               <!-- TODO show objectives form and modules form if there are no objectives or modules -->
               <h4 class="d-flex justify-content-between align-items-center">Topics
                 <a title="Add Topics" class="btn btn-outline-success btn-sm" role="button" data-toggle="collapse"
-                  href="#add_topics_form" aria-expanded="false" aria-controls="add_topics_form"><i
-                    class="fa fa-plus"></i></a>
+                  :href="'#add_topics_form'+index_module" aria-expanded="false"
+                  :aria-controls="'add_topics_form'+index_module"><i class="fa fa-plus"></i></a>
               </h4>
               <!-- add topics form -->
-              <div id="add_topics_form" class="form-group collapse">
+              <div :id="'add_topics_form'+index_module" class="form-group collapse"
+                :class="{'show':(module.topics.length==0)}">
                 <label class="d-flex justify-content-between align-items-center" for="module_titles">Add
-                  Topics (each on a new line) <a class="btn btn-success btn-sm" href="#" role="button">Add</a></label>
-                <textarea v-model="addTopics" id="topic_text" name="objective_text" cols="40" rows="2"
+                  Topics (each on a new line) <button v-if="module.topicTextToAdd !=''"
+                    v-on:click="addTopics(index_module)" class="btn btn-success btn-sm"
+                    role="button">Add</button></label>
+                <textarea v-model="module.topicTextToAdd" id="topic_text" name="objective_text" cols="40" rows="2"
                   class="form-control"></textarea>
               </div>
               <!-- end of add topics form -->
@@ -261,260 +273,196 @@
                   class="list-group-item d-flex justify-content-between align-items-center">
                   {{topic.title}}
                   <div class="module_actions">
-                    <i class="fa fa-arrow-up"></i>
-                    <i class="fa fa-arrow-down"></i>
+                    <small>
+                      <i v-on:click="deleteTopic(index_module,index_topic)" class="fa fa-trash"></i>
+                      <i class="fa fa-arrow-up"></i>
+                      <i class="fa fa-arrow-down"></i>
+                    </small>
                   </div>
                 </li>
-
-                <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-warning">
-                  Morbi leo risus
-                  <div class="module_actions">
-
-                    <i class="fa fa-arrow-up"></i>
-                    <i class="fa fa-arrow-down"></i>
-                  </div>
-                </li>
-                <!-- <li class="list-group-item d-flex justify-content-between align-items-center">Porta ac consectetur ac
-                  <div class="module_actions">
-
-                    <i class="fa fa-arrow-up"></i>
-                    <i class="fa fa-arrow-down"></i>
-                  </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Vestibulum at eros
-                  <div class="module_actions">
-
-                    <i class="fa fa-arrow-up"></i>
-                    <i class="fa fa-arrow-down"></i>
-                  </div>
-                </li> -->
               </ul>
               <!-- End of topics list -->
             </div>
+            <br>
           </div>
         </div>
-        <div class="col">col 3</div>
+        <div class="col">
+          <div v-for="(module, index_module) in course2.modules">
+            <div v-if="module.topics.length>0">
+              <h2> Module {{index_module+1}} - {{module.title}}</h2>
+              <div v-for="(topic, index_topic) in module.topics">
+                <h3>{{index_module+1}}.{{index_topic + 1}}. {{topic.title}}</h3>
+                <div class="form-group"
+                  :class="{'bg-danger text-white':(course2.modules[index_module].topics[index_topic].id_objective == -1)}">
+                  <label for="id_objective">Objective</label>
+                  <select id="id_objective" name="id_objective" aria-describedby="id_objectiveHelpBlock"
+                    class="form-control" v-model="course2.modules[index_module].topics[index_topic].id_objective">
+                    <option selected value="-1">Please select or create an objective</option>
+                    <option v-for="(objective,index_objective) in course2.objectives" :value="index_objective">
+                      {{index_objective+1}}. {{objective.objective_text.substring(0,50)}}...
+                    </option>
+                  </select>
+                </div>
+                <div class="form-group"
+                  :class="{'bg-warning text-white':(!validateSlideText(course2.modules[index_module].topics[index_topic].slide_text,course2.desiredSlideWords))}">
+                  <label for="topic_slide_text" class="d-flex justify-content-between align-items-center">
+                    Topic Slide Text <small>({{wordCount(course2.modules[index_module].topics[index_topic].slide_text)}}
+                      words)</small></label>
+                  <textarea id="topic_slide_text" name="topic_slide_text" cols="40" rows="3"
+                    aria-describedby="topic_slide_textHelpBlock" class="form-control"
+                    v-model="course2.modules[index_module].topics[index_topic].slide_text"></textarea>
+                </div>
+                <div class="form-group"
+                  :class="{'bg-warning text-white':(!validateSlideText(course2.modules[index_module].topics[index_topic].participant_notes,course2.desiredPGWords))}">
+                  <label for="topic_participant_notes" class="d-flex justify-content-between align-items-center">
+                    Topic Participant Notes
+                    <small>({{wordCount(course2.modules[index_module].topics[index_topic].participant_notes)}}
+                      words)</small></label>
+                  <textarea id="topic_participant_notes" name="topic_participant_notes" cols="40" rows="4"
+                    aria-describedby="topic_participant_notesHelpBlock" class="form-control"
+                    v-model="course2.modules[index_module].topics[index_topic].participant_notes"></textarea>
+                </div>
+                <div class="form-group"
+                  :class="{'bg-warning text-white':(!validateSlideText(course2.modules[index_module].topics[index_topic].instructor_notes,course2.desiredIGWords))}">
+                  <label for="topic_instructor_notes" class="d-flex justify-content-between align-items-center">
+                    Topic Instructor Notes
+                    <small>({{wordCount(course2.modules[index_module].topics[index_topic].instructor_notes)}}
+                      words)</small></label>
+                  <textarea id="topic_instructor_notes" name="topic_instructor_notes" cols="40" rows="2"
+                    aria-describedby="topic_instructor_notesHelpBlock" class="form-control"
+                    v-model="course2.modules[index_module].topics[index_topic].instructor_notes"></textarea>
+                </div>
+              </div>
+              <!-- end of topic loop  -->
+            </div>
+            <!-- end of if div for far right -->
+          </div>
+          <!-- end of module loop -->
+        </div>
+        <!-- </div> -->
+      </div>
+      <!-- end of row  -->
+    </div>
+    <!-- Save and load Modal -->
+    <div class="modal fade" id="saveLoad" tabindex="-1" role="dialog" aria-labelledby="saveLoadLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="saveLoadLabel">Save and Load</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Copy the text below to backup all information on this page. Paste into the box to load
+              previously copied material.</p>
+            <!-- TODO save to disk option -->
+            <!-- TODO make textbox fill modal -->
+            <textarea name="" id="" cols="50" rows="6" v-model="courseBackupString"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" v-on:click="saveLoad('load')">Load</button>
+          </div>
+        </div>
       </div>
     </div>
+    <!-- end of modal -->
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="form-group col">
+                <label for="slide_text_min_words">Slide Text Minimum Words</label>
+                <input v-model="course2.desiredSlideWords.min" id="slide_text_min_words" name="slide_text_min_words"
+                  type="text" class="form-control">
+              </div>
+              <div class="form-group col">
+                <label for="slide_text_max_words">Slide Text Maximum Words</label>
+                <input v-model="course2.desiredSlideWords.max" id="slide_text_max_words" name="slide_text_max_words"
+                  type="text" class="form-control">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col">
+                <label for="participant_notes_min_words">Participant Notes Minimum Words</label>
+                <input v-model="course2.desiredPGWords.min" id="participant_notes_min_words"
+                  name="participant_notes_min_words" type="text" class="form-control">
+              </div>
+              <div class="form-group col">
+                <label for="participant_notes_max_words">Participant Notes Maximum Words</label>
+                <input v-model="course2.desiredPGWords.max" id="participant_notes_max_words"
+                  name="participant_notes_max_words" type="text" class="form-control">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col">
+                <label for="instructor_notes_min_words">Instructor Notes Minimum Words</label>
+                <input v-model="course2.desiredIGWords.min" id="instructor_notes_min_words"
+                  name="instructor_notes_min_words" type="text" class="form-control">
+              </div>
+              <div class="form-group col">
+                <label for="instructor_notes_max_words">Instructor Notes Maximum Words</label>
+                <input v-model="course2.desiredIGWords.max" id="instructor_notes_max_words"
+                  name="instructor_notes_max_words" type="text" class="form-control">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary" v-on:click="saveLoad('load')">Load</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end of modal -->
+
+    <!-- Modal -->
+    <div class="modal fade" id="pptOutlineModal" tabindex="-1" role="dialog" aria-labelledby="pptOutlineModalTitle"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="pptOutlineModalTitle">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body pptoutline">
+            <p>Copy the text below into ms-word and save.  Then create new slides in PPT from outline. </p>
+            <hr>
+            <small><div v-html="pptOutline"></div></small>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end of powerpoint outline modal -->
   </div>
   <!-- TODO map exercise checkbox to variable -->
 </body>
 <script>
-  var exampleCourse = {
-    "course_title": "",
-    "course_client": "",
-    "course_duration": "",
-    "module_titles_string": "Introduction\nScope and Scale\nUnits and Concepts\n",
-    "module_subtitles_array": [
-      "Sample Module Subtitle",
-      "Sample Module Subtitle",
-      "Sample Module Subtitle"
-    ],
-    "module_instructors_array": [
-      "Kevin",
-      "Sally",
-      "Bill"
-    ],
-    "module_duration_array": [
-      "45",
-      "30",
-      "60"
-    ],
-    "module_topics_array": [
-      "1.1 Topic\n1.2 Topic\n1.3 Topic",
-      "2.1 Topic\n2.2 Topic\n2.3 Topic\n2.4 Topic",
-      "3.1 Topic\n3.2 Topic\n3.3 Topic\n3.4 Topic"
-    ],
-    "objectives": "Introduction of the module.\nIdentify when scope is x,y, and z\nMatch this thing to that thing\nRecognize the need for something\nEstablish the recommended amount of a thing\nCalculate the product of something",
-    "topic_slide_text_array": [
-      [
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nUt non risus ut urna elementum cursus a et ipsum.\nNunc eget ante ac tortor varius porttitor.\nVestibulum suscipit eros sed tincidunt porta.\nNullam nec neque pellentesque, viverra ex quis, pulvinar lorem.",
-        "Praesent eu mauris et justo suscipit maximus vel vel enim.\nSed faucibus tellus nec bibendum congue.\nSed ac ipsum eleifend, rutrum justo et, imperdiet nisi.",
-        "Ut pharetra neque et est \nPharetra ullamcorper et quis velit.\n"
-      ],
-      [
-        "Praesent eu mauris et justo suscipit maximus vel vel enim.\nSed faucibus tellus nec bibendum congue.\nSed ac ipsum eleifend, rutrum justo et, imperdiet nisi.",
-        "Praesent eu mauris et justo suscipit maximus vel vel enim.\nSed faucibus tellus nec bibendum congue.\nSed ac ipsum eleifend, rutrum justo et, imperdiet nisi.",
-        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
-        "Morbi tempus quam sit \namet interdum aliquet.\n"
-      ],
-      [
-        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
-        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nUt non risus ut urna elementum cursus a et ipsum.\nNunc eget ante ac tortor varius porttitor.\nVestibulum suscipit eros sed tincidunt porta.\nNullam nec neque pellentesque, viverra ex quis, pulvinar lorem.",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nUt non risus ut urna elementum cursus a et ipsum.\nNunc eget ante ac tortor varius porttitor.\nVestibulum suscipit eros sed tincidunt porta.\nNullam nec neque pellentesque, viverra ex quis, pulvinar lorem."
-      ],
-      [
-        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
-        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
-        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
-        "Praesent eu mauris et justo suscipit maximus vel vel enim.\nSed faucibus tellus nec bibendum congue.\nSed ac ipsum eleifend, rutrum justo et, imperdiet nisi.",
-        "Praesent eu mauris et justo suscipit maximus vel vel enim.\nSed faucibus tellus nec bibendum congue.\nSed ac ipsum eleifend, rutrum justo et, imperdiet nisi.",
-        "In venenatis massa in nulla elementum, quis rutrum est lobortis.\nPhasellus non nulla sed elit tristique ultricies.\nAenean rutrum mauris eget massa placerat finibus.\nDonec cursus leo eu metus imperdiet, ac imperdiet arcu vulputate.\nCurabitur vel augue vitae nunc rutrum porttitor.",
-        "Nam rhoncus ipsum ac ligula placerat posuere.\nSed rutrum risus in purus convallis eleifend.\nInteger lobortis ipsum ut leo pharetra, sit amet laoreet dui lacinia.\nSed non augue volutpat, viverra ante sed, facilisis tortor.\nCras rhoncus urna eu neque aliquam eleifend."
-      ]
-    ],
-    "topic_participant_notes_array": [
-      [
-        "Nullam fringilla placerat dui eget luctus. Fusce sit amet scelerisque nunc. Nullam condimentum ultrices augue, ac pharetra turpis euismod vel. Vivamus consequat semper sapien, at porta est luctus sit amet. Maecenas fringilla a urna vitae aliquam. Donec ipsum est, aliquam ac mauris non, faucibus malesuada ex. In lacinia laoreet mi, eu gravida augue hendrerit bibendum. Aliquam quis sodales enim. Donec ante lorem, feugiat a convallis quis, egestas sit amet nunc. Suspendisse ac suscipit risus, vitae molestie sapien. Aenean lobortis lacinia ex, ut fermentum ligula pellentesque a. Proin nec nibh nec lacus tempus commodo. In volutpat mauris mi. Sed neque nisi, tincidunt nec dolor a, ullamcorper feugiat lacus. Sed eu semper nulla.",
-        "Nam leo velit, blandit id nisi et, dictum commodo mi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam convallis tempus risus, quis lacinia nibh interdum eu. Ut dictum mi eget turpis mollis pellentesque. Aenean porta lectus vel erat suscipit rhoncus. Aenean dapibus, nisl eu lobortis dignissim, elit sem rhoncus neque, at porta dolor sapien vel nunc. Cras lacinia vel nibh vitae mollis. Curabitur dictum nulla nibh, id posuere velit placerat bibendum. Phasellus vehicula eros sit amet est tempus ultrices. Maecenas sit amet nisi nec justo congue venenatis a sed odio. Praesent sollicitudin purus et vulputate tempus. Sed neque felis, feugiat non purus elementum, vestibulum volutpat tellus.",
-        "Nullam fringilla placerat dui eget luctus. Fusce sit amet scelerisque nunc. Nullam condimentum ultrices augue, ac pharetra turpis euismod vel. Vivamus consequat semper sapien, at porta est luctus sit amet. Maecenas fringilla a urna vitae aliquam. Donec ipsum est, aliquam ac mauris non, faucibus malesuada ex. In lacinia laoreet mi, eu gravida augue hendrerit bibendum. Aliquam quis sodales enim. Donec ante lorem, feugiat a convallis quis, egestas sit amet nunc. Suspendisse ac suscipit risus, vitae molestie sapien. Aenean lobortis lacinia ex, ut fermentum ligula pellentesque a. Proin nec nibh nec lacus tempus commodo. In volutpat mauris mi. Sed neque nisi, tincidunt nec dolor a, ullamcorper feugiat lacus. Sed eu semper nulla."
-      ],
-      [
-        "Morbi cursus convallis maximus. Nunc sagittis est ut purus elementum luctus. Nam vitae libero felis. Curabitur id lorem tincidunt, pharetra neque non, commodo dui. Curabitur lorem ipsum, vulputate et leo id, imperdiet accumsan justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam gravida ac diam eu dignissim. Nam vel leo eleifend, maximus purus id, aliquet mi. Pellentesque odio turpis, facilisis sed risus vitae, tempor venenatis ipsum. Suspendisse potenti. Nunc cursus elit mattis, elementum enim et, ornare nibh. Suspendisse interdum interdum arcu sed hendrerit. Mauris lobortis risus dolor, id malesuada metus sodales quis. Curabitur fermentum efficitur dolor sit amet vestibulum.",
-        "Nullam fringilla placerat dui eget luctus. Fusce sit amet scelerisque nunc. Nullam condimentum ultrices augue, ac pharetra turpis euismod vel. Vivamus consequat semper sapien, at porta est luctus sit amet. Maecenas fringilla a urna vitae aliquam. Donec ipsum est, aliquam ac mauris non, faucibus malesuada ex. In lacinia laoreet mi, eu gravida augue hendrerit bibendum. Aliquam quis sodales enim. Donec ante lorem, feugiat a convallis quis, egestas sit amet nunc. Suspendisse ac suscipit risus, vitae molestie sapien. Aenean lobortis lacinia ex, ut fermentum ligula pellentesque a. Proin nec nibh nec lacus tempus commodo. In volutpat mauris mi. Sed neque nisi, tincidunt nec dolor a, ullamcorper feugiat lacus. Sed eu semper nulla.",
-        "Nam leo velit, blandit id nisi et, dictum commodo mi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam convallis tempus risus, quis lacinia nibh interdum eu. Ut dictum mi eget turpis mollis pellentesque. Aenean porta lectus vel erat suscipit rhoncus. Aenean dapibus, nisl eu lobortis dignissim, elit sem rhoncus neque, at porta dolor sapien vel nunc. Cras lacinia vel nibh vitae mollis. Curabitur dictum nulla nibh, id posuere velit placerat bibendum. Phasellus vehicula eros sit amet est tempus ultrices. Maecenas sit amet nisi nec justo congue venenatis a sed odio. Praesent sollicitudin purus et vulputate tempus. Sed neque felis, feugiat non purus elementum, vestibulum volutpat tellus.",
-        "Nullam fringilla placerat dui eget luctus. Fusce sit amet scelerisque nunc. Nullam condimentum ultrices augue, ac pharetra turpis euismod vel. Vivamus consequat semper sapien, at porta est luctus sit amet. Maecenas fringilla a urna vitae aliquam. Donec ipsum est, aliquam ac mauris non, faucibus malesuada ex. In lacinia laoreet mi, eu gravida augue hendrerit bibendum. Aliquam quis sodales enim. Donec ante lorem, feugiat a convallis quis, egestas sit amet nunc. Suspendisse ac suscipit risus, vitae molestie sapien. Aenean lobortis lacinia ex, ut fermentum ligula pellentesque a. Proin nec nibh nec lacus tempus commodo. In volutpat mauris mi. Sed neque nisi, tincidunt nec dolor a, ullamcorper feugiat lacus. Sed eu semper nulla."
-      ],
-      [
-        "Morbi cursus convallis maximus. Nunc sagittis est ut purus elementum luctus. Nam vitae libero felis. Curabitur id lorem tincidunt, pharetra neque non, commodo dui. Curabitur lorem ipsum, vulputate et leo id, imperdiet accumsan justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam gravida ac diam eu dignissim. Nam vel leo eleifend, maximus purus id, aliquet mi. Pellentesque odio turpis, facilisis sed risus vitae, tempor venenatis ipsum. Suspendisse potenti. Nunc cursus elit mattis, elementum enim et, ornare nibh. Suspendisse interdum interdum arcu sed hendrerit. Mauris lobortis risus dolor, id malesuada metus sodales quis. Curabitur fermentum efficitur dolor sit amet vestibulum.",
-        "Nullam fringilla placerat dui eget luctus. Fusce sit amet scelerisque nunc. Nullam condimentum ultrices augue, ac pharetra turpis euismod vel. Vivamus consequat semper sapien, at porta est luctus sit amet. Maecenas fringilla a urna vitae aliquam. Donec ipsum est, aliquam ac mauris non, faucibus malesuada ex. In lacinia laoreet mi, eu gravida augue hendrerit bibendum. Aliquam quis sodales enim. Donec ante lorem, feugiat a convallis quis, egestas sit amet nunc. Suspendisse ac suscipit risus, vitae molestie sapien. Aenean lobortis lacinia ex, ut fermentum ligula pellentesque a. Proin nec nibh nec lacus tempus commodo. In volutpat mauris mi. Sed neque nisi, tincidunt nec dolor a, ullamcorper feugiat lacus. Sed eu semper nulla.",
-        "Nam leo velit, blandit id nisi et, dictum commodo mi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam convallis tempus risus, quis lacinia nibh interdum eu. Ut dictum mi eget turpis mollis pellentesque. Aenean porta lectus vel erat suscipit rhoncus. Aenean dapibus, nisl eu lobortis dignissim, elit sem rhoncus neque, at porta dolor sapien vel nunc. Cras lacinia vel nibh vitae mollis. Curabitur dictum nulla nibh, id posuere velit placerat bibendum. Phasellus vehicula eros sit amet est tempus ultrices. Maecenas sit amet nisi nec justo congue venenatis a sed odio. Praesent sollicitudin purus et vulputate tempus. Sed neque felis, feugiat non purus elementum, vestibulum volutpat tellus.",
-        "Morbi cursus convallis maximus. Nunc sagittis est ut purus elementum luctus. Nam vitae libero felis. Curabitur id lorem tincidunt, pharetra neque non, commodo dui. Curabitur lorem ipsum, vulputate et leo id, imperdiet accumsan justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam gravida ac diam eu dignissim. Nam vel leo eleifend, maximus purus id, aliquet mi. Pellentesque odio turpis, facilisis sed risus vitae, tempor venenatis ipsum. Suspendisse potenti. Nunc cursus elit mattis, elementum enim et, ornare nibh. Suspendisse interdum interdum arcu sed hendrerit. Mauris lobortis risus dolor, id malesuada metus sodales quis. Curabitur fermentum efficitur dolor sit amet vestibulum."
-      ]
-    ],
-    "topic_instructor_notes_array": [
-      [
-        "Ut pharetra neque et est pharetra ullamcorper et quis velit.\nUt pulvinar diam eu neque laoreet tincidunt.\nSed ultrices nisi eu suscipit lacinia.",
-        "Morbi tempus quam sit amet interdum aliquet.\nSed a mauris nec augue mollis pellentesque.\nVestibulum aliquam massa quis nulla feugiat, ac iaculis sem efficitur.\nQuisque sed tortor at mauris consectetur hendrerit ut id velit.",
-        "Etiam in est gravida turpis tempus efficitur sed sit amet odio.\nInteger in dui nec augue tristique volutpat non ut lacus.\nAenean ornare dolor eget neque ullamcorper sagittis."
-      ],
-      [
-        "Ut pharetra neque et est pharetra ullamcorper et quis velit.\nUt pulvinar diam eu neque laoreet tincidunt.\nSed ultrices nisi eu suscipit lacinia.",
-        "Morbi tempus quam sit amet interdum aliquet.\nSed a mauris nec augue mollis pellentesque.\nVestibulum aliquam massa quis nulla feugiat, ac iaculis sem efficitur.\nQuisque sed tortor at mauris consectetur hendrerit ut id velit.",
-        "Etiam in est gravida turpis tempus efficitur sed sit amet odio.\nInteger in dui nec augue tristique volutpat non ut lacus.\nAenean ornare dolor eget neque ullamcorper sagittis.",
-        "Morbi tempus quam sit amet interdum aliquet.\nSed a mauris nec augue mollis pellentesque.\nVestibulum aliquam massa quis nulla feugiat, ac iaculis sem efficitur.\nQuisque sed tortor at mauris consectetur hendrerit ut id velit."
-      ],
-      [
-        "Etiam in est gravida turpis tempus efficitur sed sit amet odio.\nInteger in dui nec augue tristique volutpat non ut lacus.\nAenean ornare dolor eget neque ullamcorper sagittis.",
-        "Ut pharetra neque et est pharetra ullamcorper et quis velit.\nUt pulvinar diam eu neque laoreet tincidunt.\nSed ultrices nisi eu suscipit lacinia.",
-        "Nullam venenatis ante bibendum placerat gravida.\nAliquam vel nisl eget elit convallis pretium.\nCurabitur blandit est eget justo dignissim luctus.",
-        "Morbi tempus quam sit amet interdum aliquet.\nSed a mauris nec augue mollis pellentesque.\nVestibulum aliquam massa quis nulla feugiat, ac iaculis sem efficitur.\nQuisque sed tortor at mauris consectetur hendrerit ut id velit."
-      ]
-    ],
-    "topic_objective_array": [
-      [
-        3,
-        6,
-        1,
-        4,
-        6
-      ],
-      [
-        4,
-        5,
-        6,
-        2
-      ],
-      [
-        6,
-        2,
-        1,
-        5
-      ]
-    ],
-    "topic_media_required": [
-      [
-        [
-          "graphic"
-        ],
-        [
-          "video",
-          "animation"
-        ],
-        [
-          "graphic"
-        ],
-        [
-          "graphic"
-        ],
-        [
-          "video"
-        ],
-        [
-          "graphic"
-        ],
-        [
-          "graphic"
-        ]
-      ],
-      [
-        [
-          "animation"
-        ],
-        [],
-        [
-          "graphic"
-        ],
-        [],
-        [],
-        [
-          "graphic"
-        ],
-        []
-      ],
-      [
-        [
-          "graphic"
-        ],
-        [],
-        [
-          "graphic"
-        ],
-        [],
-        [
-          "graphic",
-          "animation"
-        ],
-        [],
-        [
-          "animation"
-        ]
-      ]
-    ]
-  };
-  JSON.stringify(course2)
-  var course2b =
-    '{"title":"","client":"","duration":"","modules":[{"title":"","subtitle":"","instructor":"","duration":"","description":"","topics":[{"title":"","slide_text":"","participant_notes":"","instructor_notes":"","id_objective":"","exercises":[{"title":"","description":""}],"graphics":[{"filename":"","citation":"","description":"","type":""}]}]}],"objectives":[{"objective_text":""}]}';
-  var course2 = {
+  var exampleCourse =
+    '{"title":"Example Course Title","client":"Example Client Name","duration":"4","modules":[{"title":"Introduction","subtitle":"Sample Module Subtitle","instructor":"Kevin","duration":"45","description":"Sample Module Description for the Introduction module","topics":[{"title":"Welcome","slide_text":"Welcome to the course","participant_notes":"Thank you for taking our course","instructor_notes":"Welcome the participants and go over logistics","id_objective":0,"exercises":[{"title":"","description":""}],"graphics":[{"filename":"","citation":"","description":"","type":""}]},{"title":"Overview","slide_text":"","participant_notes":"","instructor_notes":"","id_objective":-1,"exercises":[{"title":"","description":""}],"graphics":[{"filename":"","citation":"","description":"","type":""}]}],"topicTextToAdd":""},{"title":"Scope and Scale","subtitle":"","instructor":"","duration":"","description":"","topics":[],"topicTextToAdd":""},{"title":"Units and Concepts","subtitle":"","instructor":"","duration":"","description":"","topics":[],"topicTextToAdd":""}],"objectives":[{"objective_text":"Introduction to the module"}],"desiredSlideWords":{"min":2,"max":10},"desiredPGWords":{"min":3,"max":15},"desiredIGWords":{"min":4,"max":8}}'
+  var course23 = {
     title: '',
     client: '',
     duration: '',
     modules: [{
-      title: 'Introduction',
-      subtitle: 'a',
-      instructor: 'b',
-      duration: 'c',
-      description: 'd',
-      topics: [{
-        title: 'e',
-        slide_text: 'f',
-        participant_notes: 'g',
-        instructor_notes: 'h',
-        id_objective: 'i',
-        exercises: [{
-          title: 'j',
-          description: 'k'
-        }],
-        graphics: [{
-          filename: 'l',
-          citation: 'm',
-          description: 'n',
-          type: 'o'
-        }]
-      }]
-    }],
-    objectives: [{
-      objective_text: 'p'
-    }]
-  };
-
-  var courseblank = {
-    title: '',
-    client: '',
-    duration: '',
-    modules: [{
-      title: 'test',
+      title: '',
       subtitle: '',
       instructor: '',
       duration: '',
@@ -524,7 +472,7 @@
         slide_text: '',
         participant_notes: '',
         instructor_notes: '',
-        id_objective: '',
+        id_objective: -1,
         exercises: [{
           title: '',
           description: ''
@@ -535,106 +483,191 @@
           description: '',
           type: ''
         }]
-      }]
+      }],
+      topicTextToAdd: ''
+    }],
+    objectives: [{
+      objective_text: "Introduction to the module"
+    }],
+    desiredSlideWords: {
+      min: 2,
+      max: 10
+    },
+    desiredPGWords: {
+      min: 3,
+      max: 15
+    },
+    desiredIGWords: {
+      min: 4,
+      max: 8
+    }
+  };
+  var courseblank = {
+    title: '',
+    client: '',
+    duration: '',
+    modules: [{
+      title: '',
+      subtitle: '',
+      instructor: '',
+      duration: '',
+      description: '',
+      topics: [{
+        title: '',
+        slide_text: '',
+        participant_notes: '',
+        instructor_notes: '',
+        id_objective: -1,
+        exercises: [{
+          title: '',
+          description: ''
+        }],
+        graphics: [{
+          filename: '',
+          citation: '',
+          description: '',
+          type: ''
+        }]
+      }],
+      topicTextToAdd: ''
     }],
     objectives: [{
       objective_text: ''
-    }]
+    }],
+    desiredSlideWords: {
+      min: 2,
+      max: 10
+    },
+    desiredPGWords: {
+      min: 3,
+      max: 15
+    },
+    desiredIGWords: {
+      min: 4,
+      max: 8
+    }
   };
-  console.log
-  var resetObject =
-    '{"course_title":"","course_client":"","course_duration":"","module_titles_string":"","module_subtitles_array":[],"module_instructors_array":[],"module_duration_array":[],"module_topics_array":[],"objectives":"Introduction of the module.","topic_slide_text_array":[],"topic_participant_notes_array":[],"topic_instructor_notes_array":[],"topic_objective_array":[],"topic_media_required":[]}';
+  var courseblank2 = {
+    title: '',
+    client: '',
+    duration: '',
+    modules: [],
+    objectives: [],
+    desiredSlideWords: {
+      min: 2,
+      max: 10
+    },
+    desiredPGWords: {
+      min: 3,
+      max: 15
+    },
+    desiredIGWords: {
+      min: 4,
+      max: 8
+    }
+  };
   var app = new Vue({
     el: '#app',
     data: {
-      course2: course2,
-      addModules: 'modddd',
-      addTopics: [],
-      addObjectives: 'obbbbb',
-      courseBackupString: "",
-      course: {
-        course_title: '',
-        course_client: '',
-        course_duration: '',
-        module_titles_string: '',
-        module_subtitles_array: [], // array location indicates module number + 1
-        module_instructors_array: [], // array location indciate module number + 1
-        module_duration_array: [], // array location indciate module number + 1
-        module_topics_array: [], // array location indicates module number in modules text string - 1
-        objectives: "Introduction of the module.",
-        topic_slide_text_array: [], //  2D array, first is module, second is topic
-        topic_participant_notes_array: [], //  2D array, first is module, second is topic
-        topic_instructor_notes_array: [], //  2D array, first is module, second is topic
-        topic_objective_array: [], //  2D array, first is module, second is topic
-        topic_media_required: [], //  3D array, first is module, second is topic, 3rd is list of selections
-      },
+      course2: courseblank2,
+      addModulesText: '',
+      addTopicsText: [],
+      addObjectivesText: '',
+      courseBackupString: 'sdf',
     },
     computed: {
-      moduleTitles: function () {
-        return this.course.module_titles_string.split(/\r|\n/)
+      objectivesUsage: function () {
+        let objectiveReport = new Array(this.course2.objectives.length).fill(0)
+        this.course2.modules.forEach(function (module, index_module) {
+          module.topics.forEach(function (topic, index_topic) {
+            topicTitle = topic.title
+            console.log(topic)
+            if (topic.id_objective != -1) {
+              if (isNaN(objectiveReport[topic.id_objective])) {
+                objectiveReport[topic.id_objective] == 0
+              }
+              objectiveReport[topic.id_objective] += 1
+            }
+          })
+        })
+        return objectiveReport;
       },
-      objectiveList: function () {
-        return this.course.objectives.split(/\r|\n/)
-      },
-      backup: function () {
-        // var jsonBackup = {}
-        // let that = this
-        // jsonBackup.course_title = this.course.course_title
-        // jsonBackup.modules = []
-        // this.moduleTitles.forEach(function (mod, index_module) {
-        //     jsonBackup.modules.push({
-        //         module_title: mod
-        //     })
-        // });
-        // return jsonBackup
-        return JSON.stringify(this.course)
-      },
-      outline: function () {
-        let outline = '';
+      pptOutline: function () {
+        let outline = ''
         let that = this
-        this.moduleTitles.forEach(function (module_title, index_module) {
-          outline += '<h1>' + module_title + '</h1>'
-          let topicList = []
-          if (that.course.module_topics_array[index_module]) {
-            topicList = that.course.module_topics_array[index_module].split(/\r|\n/)
-          }
-          topicList.forEach(function (topic_title, index_topic) {
-            outline += '<h2>' + topic_title + '</h2>'
-          });
-        });
-        return outline
+        this.course2.modules.forEach(function (module, index_module) {
+
+          outline += '<h1>' + module.title + '</h1>'
+          outline += '<h2>' + module.subtitle + '</h2>'
+          module.topics.forEach(function (topic, index_module) {
+            outline += '<h1>' + topic.title + '</h1>'
+          })
+
+        })
+
+return outline
       }
     },
     methods: {
-      topicTitles: function (index) {
-        if (!this.course.topic_slide_text_array[index]) {
-          this.course.topic_slide_text_array.push([])
-        }
-        if (!this.course.topic_participant_notes_array[index]) {
-          this.course.topic_participant_notes_array.push([])
-        }
-        if (!this.course.topic_instructor_notes_array[index]) {
-          this.course.topic_instructor_notes_array.push([])
-        }
-        if (!this.course.topic_objective_array[index]) {
-          this.course.topic_objective_array.push([])
-        }
-        if (!this.course.topic_media_required[index]) {
-          console.log("topic media")
-          this.course.topic_media_required.push([
-            []
-          ])
-        }
-        if (this.course.module_topics_array[index]) {
-          let topicList = []
-          topicList = this.course.module_topics_array[index].split(/\r|\n/)
-          if (!this.course.topic_media_required[index][topicList.length - 1]) {
-            console.log("topic media 2")
-            this.course.topic_media_required[index].push([])
+      addModules: function () {
+        console.log("in add mods")
+        let tempModuleObj = JSON.parse(JSON.stringify(courseblank.modules[0]))
+        tempModuleObj.topics = []
+        let tempModuleList = this.addModulesText.split(/\r|\n/)
+        this.addModulesText = ""
+        let that = this
+        tempModuleList.forEach(function (module_title, index_module) {
+          if (module_title != '') {
+            tempModuleObj.title = module_title
+            that.course2.modules.push(JSON.parse(JSON.stringify(tempModuleObj)))
           }
-          return topicList
-        } else {
-          return ""
+        });
+        $('#add_modules_form').collapse('hide')
+      },
+      addTopics: function (moduleNum) {
+        // console.log("module number to add to " + moduleNum)
+        // console.log(courseblank)
+        let tempTopicObj = courseblank.modules[0].topics[0]
+        let tempTopicList = this.course2.modules[moduleNum].topicTextToAdd.split(/\r|\n/)
+        this.course2.modules[moduleNum].topicTextToAdd = ""
+        let that = this
+        tempTopicList.forEach(function (topic_title, index_topic) {
+          // console.log(topic_title)
+          if (topic_title != '') {
+            tempTopicObj.title = topic_title
+            that.course2.modules[moduleNum].topics.push(JSON.parse(JSON.stringify(tempTopicObj)))
+          }
+        });
+        $('#add_topics_form' + moduleNum).collapse('hide')
+      },
+      addObjectives: function () {
+        let tempTopicObj = courseblank.modules[0].topics[0]
+        let tempObjectivesList = this.addObjectivesText.split(/\r|\n/)
+        let that = this
+        tempObjectivesList.forEach(function (objective_text, index_objective) {
+          if (objective_text != '') {
+            that.course2.objectives.push({
+              'objective_text': objective_text
+            })
+          }
+        });
+        $('#add_objectives_form').collapse('hide')
+      },
+      moveModule: function (moduleNum, direction) {
+        let element = this.course2.modules[moduleNum];
+        this.course2.modules.splice(moduleNum, 1);
+        this.course2.modules.splice(moduleNum + direction, 0, element); //moves up
+      },
+      deleteModule: function (moduleNum) {
+        if (confirm("Are you sure you want to delete this module and all it's topics?") ==
+          true) {
+          this.course2.modules.splice(moduleNum, 1)
+        }
+      },
+      deleteTopic: function (moduleNum, topicNum) {
+        if (confirm("Are you sure you want to delete this topic and all it's data?") ==
+          true) {
+          this.course2.modules[moduleNum].topics.splice(topicNum, 1)
         }
       },
       saveLoad: function (action) {
@@ -644,23 +677,42 @@
           console.log("in load")
           if (confirm("This will clear any current course data and load the pasted project.") ==
             true) {
-            that.course = JSON.parse(that.courseBackupString)
+            that.course2 = JSON.parse(that.courseBackupString)
           }
-          $('#exampleModal').modal('toggle')
+          $('#saveLoad').modal('toggle')
         } else {
-          that.courseBackupString = JSON.stringify(that.course, null, 2)
-          $('#exampleModal').modal('toggle')
+          that.courseBackupString = JSON.stringify(that.course2, null, 2)
+          $('#saveLoad').modal('toggle')
         }
+      },
+      settings: function (action) {
+        $('#settingsModal').modal('toggle')
       },
       resetApp: function () {
         if (confirm("This will clear any current course data and reset the app.") == true) {
-          this.course = JSON.parse(resetObject)
+          this.course2 = courseblank2
         }
       },
       loadExample: function () {
         if (confirm("This will clear any current course data and load the example course.") ==
           true) {
-          this.course = exampleCourse;
+          this.course2 = JSON.parse(exampleCourse);
+        }
+      },
+      wordCount: function (textString) {
+        var wom = textString.match(/\S+/g);
+        return wom ? wom.length : 0
+      },
+      exportPPTOutline: function () {
+        $('#pptOutlineModal').modal('toggle')
+      },
+      validateSlideText: function (val, desiredWords) {
+        // console.log(desiredWords)
+        let valCount = this.wordCount(val)
+        if (valCount >= desiredWords.min && valCount <= desiredWords.max) {
+          return true
+        } else {
+          return false
         }
       }
     }
