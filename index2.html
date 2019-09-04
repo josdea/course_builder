@@ -59,7 +59,8 @@
               <a class="dropdown-item" href="#">Save to Browser (coming soon)</a>
               <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Save to Clipboard</a>
               <a class="dropdown-item" href="#" v-on:click="saveToFile">Save to File</a>
-              <a class="dropdown-item dropbox-saver" href="https://dl.dropboxusercontent.com/s/deroi5nwm6u7gdf/advice.png">Save do Dropbox.com
+              <a class="dropdown-item dropbox-saver"
+                href="https://dl.dropboxusercontent.com/s/deroi5nwm6u7gdf/advice.png">Save do Dropbox.com
                 (coming later)</a>
               <!-- <a class="dropdown-item" href="#">Something else here</a> -->
             </div>
@@ -786,11 +787,21 @@
           $('#saveLoad').modal('toggle')
         }
       },
-      saveToFile: function (action) {
-          let text = JSON.stringify(this.course2, null, 2);
-          let d = new Date();
-          let filename = "BluePrinterApp " + d.toDateString() + ".doc";
-          download(filename, text);
+      saveToFile: function () {
+        let text = JSON.stringify(this.course2, null, 2);
+        let d = new Date();
+        let filename = "BluePrinterApp " + d.toDateString() + ".doc";
+        download(filename, text);
+      },
+      savetoDropbox: function () {
+        var client = new Dropbox.Client({
+          key: 'rtrezj1gi4qiorq'
+        });
+        client.authenticate(function () {
+          client.writeFile('hello.txt', 'Hello, World!', function () {
+            alert('File written!');
+          });
+        });
       },
       resetApp: function () {
         if (confirm("This will clear any current course data and reset the app.") == true) {
@@ -969,6 +980,7 @@
   integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
   integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" 
+<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs"
   data-app-key="rtrezj1gi4qiorq"></script>
+
 </html>
