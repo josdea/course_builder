@@ -58,10 +58,10 @@
               Save
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <a class="dropdown-item" href="#" v-on:click="saveToBrowser">Save to Browser</a>
-              <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Save to Clipboard</a>
-              <a class="dropdown-item" href="#" v-on:click="saveToFile">Save to File</a>
-              <a class="dropdown-item" href="#" v-on:click="saveToDropbox">Save to Dropbox (coming later)</a>
+              <a class="dropdown-item" href="#" v-on:click="saveToBrowser('')">to Browser</a>
+              <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">to Clipboard</a>
+              <a class="dropdown-item" href="#" v-on:click="saveToFile">to File</a>
+              <a class="dropdown-item" href="#" v-on:click="saveToDropbox">to Dropbox (coming later)</a>
               <!-- <a class="dropdown-item dropbox-saver"
                 href="https://dl.dropboxusercontent.com/s/deroi5nwm6u7gdf/advice.png">Save do Dropbox.com
                 (coming later)</a> -->
@@ -74,24 +74,25 @@
               Load
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Load from Clipboard</a>
-              <a class="dropdown-item" href="#" v-on:click="loadExample()">Load Example Course</a>
-              <a class="dropdown-item" href="#" v-on:click="resetApp">Clear current course</a>
-              <a class="dropdown-item" href="#" v-on:click="loadFromBrowser">Load from Browser</a>
-              <a class="dropdown-item" href="#">Load from File (coming soon)</a>
-              <a class="dropdown-item" href="#">Load from PowerPoint Outline (coming later)</a>
+              <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">from Clipboard</a>
+              <a class="dropdown-item" href="#" v-on:click="listLocalStorageCourses()" data-toggle="modal"
+                data-target="#loadFromBrowser">from Browser</a>
+              <a class="dropdown-item" href="#" v-on:click="loadExample()">Example Course</a>
+              <a class="dropdown-item" href="#" v-on:click="resetApp">Blank Course</a>
+              <a class="dropdown-item" href="#">from File (coming soon)</a>
+              <a class="dropdown-item" href="#">from PowerPoint Outline (coming later)</a>
             </div>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">Export</a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <a class="dropdown-item" href="#" v-on:click="exportPPTOutline">Export PowerPoint Outline</a>
-              <a class="dropdown-item" href="#">Export Agenda (coming soon)</a>
-              <a class="dropdown-item" href="#">Export Module / Topic Outline (coming soon)</a>
-              <a class="dropdown-item" href="#">Export to Excel (coming later)</a>
-              <a class="dropdown-item" href="#">Export Analysis Document (coming soon)</a>
-              <a class="dropdown-item" href="#">Export Design Document (coming soon)</a>
-              <a class="dropdown-item" href="#">Export Objectives Report (coming soon)</a>
+              <a class="dropdown-item" href="#" v-on:click="exportPPTOutline">PowerPoint Outline</a>
+              <a class="dropdown-item" href="#">Agenda (coming soon)</a>
+              <a class="dropdown-item" href="#">Module / Topic Outline (coming soon)</a>
+              <a class="dropdown-item" href="#">to Excel (csv) (coming soon)</a>
+              <a class="dropdown-item" href="#">Analysis Document (coming soon)</a>
+              <a class="dropdown-item" href="#">Design Document (coming soon)</a>
+              <a class="dropdown-item" href="#">Objectives Report (coming soon)</a>
             </div>
           </li>
           <li class="nav-item dropdown">
@@ -207,12 +208,10 @@
         </div>
         <div class="col">
           <!-- <br> -->
-          <!-- TODO add ability to reorder and delete modules -->
           <div v-for="(module, index_module) in course2.modules" class="module_form">
             <h3 class="d-flex justify-content-between align-items-center">
               <a data-toggle="collapse" :href="'#module_details_form'+index_module" role="button" aria-expanded="true"
                 :aria-controls="'module_details_form'+index_module">Module {{index_module+1}}
-                <!-- <i class="fa fa-caret-down"></i> -->
               </a>
               <div class="module_actions">
                 <small>
@@ -228,7 +227,6 @@
                 <input :id="'module_title'+index_module" name="module_title" placeholder="Module Title" type="text"
                   class="form-control" v-model="module.title">
               </div>
-              <!-- TODO check for ids in topics -->
               <div class="form-group">
                 <input :id="'module_subtitle'+index_module" name="module_subtitle" placeholder="Module Subtitle"
                   type="text" class="form-control" v-model="module.subtitle">
@@ -295,7 +293,14 @@
             <div v-if="module.topics.length>0" :id="'module_details_form'+index_module" class="collapse show">
               <h2> Module {{index_module+1}} - {{module.title}}</h2>
               <div v-for="(topic, index_topic) in module.topics">
-                <h3>{{index_module+1}}.{{index_topic + 1}}. {{topic.title}}</h3>
+                <h3>Topic {{index_module+1}}.{{index_topic + 1}}</h3>
+
+                <div class="form-group" :class="{'bg-danger text-white':(topic.title == '')}">
+                  <input :id="'topic_title'+index_module+index_topic" name="topic_title" placeholder="Topic Title"
+                    type="text" class="form-control" v-model="topic.title">
+                </div>
+
+
                 <div class="form-group"
                   :class="{'bg-danger text-white':(course2.modules[index_module].topics[index_topic].id_objective == -1)}">
                   <label :for="'id_objective'+index_module+index_topic">Objective</label>
@@ -366,7 +371,6 @@
                     </div>
                   </div>
                 </div>
-
                 <div v-if="course2.modules[index_module].topics[index_topic].media.required.length !=0"
                   :id="'media_details'+index_module+index_topic" class="form-group">
                   <label class="d-flex justify-content-between align-items-center"
@@ -375,7 +379,6 @@
                     :id="'media_details'+index_module+index_topic" name="media_details" cols="40" rows="2"
                     class="form-control"></textarea>
                 </div>
-
                 <div class="form-group">
                   <!-- <label>Exercise</label>  -->
                   <div>
@@ -396,7 +399,6 @@
                       :id="'exercise_title'+index_module+index_topic" name="exercise_title" type="text"
                       class="form-control">
                   </div>
-
                   <div :id="'add_topics_form'+index_module+index_topic" class="form-group">
                     <label class="d-flex justify-content-between align-items-center"
                       :for="'topic_text'+index_module+index_topic">Exercise Directions
@@ -445,7 +447,6 @@
       </div>
     </div>
     <!-- end of modal -->
-
     <!-- Settings Modal -->
     <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel"
       aria-hidden="true">
@@ -503,7 +504,6 @@
       </div>
     </div>
     <!-- end of modal -->
-
     <!-- Modal -->
     <div class="modal fade" id="pptOutlineModal" tabindex="-1" role="dialog" aria-labelledby="pptOutlineModalTitle"
       aria-hidden="true">
@@ -531,60 +531,90 @@
       </div>
     </div>
     <!-- end of powerpoint outline modal -->
+
+    <!-- Load Modal -->
+    <div class="modal fade" id="loadFromBrowser" tabindex="-1" role="dialog" aria-labelledby="loadFromBrowserTitle"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="loadFromBrowserTitle">Load from Browser</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <ul class="list-group">
+              <li v-for="(course, index_course) in localStorage"
+                class="list-group-item d-flex justify-content-between align-items-center">
+                <a v-on:click="loadFromBrowser(course)" href="#">{{course}}</a>
+                <i v-on:click="deleteFromBrowser(course)" class="fa fa-trash"></i>
+              </li>
+            </ul>
+            <a href="#" v-on:click="deleteAllFromBrowser">Delete all from
+              browser</a>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end of load modal -->
   </div>
   <!-- TODO map exercise checkbox to variable -->
 </body>
 <script>
-  var course23 = {
-    title: '',
-    client: '',
-    duration: '',
-    modules: [{
-      title: '',
-      subtitle: '',
-      instructor: '',
-      duration: '',
-      description: '',
-      topics: [{
-        title: '',
-        slide_text: '',
-        participant_notes: '',
-        instructor_notes: '',
-        id_objective: -1,
-        exercise: {
-          has_exercise: false,
-          title: 'asd',
-          description: 'fda'
-        },
-        media: {
-          details: '',
-          required: []
-        },
-        graphics: [{
-          filename: '',
-          citation: '',
-          description: '',
-          type: ''
-        }]
-      }],
-      topicTextToAdd: ''
-    }],
-    objectives: [{
-      objective_text: "Introduction to the module"
-    }],
-    desiredSlideWords: {
-      min: 3,
-      max: 12
-    },
-    desiredPGWords: {
-      min: 10,
-      max: 50
-    },
-    desiredIGWords: {
-      min: 5,
-      max: 15
-    }
-  };
+  // var course23 = {
+  //   title: '',
+  //   client: '',
+  //   duration: '',
+  //   modules: [{
+  //     title: '',
+  //     subtitle: '',
+  //     instructor: '',
+  //     duration: '',
+  //     description: '',
+  //     topics: [{
+  //       title: '',
+  //       slide_text: '',
+  //       participant_notes: '',
+  //       instructor_notes: '',
+  //       id_objective: -1,
+  //       exercise: {
+  //         has_exercise: false,
+  //         title: 'asd',
+  //         description: 'fda'
+  //       },
+  //       media: {
+  //         details: '',
+  //         required: []
+  //       },
+  //       graphics: [{
+  //         filename: '',
+  //         citation: '',
+  //         description: '',
+  //         type: ''
+  //       }]
+  //     }],
+  //     topicTextToAdd: ''
+  //   }],
+  //   objectives: [{
+  //     objective_text: "Introduction to the module"
+  //   }],
+  //   desiredSlideWords: {
+  //     min: 3,
+  //     max: 12
+  //   },
+  //   desiredPGWords: {
+  //     min: 10,
+  //     max: 50
+  //   },
+  //   desiredIGWords: {
+  //     min: 5,
+  //     max: 15
+  //   }
+  // };
   var courseblank = {
     title: '',
     client: '',
@@ -609,15 +639,9 @@
         media: {
           details: '',
           required: []
-        },
-        graphics: [{
-          filename: '',
-          citation: '',
-          description: '',
-          type: ''
-        }]
+        }
       }],
-      topicTextToAdd: ''
+      topicTextToAdd: '' //TODO remove the need for this in the course
     }],
     objectives: [{
       objective_text: ''
@@ -666,7 +690,8 @@
         title: '',
         message: ''
       },
-      topicTextToAdd: '',
+      localStorage: []
+      // topicTextToAdd: '',
     },
     computed: {
       objectivesUsage: function () {
@@ -689,28 +714,45 @@
         let outline = ''
         let that = this
         let slideTextArr = []
+        let moduleObjectives = []
         this.course2.modules.forEach(function (module, index_module) {
-
-          outline += '<h1>' + module.title + '</h1>'
+          outline += '<h1>Module ' + (index_module + 1) + ' - ' + module.title + '</h1>'
           outline += '<h2>' + module.subtitle + '</h2>'
-          module.topics.forEach(function (topic, index_module) {
-            outline += '<h1>' + topic.title + '</h1>'
-            slideTextArr = topic.slide_text.split(/\r|\n/)
+          moduleObjectives = that.getObjectivesByModule(index_module)
 
-            slideTextArr.forEach(function (slideLine, index_slide_line) {
-              outline += '<h2>' + slideLine + '</h2>'
-            })
+          outline += '<h1>' + module.title + ' Objectives</h1>'
+          moduleObjectives.forEach(function (objective, index_objective) {
+            outline += '<h2>' + that.course2.objectives[objective].objective_text + '</h2>'
 
           })
 
+          module.topics.forEach(function (topic, index_module) {
+            outline += '<h1>' + topic.title + '</h1>'
+            slideTextArr = topic.slide_text.split(/\r|\n/)
+            slideTextArr.forEach(function (slideLine, index_slide_line) {
+              outline += '<h2>' + slideLine + '</h2>'
+            })
+          })
         })
-
         return outline
       }
     },
+    created() {
+      window.addEventListener('beforeunload', () => {
+        let d = new Date();
+        let theDate = [d.getFullYear(), d.getMonth() + 1, d.getDate(), '_', d.getHours(), ':', d.getMinutes(),
+          ':', d.getSeconds()
+        ]
+
+        if (this.course2.title != '') {
+          this.saveToBrowser('autosave_' + theDate.join('') + '_' + this.course2.title)
+        } else {
+          this.saveToBrowser(theDate.join('') + '_autoSave')
+        }
+      }, false)
+    },
     methods: {
       addModules: function () {
-        // console.log("in add mods")
         let tempModuleObj = JSON.parse(JSON.stringify(courseblank.modules[0]))
         tempModuleObj.topics = []
         let tempModuleList = this.addModulesText.split(/\r|\n/)
@@ -725,8 +767,6 @@
         $('#add_modules_form').collapse('hide')
       },
       addTopics: function (moduleNum) {
-        // console.log("module number to add to " + moduleNum)
-        // console.log(courseblank)
         let tempTopicObj = courseblank.modules[0].topics[0]
         let tempTopicList = this.course2.modules[moduleNum].topicTextToAdd.split(/\r|\n/)
         this.course2.modules[moduleNum].topicTextToAdd = ""
@@ -757,7 +797,7 @@
       moveModule: function (moduleNum, direction) {
         let element = this.course2.modules[moduleNum];
         this.course2.modules.splice(moduleNum, 1);
-        this.course2.modules.splice(moduleNum + direction, 0, element); //moves up
+        this.course2.modules.splice(moduleNum + direction, 0, element); // direction -1 moves up
       },
       deleteModule: function (moduleNum) {
         if (confirm("Are you sure you want to delete this module and all it's topics?") ==
@@ -793,69 +833,71 @@
       },
       saveToFile: function () {
         let text = JSON.stringify(this.course2, null, 2);
+
         let d = new Date();
-        let filename = "BluePrinterApp " + d.toDateString() + ".doc";
+        let theDate = [d.getFullYear(), d.getMonth() + 1, d.getDate(), '_', d.getHours(), d.getMinutes(), d
+          .getSeconds()
+        ]
+
+        let filename = "BluePrinterApp " + theDate.join('') + ".doc";
+
         download(filename, text);
       },
       saveToDropbox: function () {
         console.log("in save to dropbox function, not set up")
       },
-      saveToBrowser: function () {
+      saveToBrowser: function (courseName) {
         let that = this
+        if (courseName == '') {
+          courseName = prompt("Please enter save name", that.course2.title)
+        }
         if (typeof Storage !== "undefined") { //browser supports local storage
-          // localStorage.blueprinter = that.course2;
-          localStorage.blueprinter = 12345;
-            alert("Saved")
-          if (localStorage.blueprinter) { // user has been here before
-            // document.getElementById("result").innerHTML =
-            //   "Welcome back, you've been here " +
-            //   localStorage.blueprinter +
-            //   " times before.";
-            // localStorage.blueprinter = Number(localStorage.blueprinter) + 1;
-          } else {
-
-            
-            // document.getElementById("result").innerHTML =
-            //   "This is your first time here! Welcome.";
-          }
-          // document.getElementById("result").innerHTML = "You have clicked the button " + localStorage.clickcount + " time(s).";
+          // if (localStorage[courseName]) { // user has been here before or localstorage item exists
+          // alert("Not saved, or course name in use")
+          // } else { // local storage item doesn't exist
+          localStorage[courseName] = JSON.stringify(this.course2);
+          console.log("Saved")
+          // }
         } else {
           alert("Sorry, your browser does not support web storage.  Changes will not be saved");
-          // document.getElementById("result").innerHTML =
-          //   "Sorry, your browser does not support web storage...";
         }
-
-
-
       },
-      loadFromBrowser: function () {
+      loadFromBrowser: function (storageName) {
+        console.log(storageName)
         let that = this
+        $('#loadFromBrowser').modal('toggle')
         if (typeof Storage !== "undefined") { //browser supports local storage
-
-          if (localStorage.blueprinter) { // user has been here before
-            // that.course2 = localStorage.blueprinter
-            // document.getElementById("result").innerHTML =
-            //   "Welcome back, you've been here " +
-            //   localStorage.blueprinter +
-            //   " times before.";
-            // localStorage.blueprinter = Number(localStorage.blueprinter) + 1;
-            alert("Loaded "+ localStorage.blueprinter)
-
-          } else {
-
-            // localStorage.blueprinter = this.course2;
-            // document.getElementById("result").innerHTML =
-            //   "This is your first time here! Welcome.";
-          }
-          // document.getElementById("result").innerHTML = "You have clicked the button " + localStorage.clickcount + " time(s).";
+          if (localStorage[storageName]) { // user has been here before
+            if (confirm("This will clear any current course data and load the course you selected.") == true) {
+              that.course2 = JSON.parse(localStorage[storageName])
+            }
+            console.log("Loaded")
+          } else {}
         } else {
           alert("Sorry, your browser does not support web storage.  Changes will not be saved");
-          // document.getElementById("result").innerHTML =
-          //   "Sorry, your browser does not support web storage...";
         }
-
-
-
+      },
+      deleteFromBrowser: function (storageName) {
+        if (localStorage[storageName]) {
+          if (confirm("Are you sure you want to remove this course from the browser.") == true) {
+            localStorage.removeItem(storageName);
+          }
+        }
+        this.listLocalStorageCourses()
+      },
+      deleteAllFromBrowser: function () {
+        if (confirm("Are you sure you want to remove all courses from the browser?") == true) {
+          localStorage.clear()
+        }
+        this.listLocalStorageCourses()
+        $('#loadFromBrowser').modal('toggle')
+      },
+      listLocalStorageCourses: function () {
+        let browserCourses = []
+        for (var i = 0; i < localStorage.length; i++) {
+          browserCourses.push(localStorage.key(i))
+        }
+        this.localStorage = browserCourses
       },
       resetApp: function () {
         if (confirm("This will clear any current course data and reset the app.") == true) {
@@ -866,7 +908,7 @@
         let that = this
         if (confirm("This will clear any current course data and load the example course.") ==
           true) {
-          that.course2 = exampleCourse;
+          that.course2 = JSON.parse(JSON.stringify(exampleCourse));
         }
       },
       wordCount: function (textString) {
@@ -875,17 +917,14 @@
       },
       exportPPTOutline: function () {
         $('#pptOutlineModal').modal('toggle')
+
       },
       validateText: function (val, desiredWords) {
-        // console.log(val)
         let valCount = this.wordCount(val)
         let valid = true;
         let message = ''
         var spaceReg = /\n{2,}|\s{2,}/
-        // var spaceReg = /(\n|\s){2,}/g
         let extraSpaces = val.match(spaceReg)
-        // console.log(extraSpaces)
-
         if (valCount < desiredWords.min || valCount > desiredWords.max) {
           valid = false
           message += 'Word Count out of range. (' + desiredWords.min + '-' + desiredWords.max + ')'
@@ -898,10 +937,30 @@
           'message': message,
           'valid': valid
         }
+      },
+      getObjectivesByModule: function (moduleNum) {
+        let objectiveList = []
+
+        this.course2.modules[moduleNum].topics.forEach(function (topic, index_topic) {
+
+          if (topic.id_objective != -1 && objectiveList.indexOf(topic.id_objective)) {
+            objectiveList.push(topic.id_objective)
+          }
+
+          // topicTitle = topic.title
+          // console.log(topic)
+          // if (topic.id_objective != -1) {
+          //   if (isNaN(objectiveReport[topic.id_objective])) {
+          //     objectiveReport[topic.id_objective] == 0
+          //   }
+          //   objectiveReport[topic.id_objective] += 1
+          // }
+        })
+        console.log(objectiveList)
+        return objectiveList
       }
     }
   })
-
   var exampleCourse = {
     "title": "Need for Safety",
     "client": "DAW",
@@ -941,7 +1000,7 @@
             "slide_text": "The Next Four Days",
             "participant_notes": "For the next four days we will be discussing safety and why need to be safe.",
             "instructor_notes": "Briefly the discuss the main points of the course modules.",
-            "id_objective": 0,
+            "id_objective": 1,
             "exercise": {
               "has_exercise": false,
               "title": "",
@@ -1034,6 +1093,5 @@
   integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
   integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
 
 </html>
