@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Course Builder</title>
+  <title>Course Blueprinter</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
@@ -29,13 +29,13 @@
       padding: .25rem;
     }
 
-    .pptoutline h1{
+    .pptoutline h1 {
       font-size: 1rem;
     }
-    .pptoutline h2{
+
+    .pptoutline h2 {
       font-size: .9rem;
     }
-
   </style>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 </head>
@@ -43,7 +43,7 @@
 <body>
   <div id="app">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">Course Blueprint Builder</a>
+      <a class="navbar-brand" href="#">The Blueprint(er) App</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
         aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -58,9 +58,8 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               <a class="dropdown-item" href="#">Save to Browser (coming soon)</a>
               <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Save to Clipboard</a>
-              <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Save do Disk (coming
-                soon)</a>
-              <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Save do Dropbox.com
+              <a class="dropdown-item" href="#" v-on:click="saveToFile">Save to File</a>
+              <a class="dropdown-item dropbox-saver" href="https://dl.dropboxusercontent.com/s/deroi5nwm6u7gdf/advice.png">Save do Dropbox.com
                 (coming later)</a>
               <!-- <a class="dropdown-item" href="#">Something else here</a> -->
             </div>
@@ -71,22 +70,19 @@
               Load
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <a class="dropdown-item" href="#">Load from Browser (coming soon)</a>
               <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">Load from Clipboard</a>
               <a class="dropdown-item" href="#" v-on:click="loadExample()">Load Example Course</a>
+              <a class="dropdown-item" href="#" v-on:click="resetApp">Clear current course</a>
+              <a class="dropdown-item" href="#">Load from Browser (coming soon)</a>
               <a class="dropdown-item" href="#">Load from File (coming soon)</a>
               <a class="dropdown-item" href="#">Load from PowerPoint Outline (coming later)</a>
-              <a class="dropdown-item" href="#" v-on:click="resetApp">Clear current course</a>
             </div>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" data-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false">
-              Export
-            </a>
+              aria-haspopup="true" aria-expanded="false">Export</a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="#" v-on:click="exportPPTOutline">Export PowerPoint Outline</a>
               <a class="dropdown-item" href="#">Export Agenda (coming soon)</a>
-              <a class="dropdown-item" href="#" v-on:click="exportPPTOutline">Export PowerPoint Outline (coming
-                soon)</a>
               <a class="dropdown-item" href="#">Export Module / Topic Outline (coming soon)</a>
               <a class="dropdown-item" href="#">Export to Excel (coming later)</a>
               <a class="dropdown-item" href="#">Export Analysis Document (coming soon)</a>
@@ -100,7 +96,7 @@
               Settings
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink4">
-              <a class="dropdown-item" href="#" v-on:click="settings('maxMinWords')">Max / Min Words</a>
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#settingsModal">Max / Min Words</a>
             </div>
           </li>
           </li>
@@ -137,7 +133,7 @@
                   v-model="course2.client">
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" :class="{'bg-danger':(isNaN(course2.duration) && course2.duration !='')}">
               <div class="input-group">
                 <div class="input-group-prepend">
                   <div class="input-group-text">
@@ -162,8 +158,8 @@
           <!-- add modules form -->
           <div id="add_modules_form" class="form-group collapse" :class="{'show':(course2.modules.length==0)}">
             <label class="d-flex justify-content-between align-items-center" for="module_titles">Add Module
-              Titles <br> (each on a new line) <a v-if="addModulesText !=''" v-on:click="addModules"
-                class="btn btn-success btn-sm" href="#" role="button">Add</a></label>
+              Titles <br> (each on a new line) <button v-if="addModulesText !=''" v-on:click="addModules"
+                class="btn btn-success btn-sm" role="button">Add</button></label>
             <textarea v-model="addModulesText" id="module_titles" name="module_titles" cols="40" rows="2"
               class="form-control"></textarea>
           </div>
@@ -187,8 +183,8 @@
           <!-- add Objectives form -->
           <div id="add_objectives_form" class="form-group collapse" :class="{'show':(course2.objectives.length==0)}">
             <label class="d-flex justify-content-between align-items-center" for="module_titles">Add
-              Objectives <br> (each on a new line) <button v-on:click="addObjectives" class="btn btn-success btn-sm"
-                role="button">Add</button></label>
+              Objectives <br> (each on a new line) <button v-if="addObjectivesText !=''" v-on:click="addObjectives"
+                class="btn btn-success btn-sm" role="button">Add</button></label>
             <textarea v-model="addObjectivesText" id="objective_text" name="objective_text" cols="40" rows="2"
               class="form-control"></textarea>
           </div>
@@ -211,7 +207,9 @@
           <div v-for="(module, index_module) in course2.modules" class="module_form">
             <h3 class="d-flex justify-content-between align-items-center">
               <a data-toggle="collapse" :href="'#module_details_form'+index_module" role="button" aria-expanded="true"
-                :aria-controls="'module_details_form'+index_module">Module {{index_module+1}}</a>
+                :aria-controls="'module_details_form'+index_module">Module {{index_module+1}}
+                <!-- <i class="fa fa-caret-down"></i> -->
+              </a>
               <div class="module_actions">
                 <small>
                   <i v-on:click="deleteModule(index_module)" class="fa fa-trash"></i>
@@ -235,7 +233,7 @@
                 <input :id="'module_instructor'+index_module" name="module_instructor" placeholder="Module Instructor"
                   type="text" class="form-control" v-model="module.instructor">
               </div>
-              <div class="form-group">
+              <div class="form-group" :class="{'bg-danger':(isNaN(module.duration) && module.duration !='')}">
                 <div class="input-group">
                   <input :id="'module_duration'+index_module" name="module_duration" placeholder="Module Duration"
                     type="text" class="form-control" v-model="module.duration">
@@ -245,9 +243,9 @@
                 </div>
               </div>
               <div class="form-group">
-                <label for="topic_titles">Module Description</label> <br>
-                <textarea id="module_description" name="module_description" cols="40" rows="2" class="form-control"
-                  v-model="module.description"></textarea>
+                <label :for="'module_description'+index_module">Module Description</label> <br>
+                <textarea :id="'module_description'+index_module" name="module_description" cols="40" rows="2"
+                  class="form-control" v-model="module.description"></textarea>
               </div>
               <!-- Topics List -->
               <!-- TODO show topics form if there are no topics -->
@@ -260,12 +258,12 @@
               <!-- add topics form -->
               <div :id="'add_topics_form'+index_module" class="form-group collapse"
                 :class="{'show':(module.topics.length==0)}">
-                <label class="d-flex justify-content-between align-items-center" for="module_titles">Add
+                <label class="d-flex justify-content-between align-items-center" :for="'topic_text'+index_module">Add
                   Topics (each on a new line) <button v-if="module.topicTextToAdd !=''"
                     v-on:click="addTopics(index_module)" class="btn btn-success btn-sm"
                     role="button">Add</button></label>
-                <textarea v-model="module.topicTextToAdd" id="topic_text" name="objective_text" cols="40" rows="2"
-                  class="form-control"></textarea>
+                <textarea v-model="module.topicTextToAdd" :id="'topic_text'+index_module" name="objective_text"
+                  cols="40" rows="2" class="form-control"></textarea>
               </div>
               <!-- end of add topics form -->
               <ul class="list-group">
@@ -275,8 +273,10 @@
                   <div class="module_actions">
                     <small>
                       <i v-on:click="deleteTopic(index_module,index_topic)" class="fa fa-trash"></i>
-                      <i class="fa fa-arrow-up"></i>
-                      <i class="fa fa-arrow-down"></i>
+                      <i v-if="index_topic != 0" v-on:click="moveTopic(index_module, index_topic, -1)"
+                        class="fa fa-arrow-up"></i>
+                      <i v-if="index_topic != course2.modules[index_module].topics.length-1"
+                        v-on:click="moveTopic(index_module, index_topic, 1)" class="fa fa-arrow-down"></i>
                     </small>
                   </div>
                 </li>
@@ -288,15 +288,15 @@
         </div>
         <div class="col">
           <div v-for="(module, index_module) in course2.modules">
-            <div v-if="module.topics.length>0">
+            <div v-if="module.topics.length>0" :id="'module_details_form'+index_module" class="collapse show">
               <h2> Module {{index_module+1}} - {{module.title}}</h2>
               <div v-for="(topic, index_topic) in module.topics">
                 <h3>{{index_module+1}}.{{index_topic + 1}}. {{topic.title}}</h3>
                 <div class="form-group"
                   :class="{'bg-danger text-white':(course2.modules[index_module].topics[index_topic].id_objective == -1)}">
-                  <label for="id_objective">Objective</label>
-                  <select id="id_objective" name="id_objective" aria-describedby="id_objectiveHelpBlock"
-                    class="form-control" v-model="course2.modules[index_module].topics[index_topic].id_objective">
+                  <label :for="'id_objective'+index_module+index_topic">Objective</label>
+                  <select :id="'id_objective'+index_module+index_topic" name="id_objective" class="form-control"
+                    v-model="course2.modules[index_module].topics[index_topic].id_objective">
                     <option selected value="-1">Please select or create an objective</option>
                     <option v-for="(objective,index_objective) in course2.objectives" :value="index_objective">
                       {{index_objective+1}}. {{objective.objective_text.substring(0,50)}}...
@@ -304,33 +304,105 @@
                   </select>
                 </div>
                 <div class="form-group"
-                  :class="{'bg-warning text-white':(!validateSlideText(course2.modules[index_module].topics[index_topic].slide_text,course2.desiredSlideWords))}">
-                  <label for="topic_slide_text" class="d-flex justify-content-between align-items-center">
-                    Topic Slide Text <small>({{wordCount(course2.modules[index_module].topics[index_topic].slide_text)}}
+                  :class="{'bg-warning text-white':(!validateText(course2.modules[index_module].topics[index_topic].slide_text,course2.desiredSlideWords).valid)}">
+                  <label :for="'topic_slide_text'+index_module+index_topic"
+                    class="d-flex justify-content-between align-items-center">
+                    Topic Slide Text
+                    <small><span>{{validateText(course2.modules[index_module].topics[index_topic].slide_text,course2.desiredSlideWords).message}}</span>
+                      ({{wordCount(course2.modules[index_module].topics[index_topic].slide_text)}}
                       words)</small></label>
-                  <textarea id="topic_slide_text" name="topic_slide_text" cols="40" rows="3"
+                  <textarea :id="'topic_slide_text'+index_module+index_topic" name="topic_slide_text" cols="40" rows="3"
                     aria-describedby="topic_slide_textHelpBlock" class="form-control"
                     v-model="course2.modules[index_module].topics[index_topic].slide_text"></textarea>
                 </div>
                 <div class="form-group"
-                  :class="{'bg-warning text-white':(!validateSlideText(course2.modules[index_module].topics[index_topic].participant_notes,course2.desiredPGWords))}">
-                  <label for="topic_participant_notes" class="d-flex justify-content-between align-items-center">
+                  :class="{'bg-warning text-white':(!validateText(course2.modules[index_module].topics[index_topic].participant_notes,course2.desiredPGWords).valid)}">
+                  <label :for="'topic_participant_notes'+index_module+index_topic"
+                    class="d-flex justify-content-between align-items-center">
                     Topic Participant Notes
-                    <small>({{wordCount(course2.modules[index_module].topics[index_topic].participant_notes)}}
+                    <small><span>{{validateText(course2.modules[index_module].topics[index_topic].participant_notes,course2.desiredPGWords).message}}</span>
+                      ({{wordCount(course2.modules[index_module].topics[index_topic].participant_notes)}}
                       words)</small></label>
-                  <textarea id="topic_participant_notes" name="topic_participant_notes" cols="40" rows="4"
-                    aria-describedby="topic_participant_notesHelpBlock" class="form-control"
+                  <textarea :id="'topic_participant_notes'+index_module+index_topic" name="topic_participant_notes"
+                    cols="40" rows="4" aria-describedby="topic_participant_notesHelpBlock" class="form-control"
                     v-model="course2.modules[index_module].topics[index_topic].participant_notes"></textarea>
                 </div>
                 <div class="form-group"
-                  :class="{'bg-warning text-white':(!validateSlideText(course2.modules[index_module].topics[index_topic].instructor_notes,course2.desiredIGWords))}">
-                  <label for="topic_instructor_notes" class="d-flex justify-content-between align-items-center">
+                  :class="{'bg-warning text-white':(!validateText(course2.modules[index_module].topics[index_topic].instructor_notes,course2.desiredIGWords).valid)}">
+                  <label :for="'topic_instructor_notes'+index_module+index_topic"
+                    class="d-flex justify-content-between align-items-center">
                     Topic Instructor Notes
-                    <small>({{wordCount(course2.modules[index_module].topics[index_topic].instructor_notes)}}
+                    <small><span>{{validateText(course2.modules[index_module].topics[index_topic].instructor_notes,course2.desiredIGWords).message}}</span>
+                      ({{wordCount(course2.modules[index_module].topics[index_topic].instructor_notes)}}
                       words)</small></label>
-                  <textarea id="topic_instructor_notes" name="topic_instructor_notes" cols="40" rows="2"
-                    aria-describedby="topic_instructor_notesHelpBlock" class="form-control"
+                  <textarea :id="'topic_instructor_notes'+index_module+index_topic" name="topic_instructor_notes"
+                    cols="40" rows="2" aria-describedby="topic_instructor_notesHelpBlock" class="form-control"
                     v-model="course2.modules[index_module].topics[index_topic].instructor_notes"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Media Required</label>
+                  <div>
+                    <div class="form-check form-check-inline">
+                      <input v-model="course2.modules[index_module].topics[index_topic].media.required"
+                        name="topic_media" :id="'topic_media_0'+index_module+index_topic" type="checkbox"
+                        class="form-check-input" value="graphic">
+                      <label :for="'topic_media_0'+index_module+index_topic" class="form-check-label">Graphic</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input v-model="course2.modules[index_module].topics[index_topic].media.required"
+                        name="topic_media" :id="'topic_media_1'+index_module+index_topic" type="checkbox"
+                        class="form-check-input" value="video">
+                      <label :for="'topic_media_1'+index_module+index_topic" class="form-check-label">Video</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input v-model="course2.modules[index_module].topics[index_topic].media.required"
+                        name="topic_media" :id="'topic_media_2'+index_module+index_topic" type="checkbox"
+                        class="form-check-input" value="animation">
+                      <label :for="'topic_media_2'+index_module+index_topic" class="form-check-label">Animation</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="course2.modules[index_module].topics[index_topic].media.required.length !=0"
+                  :id="'media_details'+index_module+index_topic" class="form-group">
+                  <label class="d-flex justify-content-between align-items-center"
+                    :for="'media_details'+index_module+index_topic">Media Details</label>
+                  <textarea v-model="course2.modules[index_module].topics[index_topic].media.details"
+                    :id="'media_details'+index_module+index_topic" name="media_details" cols="40" rows="2"
+                    class="form-control"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <!-- <label>Exercise</label>  -->
+                  <div>
+                    <div class="form-check form-check-inline">
+                      <input v-model="course2.modules[index_module].topics[index_topic].exercise.has_exercise"
+                        name="has_exercise" :id="'has_exercise_0'+index_module+index_topic" type="checkbox"
+                        class="form-check-input" value="true">
+                      <label :for="'has_exercise_0'+index_module+index_topic" class="form-check-label">Topic has
+                        Exercise?</label>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="course2.modules[index_module].topics[index_topic].exercise.has_exercise"
+                  class="exercisedetails">
+                  <div class="form-group">
+                    <label :for="'exercise_title'+index_module+index_topic">Exercise Title</label>
+                    <input v-model="course2.modules[index_module].topics[index_topic].exercise.title"
+                      :id="'exercise_title'+index_module+index_topic" name="exercise_title" type="text"
+                      class="form-control">
+                  </div>
+
+                  <div :id="'add_topics_form'+index_module+index_topic" class="form-group">
+                    <label class="d-flex justify-content-between align-items-center"
+                      :for="'topic_text'+index_module+index_topic">Exercise Directions
+                      <small>({{wordCount(course2.modules[index_module].topics[index_topic].exercise.description)}}
+                        words)</small>
+                    </label>
+                    <textarea v-model="course2.modules[index_module].topics[index_topic].exercise.description"
+                      :id="'topic_text'+index_module+index_topic" name="objective_text" cols="40" rows="2"
+                      class="form-control"></textarea>
+                  </div>
                 </div>
               </div>
               <!-- end of topic loop  -->
@@ -359,7 +431,7 @@
               previously copied material.</p>
             <!-- TODO save to disk option -->
             <!-- TODO make textbox fill modal -->
-            <textarea name="" id="" cols="50" rows="6" v-model="courseBackupString"></textarea>
+            <textarea name="" id="" cols="50" rows="10" v-model="courseBackupString"></textarea>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -369,6 +441,7 @@
       </div>
     </div>
     <!-- end of modal -->
+
     <!-- Settings Modal -->
     <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel"
       aria-hidden="true">
@@ -433,19 +506,22 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="pptOutlineModalTitle">Modal title</h5>
+            <h5 class="modal-title" id="pptOutlineModalTitle">Export to PPT</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body pptoutline">
-            <p>Copy the text below into ms-word and save.  Then create new slides in PPT from outline. </p>
+            <p>Copy the text below into ms-word and save. Then create new slides in PPT from outline and use your Word
+              file.</p>
             <hr>
-            <small><div v-html="pptOutline"></div></small>
+            <small>
+              <div v-html="pptOutline"></div>
+            </small>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
           </div>
         </div>
       </div>
@@ -455,8 +531,6 @@
   <!-- TODO map exercise checkbox to variable -->
 </body>
 <script>
-  var exampleCourse =
-    '{"title":"Example Course Title","client":"Example Client Name","duration":"4","modules":[{"title":"Introduction","subtitle":"Sample Module Subtitle","instructor":"Kevin","duration":"45","description":"Sample Module Description for the Introduction module","topics":[{"title":"Welcome","slide_text":"Welcome to the course","participant_notes":"Thank you for taking our course","instructor_notes":"Welcome the participants and go over logistics","id_objective":0,"exercises":[{"title":"","description":""}],"graphics":[{"filename":"","citation":"","description":"","type":""}]},{"title":"Overview","slide_text":"","participant_notes":"","instructor_notes":"","id_objective":-1,"exercises":[{"title":"","description":""}],"graphics":[{"filename":"","citation":"","description":"","type":""}]}],"topicTextToAdd":""},{"title":"Scope and Scale","subtitle":"","instructor":"","duration":"","description":"","topics":[],"topicTextToAdd":""},{"title":"Units and Concepts","subtitle":"","instructor":"","duration":"","description":"","topics":[],"topicTextToAdd":""}],"objectives":[{"objective_text":"Introduction to the module"}],"desiredSlideWords":{"min":2,"max":10},"desiredPGWords":{"min":3,"max":15},"desiredIGWords":{"min":4,"max":8}}'
   var course23 = {
     title: '',
     client: '',
@@ -473,10 +547,15 @@
         participant_notes: '',
         instructor_notes: '',
         id_objective: -1,
-        exercises: [{
-          title: '',
-          description: ''
-        }],
+        exercise: {
+          has_exercise: false,
+          title: 'asd',
+          description: 'fda'
+        },
+        media: {
+          details: '',
+          required: []
+        },
         graphics: [{
           filename: '',
           citation: '',
@@ -490,16 +569,16 @@
       objective_text: "Introduction to the module"
     }],
     desiredSlideWords: {
-      min: 2,
-      max: 10
+      min: 3,
+      max: 12
     },
     desiredPGWords: {
-      min: 3,
-      max: 15
+      min: 10,
+      max: 50
     },
     desiredIGWords: {
-      min: 4,
-      max: 8
+      min: 5,
+      max: 15
     }
   };
   var courseblank = {
@@ -518,10 +597,15 @@
         participant_notes: '',
         instructor_notes: '',
         id_objective: -1,
-        exercises: [{
+        exercise: {
+          has_exercise: false,
           title: '',
           description: ''
-        }],
+        },
+        media: {
+          details: '',
+          required: []
+        },
         graphics: [{
           filename: '',
           citation: '',
@@ -535,16 +619,16 @@
       objective_text: ''
     }],
     desiredSlideWords: {
-      min: 2,
-      max: 10
+      min: 3,
+      max: 12
     },
     desiredPGWords: {
-      min: 3,
-      max: 15
+      min: 10,
+      max: 50
     },
     desiredIGWords: {
-      min: 4,
-      max: 8
+      min: 5,
+      max: 15
     }
   };
   var courseblank2 = {
@@ -573,7 +657,11 @@
       addModulesText: '',
       addTopicsText: [],
       addObjectivesText: '',
-      courseBackupString: 'sdf',
+      courseBackupString: '',
+      alertBoxText: {
+        title: '',
+        message: ''
+      }
     },
     computed: {
       objectivesUsage: function () {
@@ -581,7 +669,7 @@
         this.course2.modules.forEach(function (module, index_module) {
           module.topics.forEach(function (topic, index_topic) {
             topicTitle = topic.title
-            console.log(topic)
+            // console.log(topic)
             if (topic.id_objective != -1) {
               if (isNaN(objectiveReport[topic.id_objective])) {
                 objectiveReport[topic.id_objective] == 0
@@ -595,22 +683,29 @@
       pptOutline: function () {
         let outline = ''
         let that = this
+        let slideTextArr = []
         this.course2.modules.forEach(function (module, index_module) {
 
           outline += '<h1>' + module.title + '</h1>'
           outline += '<h2>' + module.subtitle + '</h2>'
           module.topics.forEach(function (topic, index_module) {
             outline += '<h1>' + topic.title + '</h1>'
+            slideTextArr = topic.slide_text.split(/\r|\n/)
+
+            slideTextArr.forEach(function (slideLine, index_slide_line) {
+              outline += '<h2>' + slideLine + '</h2>'
+            })
+
           })
 
         })
 
-return outline
+        return outline
       }
     },
     methods: {
       addModules: function () {
-        console.log("in add mods")
+        // console.log("in add mods")
         let tempModuleObj = JSON.parse(JSON.stringify(courseblank.modules[0]))
         tempModuleObj.topics = []
         let tempModuleList = this.addModulesText.split(/\r|\n/)
@@ -651,6 +746,7 @@ return outline
             })
           }
         });
+        this.addObjectivesText = ''
         $('#add_objectives_form').collapse('hide')
       },
       moveModule: function (moduleNum, direction) {
@@ -664,6 +760,12 @@ return outline
           this.course2.modules.splice(moduleNum, 1)
         }
       },
+      moveTopic: function (moduleNum, topicNum, direction) {
+        let element = this.course2.modules[moduleNum].topics[topicNum];
+        this.course2.modules[moduleNum].topics.splice(topicNum, 1);
+        this.course2.modules[moduleNum].topics.splice(topicNum + direction, 0,
+          element); //moves up if direction is -1
+      },
       deleteTopic: function (moduleNum, topicNum) {
         if (confirm("Are you sure you want to delete this topic and all it's data?") ==
           true) {
@@ -671,10 +773,9 @@ return outline
         }
       },
       saveLoad: function (action) {
-        console.log("in save function " + action)
+        // console.log("in save function " + action)
         let that = this
         if (action == "load") {
-          console.log("in load")
           if (confirm("This will clear any current course data and load the pasted project.") ==
             true) {
             that.course2 = JSON.parse(that.courseBackupString)
@@ -685,8 +786,11 @@ return outline
           $('#saveLoad').modal('toggle')
         }
       },
-      settings: function (action) {
-        $('#settingsModal').modal('toggle')
+      saveToFile: function (action) {
+          let text = JSON.stringify(this.course2, null, 2);
+          let d = new Date();
+          let filename = "BluePrinterApp " + d.toDateString() + ".doc";
+          download(filename, text);
       },
       resetApp: function () {
         if (confirm("This will clear any current course data and reset the app.") == true) {
@@ -694,9 +798,10 @@ return outline
         }
       },
       loadExample: function () {
+        let that = this
         if (confirm("This will clear any current course data and load the example course.") ==
           true) {
-          this.course2 = JSON.parse(exampleCourse);
+          that.course2 = exampleCourse;
         }
       },
       wordCount: function (textString) {
@@ -706,17 +811,157 @@ return outline
       exportPPTOutline: function () {
         $('#pptOutlineModal').modal('toggle')
       },
-      validateSlideText: function (val, desiredWords) {
-        // console.log(desiredWords)
+      validateText: function (val, desiredWords) {
+        // console.log(val)
         let valCount = this.wordCount(val)
-        if (valCount >= desiredWords.min && valCount <= desiredWords.max) {
-          return true
-        } else {
-          return false
+        let valid = true;
+        let message = ''
+        var spaceReg = /\n{2,}|\s{2,}/
+        // var spaceReg = /(\n|\s){2,}/g
+        let extraSpaces = val.match(spaceReg)
+        // console.log(extraSpaces)
+
+        if (valCount < desiredWords.min || valCount > desiredWords.max) {
+          valid = false
+          message += 'Word Count out of range. (' + desiredWords.min + '-' + desiredWords.max + ')'
+        }
+        if (extraSpaces) {
+          valid = false
+          message += ' Contains extra spacing'
+        }
+        return {
+          'message': message,
+          'valid': valid
         }
       }
     }
   })
+
+  var exampleCourse = {
+    "title": "Need for Safety",
+    "client": "DAW",
+    "duration": "4",
+    "modules": [{
+        "title": "Introduction",
+        "subtitle": "Overview and Welcome",
+        "instructor": "Kevin",
+        "duration": "15",
+        "description": "Introduction to the course and course overview.",
+        "topics": [{
+            "title": "Welcome",
+            "slide_text": "Thank you for joining our course",
+            "participant_notes": "We are glad you are here.",
+            "instructor_notes": "Introduce the instructors and the course goals.",
+            "id_objective": 0,
+            "exercise": {
+              "has_exercise": false,
+              "title": "",
+              "description": ""
+            },
+            "media": {
+              "details": "DAW logo",
+              "required": [
+                "graphic"
+              ]
+            },
+            "graphics": [{
+              "filename": "",
+              "citation": "",
+              "description": "",
+              "type": ""
+            }]
+          },
+          {
+            "title": "Overview",
+            "slide_text": "The Next Four Days",
+            "participant_notes": "For the next four days we will be discussing safety and why need to be safe.",
+            "instructor_notes": "Briefly the discuss the main points of the course modules.",
+            "id_objective": 0,
+            "exercise": {
+              "has_exercise": false,
+              "title": "",
+              "description": ""
+            },
+            "media": {
+              "details": "",
+              "required": []
+            },
+            "graphics": [{
+              "filename": "",
+              "citation": "",
+              "description": "",
+              "type": ""
+            }]
+          }
+        ],
+        "topicTextToAdd": ""
+      },
+      {
+        "title": "Understanding Hazards",
+        "subtitle": "Watch Out!",
+        "instructor": "Sally",
+        "duration": "45",
+        "description": "Discussion of hazards and their signs",
+        "topics": [{
+          "title": "Need for Caution",
+          "slide_text": "Leverage\nAgile\nframeworks",
+          "participant_notes": "Leverage agile frameworks to provide a robust synopsis for high level overviews. Iterative approaches to corporate strategy foster collaborative thinking to further the overall value proposition.",
+          "instructor_notes": "Organically grow the holistic world view of disruptive innovation via workplace diversity and empowerment.",
+          "id_objective": 1,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Making of a Safety Sign",
+            "description": "Discuss with a partner the definition of safety and caution."
+          },
+          "media": {
+            "details": "Safety animation related to cautious behavior",
+            "required": [
+              "animation"
+            ]
+          },
+          "graphics": [{
+            "filename": "",
+            "citation": "",
+            "description": "",
+            "type": ""
+          }]
+        }],
+        "topicTextToAdd": ""
+      }
+    ],
+    "objectives": [{
+        "objective_text": "Introduce the module"
+      },
+      {
+        "objective_text": "Define caution"
+      }
+    ],
+    "desiredSlideWords": {
+      "min": 2,
+      "max": 10
+    },
+    "desiredPGWords": {
+      "min": 3,
+      "max": "40"
+    },
+    "desiredIGWords": {
+      "min": 4,
+      "max": "15"
+    }
+  };
+
+  function download(filename, text) {
+    var element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+    );
+    element.setAttribute("download", filename);
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
   integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -724,5 +969,6 @@ return outline
   integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
   integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
+  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="	
+  rtrezj1gi4qiorq"></script>
 </html>
