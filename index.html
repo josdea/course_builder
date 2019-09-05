@@ -640,11 +640,13 @@
             .getMinutes(),
             ':', d.getSeconds()
           ]
+          if(this.course2.modules[0] || this.course2.objectives[0]){ //autosave if there are some modules or objectives
           if (this.course2.title != '') {
             this.saveToBrowser('autosave_' + theDate.join('') + '_' + this.course2.title)
           } else {
             this.saveToBrowser(theDate.join('') + '_autoSave')
           }
+        }
         }, false)
       },
       addModules: function () {
