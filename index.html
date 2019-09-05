@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-  <!-- <meta http-equiv="refresh" content="5"> -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -11,6 +10,9 @@
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
     integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs"
+      data-app-key="rtrezj1gi4qiorq"></script> -->
   <style>
     h2 {
       font-size: 1.4rem
@@ -29,23 +31,24 @@
       padding: .25rem;
     }
 
-    .pptoutline h1 {
+    .modal-body h1 {
       font-size: 1rem;
     }
 
-    .pptoutline h2 {
+    .modal-body h2 {
       font-size: .9rem;
     }
+
+    #file-input {
+      opacity: 0;
+    }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs"
-    data-app-key="rtrezj1gi4qiorq"></script>
 </head>
 
 <body>
   <div id="app">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">The Blueprint(er) App</a>
+      <a class="navbar-brand" href="#">The Blueprint(er)</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
         aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -58,15 +61,12 @@
               Save
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="#" v-on:click="saveToFile">to File</a>
               <a class="dropdown-item" href="#" v-on:click="saveToBrowser('')">to Browser</a>
               <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">to Clipboard</a>
-              <a class="dropdown-item" href="#" v-on:click="saveToFile">to File</a>
               <a class="dropdown-item" href="#" v-on:click="saveToDropbox">to Dropbox (coming later)</a>
-              <!-- <a class="dropdown-item dropbox-saver"
-                href="https://dl.dropboxusercontent.com/s/deroi5nwm6u7gdf/advice.png">Save do Dropbox.com
-                (coming later)</a> -->
-              <!-- <a class="dropdown-item" href="#">Something else here</a> -->
             </div>
+            <!-- TODO ability to rename and delete objectives - maybe when clicking on objective it lists all the topics that reference it -->
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown"
@@ -74,12 +74,14 @@
               Load
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="#" v-on:click="openFromFile">from File</a>
               <a class="dropdown-item" href="#" v-on:click="saveLoad('launch')">from Clipboard</a>
               <a class="dropdown-item" href="#" v-on:click="listLocalStorageCourses()" data-toggle="modal"
                 data-target="#loadFromBrowser">from Browser</a>
-              <a class="dropdown-item" href="#" v-on:click="loadExample()">Example Course</a>
+              <a class="dropdown-item" href="#" v-on:click="loadExample()">Example Data</a>
               <a class="dropdown-item" href="#" v-on:click="resetApp">Blank Course</a>
-              <a class="dropdown-item" href="#">from File (coming soon)</a>
+              <a class="dropdown-item" href="#">from Module / Topic Outline (coming soon)</a>
+              <a class="dropdown-item" href="#">from Excel (csv) (coming later)</a>
               <a class="dropdown-item" href="#">from PowerPoint Outline (coming later)</a>
             </div>
           <li class="nav-item dropdown">
@@ -87,12 +89,13 @@
               aria-haspopup="true" aria-expanded="false">Export</a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               <a class="dropdown-item" href="#" v-on:click="exportPPTOutline">PowerPoint Outline</a>
+              <a class="dropdown-item" href="#" v-on:click="exportModuleTopicOutline">Module / Topic Outline</a>
+              <a class="dropdown-item" href="#" v-on:click="exportCSV">to Excel (csv)</a>
               <a class="dropdown-item" href="#">Agenda (coming soon)</a>
-              <a class="dropdown-item" href="#">Module / Topic Outline (coming soon)</a>
-              <a class="dropdown-item" href="#">to Excel (csv) (coming soon)</a>
               <a class="dropdown-item" href="#">Analysis Document (coming soon)</a>
               <a class="dropdown-item" href="#">Design Document (coming soon)</a>
               <a class="dropdown-item" href="#">Objectives Report (coming soon)</a>
+              <a class="dropdown-item" href="#">Media / Graphics Report (coming soon)</a>
             </div>
           </li>
           <li class="nav-item dropdown">
@@ -170,7 +173,7 @@
           </div>
           <!-- end of add modules form -->
           <div class="list-group">
-            <a v-for="(module, index_module) in course2.modules" href="#"
+            <a v-for="(module, index_module) in course2.modules" :href="'#module'+index_module"
               class="list-group-item d-flex justify-content-between align-items-center">
               {{index_module+1}}. {{module.title}}
               <span class="badge badge-primary badge-pill"
@@ -203,13 +206,13 @@
             </a>
           </div>
           <!-- End of objectives list -->
+          <!-- TODO maybe topic list in each module is a link to that spot on the far right -->
           <br>
           <hr>
         </div>
         <div class="col">
-          <!-- <br> -->
           <div v-for="(module, index_module) in course2.modules" class="module_form">
-            <h3 class="d-flex justify-content-between align-items-center">
+            <h3 :id="'module'+index_module" class="d-flex justify-content-between align-items-center">
               <a data-toggle="collapse" :href="'#module_details_form'+index_module" role="button" aria-expanded="true"
                 :aria-controls="'module_details_form'+index_module">Module {{index_module+1}}
               </a>
@@ -250,8 +253,6 @@
                   class="form-control" v-model="module.description"></textarea>
               </div>
               <!-- Topics List -->
-              <!-- TODO show topics form if there are no topics -->
-              <!-- TODO show objectives form and modules form if there are no objectives or modules -->
               <h4 class="d-flex justify-content-between align-items-center">Topics
                 <a title="Add Topics" class="btn btn-outline-success btn-sm" role="button" data-toggle="collapse"
                   :href="'#add_topics_form'+index_module" aria-expanded="false"
@@ -294,13 +295,10 @@
               <h2> Module {{index_module+1}} - {{module.title}}</h2>
               <div v-for="(topic, index_topic) in module.topics">
                 <h3>Topic {{index_module+1}}.{{index_topic + 1}}</h3>
-
                 <div class="form-group" :class="{'bg-danger text-white':(topic.title == '')}">
                   <input :id="'topic_title'+index_module+index_topic" name="topic_title" placeholder="Topic Title"
                     type="text" class="form-control" v-model="topic.title">
                 </div>
-
-
                 <div class="form-group"
                   :class="{'bg-danger text-white':(course2.modules[index_module].topics[index_topic].id_objective == -1)}">
                   <label :for="'id_objective'+index_module+index_topic">Objective</label>
@@ -380,7 +378,6 @@
                     class="form-control"></textarea>
                 </div>
                 <div class="form-group">
-                  <!-- <label>Exercise</label>  -->
                   <div>
                     <div class="form-check form-check-inline">
                       <input v-model="course2.modules[index_module].topics[index_topic].exercise.has_exercise"
@@ -435,7 +432,6 @@
           <div class="modal-body">
             <p>Copy the text below to backup all information on this page. Paste into the box to load
               previously copied material.</p>
-            <!-- TODO save to disk option -->
             <!-- TODO make textbox fill modal -->
             <textarea name="" id="" cols="50" rows="10" v-model="courseBackupString"></textarea>
           </div>
@@ -504,24 +500,19 @@
       </div>
     </div>
     <!-- end of modal -->
-    <!-- Modal -->
-    <div class="modal fade" id="pptOutlineModal" tabindex="-1" role="dialog" aria-labelledby="pptOutlineModalTitle"
+    <!-- reUsable Modal -->
+    <div class="modal fade" id="reusableModal" tabindex="-1" role="dialog" aria-labelledby="reusableModalTitle"
       aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="pptOutlineModalTitle">Export to PPT</h5>
+            <h5 class="modal-title" id="reusableModalTitle">{{modal.title}}</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body pptoutline">
-            <p>Copy the text below into ms-word and save. Then create new slides in PPT from outline and use your Word
-              file.</p>
-            <hr>
-            <small>
-              <div v-html="pptOutline"></div>
-            </small>
+          <div class="modal-body">
+            <div v-html="modal.body"></div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -531,7 +522,6 @@
       </div>
     </div>
     <!-- end of powerpoint outline modal -->
-
     <!-- Load Modal -->
     <div class="modal fade" id="loadFromBrowser" tabindex="-1" role="dialog" aria-labelledby="loadFromBrowserTitle"
       aria-hidden="true">
@@ -561,110 +551,16 @@
       </div>
     </div>
     <!-- end of load modal -->
+    <input type="file" id="file-input" />
   </div>
-  <!-- TODO map exercise checkbox to variable -->
+  <!-- end of vueapp-->
 </body>
 <script>
-  // var course23 = {
-  //   title: '',
-  //   client: '',
-  //   duration: '',
-  //   modules: [{
-  //     title: '',
-  //     subtitle: '',
-  //     instructor: '',
-  //     duration: '',
-  //     description: '',
-  //     topics: [{
-  //       title: '',
-  //       slide_text: '',
-  //       participant_notes: '',
-  //       instructor_notes: '',
-  //       id_objective: -1,
-  //       exercise: {
-  //         has_exercise: false,
-  //         title: 'asd',
-  //         description: 'fda'
-  //       },
-  //       media: {
-  //         details: '',
-  //         required: []
-  //       },
-  //       graphics: [{
-  //         filename: '',
-  //         citation: '',
-  //         description: '',
-  //         type: ''
-  //       }]
-  //     }],
-  //     topicTextToAdd: ''
-  //   }],
-  //   objectives: [{
-  //     objective_text: "Introduction to the module"
-  //   }],
-  //   desiredSlideWords: {
-  //     min: 3,
-  //     max: 12
-  //   },
-  //   desiredPGWords: {
-  //     min: 10,
-  //     max: 50
-  //   },
-  //   desiredIGWords: {
-  //     min: 5,
-  //     max: 15
-  //   }
-  // };
-  var courseblank = {
-    title: '',
-    client: '',
-    duration: '',
-    modules: [{
-      title: '',
-      subtitle: '',
-      instructor: '',
-      duration: '',
-      description: '',
-      topics: [{
-        title: '',
-        slide_text: '',
-        participant_notes: '',
-        instructor_notes: '',
-        id_objective: -1,
-        exercise: {
-          has_exercise: false,
-          title: '',
-          description: ''
-        },
-        media: {
-          details: '',
-          required: []
-        }
-      }],
-      topicTextToAdd: '' //TODO remove the need for this in the course
-    }],
-    objectives: [{
-      objective_text: ''
-    }],
-    desiredSlideWords: {
-      min: 3,
-      max: 12
-    },
-    desiredPGWords: {
-      min: 10,
-      max: 50
-    },
-    desiredIGWords: {
-      min: 5,
-      max: 15
-    }
-  };
-  var courseblank2 = {
+  var courseStarter = {
     title: '',
     client: '',
     duration: '',
     modules: [],
-    objectives: [],
     desiredSlideWords: {
       min: 2,
       max: 10
@@ -676,21 +572,25 @@
     desiredIGWords: {
       min: 4,
       max: 8
-    }
+    },
+    objectives: []
   };
   var app = new Vue({
     el: '#app',
     data: {
-      course2: courseblank2,
+      course2: {},
       addModulesText: '',
-      addTopicsText: [],
       addObjectivesText: '',
       courseBackupString: '',
-      alertBoxText: {
+      // alertBoxText: {
+      //   title: '',
+      //   message: ''
+      // },
+      localStorage: [],
+      modal: {
         title: '',
-        message: ''
-      },
-      localStorage: []
+        body: ''
+      }
       // topicTextToAdd: '',
     },
     computed: {
@@ -699,7 +599,6 @@
         this.course2.modules.forEach(function (module, index_module) {
           module.topics.forEach(function (topic, index_topic) {
             topicTitle = topic.title
-            // console.log(topic)
             if (topic.id_objective != -1) {
               if (isNaN(objectiveReport[topic.id_objective])) {
                 objectiveReport[topic.id_objective] == 0
@@ -709,70 +608,46 @@
           })
         })
         return objectiveReport;
-      },
-      pptOutline: function () {
-        let outline = ''
-        let that = this
-        let slideTextArr = []
-        let moduleObjectives = []
-        this.course2.modules.forEach(function (module, index_module) {
-          outline += '<h1>Module ' + (index_module + 1) + ' - ' + module.title + '</h1>'
-          outline += '<h2>' + module.subtitle + '</h2>'
-          moduleObjectives = that.getObjectivesByModule(index_module)
-
-          outline += '<h1>' + module.title + ' Objectives</h1>'
-          moduleObjectives.forEach(function (objective, index_objective) {
-            outline += '<h2>' + that.course2.objectives[objective].objective_text + '</h2>'
-
-          })
-
-          module.topics.forEach(function (topic, index_module) {
-            outline += '<h1>' + topic.title + '</h1>'
-            slideTextArr = topic.slide_text.split(/\r|\n/)
-            slideTextArr.forEach(function (slideLine, index_slide_line) {
-              outline += '<h2>' + slideLine + '</h2>'
-            })
-          })
-        })
-        return outline
       }
     },
     created() {
-      window.addEventListener('beforeunload', () => {
+      this.course2 = JSON.parse(JSON.stringify(courseStarter))
+      this.saveBeforeLeaving()
+    },
+    methods: {
+      saveBeforeLeaving: function(){
+        window.addEventListener('beforeunload', () => {
         let d = new Date();
         let theDate = [d.getFullYear(), d.getMonth() + 1, d.getDate(), '_', d.getHours(), ':', d.getMinutes(),
           ':', d.getSeconds()
         ]
-
         if (this.course2.title != '') {
           this.saveToBrowser('autosave_' + theDate.join('') + '_' + this.course2.title)
         } else {
           this.saveToBrowser(theDate.join('') + '_autoSave')
         }
       }, false)
-    },
-    methods: {
+      },
       addModules: function () {
-        let tempModuleObj = JSON.parse(JSON.stringify(courseblank.modules[0]))
+        let tempModuleObj = JSON.parse(JSON.stringify(courseSchema.modules[0]))
         tempModuleObj.topics = []
         let tempModuleList = this.addModulesText.split(/\r|\n/)
         this.addModulesText = ""
         let that = this
-        tempModuleList.forEach(function (module_title, index_module) {
+        tempModuleList.forEach((module_title, index_module) => {
           if (module_title != '') {
             tempModuleObj.title = module_title
-            that.course2.modules.push(JSON.parse(JSON.stringify(tempModuleObj)))
+            this.course2.modules.push(JSON.parse(JSON.stringify(tempModuleObj)))
           }
         });
         $('#add_modules_form').collapse('hide')
       },
       addTopics: function (moduleNum) {
-        let tempTopicObj = courseblank.modules[0].topics[0]
+        let tempTopicObj = courseSchema.modules[0].topics[0]
         let tempTopicList = this.course2.modules[moduleNum].topicTextToAdd.split(/\r|\n/)
         this.course2.modules[moduleNum].topicTextToAdd = ""
         let that = this
         tempTopicList.forEach(function (topic_title, index_topic) {
-          // console.log(topic_title)
           if (topic_title != '') {
             tempTopicObj.title = topic_title
             that.course2.modules[moduleNum].topics.push(JSON.parse(JSON.stringify(tempTopicObj)))
@@ -781,7 +656,7 @@
         $('#add_topics_form' + moduleNum).collapse('hide')
       },
       addObjectives: function () {
-        let tempTopicObj = courseblank.modules[0].topics[0]
+        let tempTopicObj = courseSchema.modules[0].topics[0]
         let tempObjectivesList = this.addObjectivesText.split(/\r|\n/)
         let that = this
         tempObjectivesList.forEach(function (objective_text, index_objective) {
@@ -818,7 +693,6 @@
         }
       },
       saveLoad: function (action) {
-        // console.log("in save function " + action)
         let that = this
         if (action == "load") {
           if (confirm("This will clear any current course data and load the pasted project.") ==
@@ -833,16 +707,58 @@
       },
       saveToFile: function () {
         let text = JSON.stringify(this.course2, null, 2);
-
         let d = new Date();
         let theDate = [d.getFullYear(), d.getMonth() + 1, d.getDate(), '_', d.getHours(), d.getMinutes(), d
           .getSeconds()
         ]
 
-        let filename = "BluePrinterApp " + theDate.join('') + ".doc";
-
+        let filename = (this.course2.title == '') ? 'BluePrinterApp' : this.course2.title
+        filename += theDate.join('') + ".doc";
         download(filename, text);
       },
+
+      openFromFile: function () {
+        let that = this
+        console.log("in open from file")
+        this.modal.title = "Open From File"
+        let input = document.getElementById('file-input')
+        // input.addEventListener('change', that.openFile)
+        input.addEventListener('change', function(e){
+          console.log("in open file")
+        var file = e.target.files[0];
+        if (!file) {
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          var contents = e.target.result;
+          console.log(contents)
+          that.course2 = JSON.parse(contents);
+        };
+        reader.readAsText(file);
+
+        })
+        input.click()
+
+        this.modal.body = ''
+      },
+      // openFile: function (e) {
+      //   let that = this
+      //   console.log("in open file")
+      //   var file = e.target.files[0];
+      //   if (!file) {
+      //     return;
+      //   }
+      //   var reader = new FileReader();
+      //   reader.onload = function (e) {
+      //     var contents = e.target.result;
+      //     console.log(contents)
+      //     that.course2 = JSON.parse(contents);
+      //   };
+      //   reader.readAsText(file);
+
+
+      // },
       saveToDropbox: function () {
         console.log("in save to dropbox function, not set up")
       },
@@ -852,18 +768,13 @@
           courseName = prompt("Please enter save name", that.course2.title)
         }
         if (typeof Storage !== "undefined") { //browser supports local storage
-          // if (localStorage[courseName]) { // user has been here before or localstorage item exists
-          // alert("Not saved, or course name in use")
-          // } else { // local storage item doesn't exist
           localStorage[courseName] = JSON.stringify(this.course2);
           console.log("Saved")
-          // }
         } else {
           alert("Sorry, your browser does not support web storage.  Changes will not be saved");
         }
       },
       loadFromBrowser: function (storageName) {
-        console.log(storageName)
         let that = this
         $('#loadFromBrowser').modal('toggle')
         if (typeof Storage !== "undefined") { //browser supports local storage
@@ -871,8 +782,7 @@
             if (confirm("This will clear any current course data and load the course you selected.") == true) {
               that.course2 = JSON.parse(localStorage[storageName])
             }
-            console.log("Loaded")
-          } else {}
+          }
         } else {
           alert("Sorry, your browser does not support web storage.  Changes will not be saved");
         }
@@ -901,7 +811,7 @@
       },
       resetApp: function () {
         if (confirm("This will clear any current course data and reset the app.") == true) {
-          this.course2 = courseblank2
+          this.course2 = JSON.parse(JSON.stringify(courseStarter))
         }
       },
       loadExample: function () {
@@ -916,9 +826,102 @@
         return wom ? wom.length : 0
       },
       exportPPTOutline: function () {
-        $('#pptOutlineModal').modal('toggle')
-
+        this.modal.title = 'PowerPoint Outline'
+        let outline =
+          '<p>Copy the text below into ms-word and save. Then create new slides in PPT from outline and use your Word file.</p><hr>'
+        let that = this
+        let slideTextArr = []
+        let moduleObjectives = []
+        this.course2.modules.forEach(function (module, index_module) {
+          outline += '<h1>Module ' + (index_module + 1) + ' - ' + module.title + '</h1>'
+          outline += '<h2>' + module.subtitle + '</h2>'
+          moduleObjectives = that.getObjectivesByModule(index_module)
+          outline += '<h1>Module ' + (index_module + 1) + ' Objectives</h1>'
+          moduleObjectives.forEach(function (objective, index_objective) {
+            outline += '<h2>' + that.course2.objectives[objective].objective_text + '</h2>'
+          })
+          module.topics.forEach(function (topic, index_module) {
+            outline += '<h1>' + topic.title + '</h1>'
+            slideTextArr = topic.slide_text.split(/\r|\n/)
+            slideTextArr.forEach(function (slideLine, index_slide_line) {
+              outline += '<h2>' + slideLine + '</h2>'
+              // TODO export exercise as slide
+            })
+          })
+        })
+        this.modal.body = outline
+        $('#reusableModal').modal('toggle')
       },
+      exportModuleTopicOutline: function () {
+        this.modal.title = 'Module Topic Outline'
+        let outline = '<ol>'
+        let that = this
+        let slideTextArr = []
+        let moduleObjectives = []
+        this.course2.modules.forEach(function (module, index_module) {
+          outline += '<li>Module ' + (index_module + 1) + ' - ' + module.title + '</li>'
+          outline += (module.topics.length != 0) ? '<ul>' : ''
+          module.topics.forEach(function (topic, index_module) {
+            outline += '<li>' + topic.title + '</li>'
+          })
+          outline += (module.topics.length != 0) ? '</ul>' : ''
+        })
+        this.modal.body = outline
+        $('#reusableModal').modal('toggle')
+      },
+      exportCSV: function () {
+        let that = this
+        let rowArr = []
+        let csvText = 'Course Title,'
+        csvText += this.course2.title
+        csvText += '\n'
+        csvText += 'Client,'
+        csvText += this.course2.client
+        csvText += '\n'
+        csvText += 'Duration,'
+        csvText += this.course2.duration + ' days'
+        csvText += '\n'
+        csvText += 'Note: Columns containing "%0" characters represent new lines. Find and replace to fix'
+        csvText += '\n'
+        csvText += '\n'
+        csvText +=
+          'Module,Module Subtitle,Description,Module Instructor,Module Duration(minutes),Topic Title,Objective,Slide Text,PG Notes,IG Notes,Has Exercise,Exercise Title,Exercise Description,Media Required,Media Details'
+
+        this.course2.modules.forEach(function (module, index_module) {
+
+          module.topics.forEach(function (topic, index_module) {
+            csvText += '\n'
+            rowArr.push(
+              module.title,
+              module.subtitle,
+              (encodeURIComponent(module.description)).replace(/%20/gi, ' '),
+              module.instructor,
+              module.duration,
+              topic.title,
+              that.course2.objectives[topic.id_objective].objective_text,
+              (encodeURIComponent(topic.slide_text)).replace(/%20/gi, ' '),
+              (encodeURIComponent(topic.participant_notes)).replace(/%20/gi, ' '),
+              (encodeURIComponent(topic.instructor_notes)).replace(/%20/gi, ' '),
+              topic.exercise.has_exercise,
+              topic.exercise.title,
+              (encodeURIComponent(topic.exercise.description)).replace(/%20/gi, ' '),
+              topic.media.required.join(' / '),
+              topic.media.details
+            )
+            csvText += rowArr.join(',')
+            rowArr = []
+          })
+        })
+        // console.log(csvText)
+        let d = new Date();
+        let theDate = [d.getFullYear(), d.getMonth() + 1, d.getDate(), '_', d.getHours(), d.getMinutes(), d
+          .getSeconds()
+        ]
+        let filename = (this.course2.title == '') ? 'BluePrinterApp' : this.course2.title
+        filename += theDate.join('') + ".csv";
+        download(filename, csvText);
+      },
+
       validateText: function (val, desiredWords) {
         let valCount = this.wordCount(val)
         let valid = true;
@@ -940,27 +943,62 @@
       },
       getObjectivesByModule: function (moduleNum) {
         let objectiveList = []
-
         this.course2.modules[moduleNum].topics.forEach(function (topic, index_topic) {
-
           if (topic.id_objective != -1 && objectiveList.indexOf(topic.id_objective)) {
             objectiveList.push(topic.id_objective)
           }
-
-          // topicTitle = topic.title
-          // console.log(topic)
-          // if (topic.id_objective != -1) {
-          //   if (isNaN(objectiveReport[topic.id_objective])) {
-          //     objectiveReport[topic.id_objective] == 0
-          //   }
-          //   objectiveReport[topic.id_objective] += 1
-          // }
         })
-        console.log(objectiveList)
         return objectiveList
       }
     }
-  })
+  });
+
+  var courseSchema = {
+    title: '',
+    client: '',
+    duration: '',
+    modules: [{
+      title: '',
+      subtitle: '',
+      instructor: '',
+      duration: '',
+      description: '',
+      topics: [{
+        title: '',
+        slide_text: '',
+        participant_notes: '',
+        instructor_notes: '',
+        id_objective: -1,
+        exercise: {
+          has_exercise: false,
+          title: '',
+          description: ''
+        },
+        media: {
+          details: '',
+          required: []
+        }
+      }],
+      topicTextToAdd: '' //TODO remove the need for this in the course
+    }],
+    desiredSlideWords: {
+      min: 3,
+      max: 12
+    },
+    desiredPGWords: {
+      min: 10,
+      max: 50
+    },
+    desiredIGWords: {
+      min: 5,
+      max: 15
+    },
+    objectives: [{
+      objective_text: ''
+    }]
+  };
+
+
   var exampleCourse = {
     "title": "Need for Safety",
     "client": "DAW",
@@ -987,13 +1025,7 @@
               "required": [
                 "graphic"
               ]
-            },
-            "graphics": [{
-              "filename": "",
-              "citation": "",
-              "description": "",
-              "type": ""
-            }]
+            }
           },
           {
             "title": "Overview",
@@ -1009,13 +1041,7 @@
             "media": {
               "details": "",
               "required": []
-            },
-            "graphics": [{
-              "filename": "",
-              "citation": "",
-              "description": "",
-              "type": ""
-            }]
+            }
           }
         ],
         "topicTextToAdd": ""
@@ -1042,22 +1068,9 @@
             "required": [
               "animation"
             ]
-          },
-          "graphics": [{
-            "filename": "",
-            "citation": "",
-            "description": "",
-            "type": ""
-          }]
+          }
         }],
         "topicTextToAdd": ""
-      }
-    ],
-    "objectives": [{
-        "objective_text": "Introduce the module"
-      },
-      {
-        "objective_text": "Define caution"
       }
     ],
     "desiredSlideWords": {
@@ -1071,7 +1084,14 @@
     "desiredIGWords": {
       "min": 4,
       "max": "15"
-    }
+    },
+    "objectives": [{
+        "objective_text": "Introduce the module"
+      },
+      {
+        "objective_text": "Define caution"
+      }
+    ]
   };
 
   function download(filename, text) {
