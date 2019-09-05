@@ -559,8 +559,9 @@
                 <i v-on:click="deleteFromBrowser(course)" class="fa fa-trash"></i>
               </li>
             </ul>
-            <a href="#" v-on:click="deleteAllFromBrowser">Delete all from
+            <a v-if="localStorage[0]" href="#" v-on:click="deleteAllFromBrowser">Delete all from
               browser</a>
+              <p v-else>You do not have any saved data in the browser</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -784,7 +785,7 @@
           localStorage.clear()
         }
         this.listLocalStorageCourses()
-        $('#loadFromBrowser').modal('toggle')
+        // $('#loadFromBrowser').modal('toggle')
       },
       listLocalStorageCourses: function () {
         let browserCourses = []
