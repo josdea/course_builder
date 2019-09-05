@@ -121,6 +121,7 @@
               <a class="dropdown-item" href="#">Mechanics Checker (coming soon)</a>
               <a class="dropdown-item" href="#">Modify Vocabulary (coming later)</a>
               <a class="dropdown-item" href="#">Specify Required Fields (coming later)</a>
+              <a class="dropdown-item" href="#">Specify Flagged Values (coming later)</a>
             </div>
           </li>
           </li>
@@ -129,7 +130,7 @@
     </nav>
     <div class="container-fluid">
       <div class="row justify-content-md-center">
-        <div :class="{'col':(course2.modules[0]), 'col-md-6':(!course2.modules[0])}">
+        <div class="col-md">
           <!-- Course Info  -->
           <h2>
             <a data-toggle="collapse" href="#course_form" role="button" aria-expanded="true" aria-controls="course_form"
@@ -227,7 +228,7 @@
           <br>
           <hr>
         </div>
-        <div :class="{'col':(course2.modules[0])}">
+        <div class="col-md">
           <div v-for="(module, index_module) in course2.modules" class="module_form">
             <h3 :id="'module'+index_module" class="d-flex justify-content-between align-items-center">
               <a data-toggle="collapse" :href="'#module_details_form'+index_module" role="button" aria-expanded="true"
@@ -306,7 +307,7 @@
             <br>
           </div>
         </div>
-        <div :class="{'col':(course2.modules[0])}">
+        <div class="col-md">
           <div v-for="(module, index_module) in course2.modules">
             <div v-if="module.topics.length>0" :id="'module_details_form'+index_module" class="collapse show">
               <h2> Module {{index_module+1}} - {{module.title}}</h2>
