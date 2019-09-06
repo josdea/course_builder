@@ -47,17 +47,17 @@
 
 <body>
   <div id="app">
-    <nav class="navbar navbar-expand-md navbar-light bg-light"> 
-      <a class="navbar-brand" href="#">The Blueprint(er)</a>
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+      <a data-toggle="collapse" href="#first-col" class="navbar-brand" title="Toggle First Column">The Blueprint(er)</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
         aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-            <li class="nav-item">
-                <a class="nav-link" href="#" v-on:click="resetApp">New</a>
-              </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" v-on:click="resetApp">New</a>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
@@ -130,7 +130,7 @@
     </nav>
     <div class="container-fluid">
       <div class="row justify-content-md-center">
-        <div class="col-md">
+        <div id="first-col" class="col-sm-12 col-md-6 col-lg-4 col-xl-3 collapse show">
           <!-- Course Info  -->
           <h2>
             <a data-toggle="collapse" href="#course_form" role="button" aria-expanded="true" aria-controls="course_form"
@@ -175,7 +175,8 @@
           </div>
           <!-- end of course info -->
           <!-- Module List -->
-          <h2 class="d-flex justify-content-between align-items-center">Modules
+          <h2  class="d-flex justify-content-between align-items-center" >
+            <a title="Toggle Middle Column" data-toggle="collapse" href="#middle-col" class="text-body">Modules</a>
             <!-- <a title="Add Modules" class="btn btn-outline-success btn-sm" role="button" data-toggle="collapse"
               href="#add_modules_form" aria-expanded="false" aria-controls="add_modules_form"><i
                 class="fa fa-plus"></i></a> -->
@@ -186,8 +187,8 @@
               Titles (each on a new line) <button v-if="addModulesText !=''" v-on:click="addModules"
                 class="btn btn-success btn-sm" role="button" data-toggle="collapse"
                 href="#add_modules_form">Add</button></label>
-            <textarea v-on:keyup.enter="addModules" v-model="addModulesText" id="module_titles" name="module_titles" cols="40" rows="2"
-              class="form-control"></textarea>
+            <textarea v-on:keyup.enter="addModules" v-model="addModulesText" id="module_titles" name="module_titles"
+              cols="40" rows="2" class="form-control"></textarea>
           </div>
           <!-- end of add modules form -->
           <div class="list-group">
@@ -209,15 +210,15 @@
           <!-- add Objectives form -->
           <div id="add_objectives_form" class="form-group">
             <label class="d-flex justify-content-between align-items-center" for="module_titles">Add
-              Objectives (each on a new line) <button v-if="addObjectivesText !=''" v-on:click="addObjectives"
+              Objectives (each on a new line) <button v-if="addObjectivesText !=''" v-on:click="createObjectives"
                 class="btn btn-success btn-sm" role="button">Add</button></label>
-            <textarea v-on:keyup.enter="addObjectives" v-model="addObjectivesText" id="objective_text" name="objective_text" cols="40" rows="2"
-              class="form-control"></textarea>
+            <textarea v-on:keyup.enter="createObjectives" v-model="addObjectivesText" id="objective_text"
+              name="objective_text" cols="40" rows="2" class="form-control"></textarea>
           </div>
           <!-- end of add objectives form -->
           <div class="list-group">
-            <a v-for="(objective, index_objective) in course2.objectives" href="#"
-              class="list-group-item d-flex justify-content-between align-items-center">
+            <a v-for="(objective, index_objective) in course2.objectives" v-on:click="updateObjective(index_objective)"
+              href="#" class="list-group-item d-flex justify-content-between align-items-center">
               {{index_objective+1}}. {{objective.objective_text}}
               <span class="badge badge-primary badge-pill"
                 title="Used in this many topics">{{objectivesUsage[index_objective]}}</span>
@@ -228,7 +229,7 @@
           <br>
           <hr>
         </div>
-        <div class="col-md">
+        <div id="middle-col" class="col-sm-12 col-md-6 col-lg-4 col-xl-3 collapse show">
           <div v-for="(module, index_module) in course2.modules" class="module_form">
             <h3 :id="'module'+index_module" class="d-flex justify-content-between align-items-center">
               <a data-toggle="collapse" :href="'#module_details_form'+index_module" role="button" aria-expanded="true"
@@ -307,7 +308,7 @@
             <br>
           </div>
         </div>
-        <div class="col-md">
+        <div id="third-col" class="col-sm-12 col-md-12 col-lg col-xl">
           <div v-for="(module, index_module) in course2.modules">
             <div v-if="module.topics.length>0" :id="'module_details_form'+index_module" class="collapse show">
               <h2> Module {{index_module+1}} - {{module.title}}</h2>
@@ -540,6 +541,38 @@
       </div>
     </div>
     <!-- end of powerpoint outline modal -->
+
+    <!-- Update Delete Objective Modal -->
+    <div class="modal fade" id="objectivesModal" tabindex="-1" role="dialog" aria-labelledby="objectivesModalTitle"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="objectivesModalTitle">{{modal.title}}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div v-if="course2.objectives[currentObjective]" class="form-group">
+              <label for="objective_editor">Objective Text</label>
+              <input id="objective_editor" name="objective" placeholder="Objective Text" type="text"
+                class="form-control" v-model="course2.objectives[currentObjective].objective_text">
+            </div>
+            <small> Deleting will reset the objective for any topics that reference it.</small>
+            <br>
+            <button v-on:click="deleteObjective(currentObjective)" type="button" class="btn btn-sm btn-danger">Delete
+              Objective</button>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end of powerpoint outline modal -->
+
     <!-- Load Modal -->
     <div class="modal fade" id="loadFromBrowser" tabindex="-1" role="dialog" aria-labelledby="loadFromBrowserTitle"
       aria-hidden="true">
@@ -561,7 +594,7 @@
             </ul>
             <a v-if="localStorage[0]" href="#" v-on:click="deleteAllFromBrowser">Delete all from
               browser</a>
-              <p v-else>You do not have any saved data in the browser</p>
+            <p v-else>You do not have any saved data in the browser</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -570,6 +603,23 @@
       </div>
     </div>
     <!-- end of load modal -->
+    <!-- begin toast  -->
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="6000"
+      style="position: absolute; top: 1rem; right: 1rem;">
+      <div class="toast-header">
+
+        <strong class="mr-auto">{{toast.title}}</strong>
+        <small>{{toast.small}}</small>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="toast-body">
+        {{toast.body}}
+      </div>
+    </div>
+    <!-- end of toast -->
+
     <input type="file" id="file-input" />
   </div>
   <!-- end of vueapp-->
@@ -601,10 +651,16 @@
       addModulesText: '',
       addObjectivesText: '',
       courseBackupString: '',
+      toast: {
+        title: '',
+        body: '',
+        small: ''
+      },
       // alertBoxText: {
       //   title: '',
       //   message: ''
       // },
+      currentObjective: -1,
       localStorage: [],
       modal: {
         title: '',
@@ -632,8 +688,17 @@
     created() {
       this.course2 = JSON.parse(JSON.stringify(courseStarter))
       this.saveBeforeLeaving()
+
     },
     methods: {
+      showToast: function (title, body, small) {
+        this.toast.title = title
+        this.toast.body = body
+        this.toast.small = small
+
+        $('.toast').toast('show');
+
+      },
       saveBeforeLeaving: function () {
         window.addEventListener('beforeunload', () => {
           let d = new Date();
@@ -641,51 +706,86 @@
             .getMinutes(),
             ':', d.getSeconds()
           ]
-          if(this.course2.modules[0] || this.course2.objectives[0]){ //autosave if there are some modules or objectives
-          if (this.course2.title != '') {
-            this.saveToBrowser('autosave_' + theDate.join('') + '_' + this.course2.title)
-          } else {
-            this.saveToBrowser(theDate.join('') + '_autoSave')
+          if (this.course2.modules[0] || this.course2.objectives[
+            0]) { //autosave if there are some modules or objectives
+            if (this.course2.title != '') {
+              this.saveToBrowser('autosave_' + theDate.join('') + '_' + this.course2.title)
+            } else {
+              this.saveToBrowser(theDate.join('') + '_autoSave')
+            }
           }
-        }
         }, false)
       },
       addModules: function () {
+
         let tempModuleObj = JSON.parse(JSON.stringify(courseSchema.modules[0]))
         tempModuleObj.topics = []
+        let modulesAdded = 0
         let tempModuleList = this.addModulesText.split(/\r|\n/)
         this.addModulesText = ""
         tempModuleList.forEach((module_title, index_module) => {
           if (module_title != '') {
+            modulesAdded += 1
             tempModuleObj.title = module_title
             this.course2.modules.push(JSON.parse(JSON.stringify(tempModuleObj)))
           }
         });
         // $('#add_modules_form').collapse('hide')
+        this.showToast('Modules Created', modulesAdded + ' module(s) have been created.', '')
       },
       addTopics: function (moduleNum) {
+        let topicsAdded = 0
         let tempTopicObj = courseSchema.modules[0].topics[0]
         let tempTopicList = this.course2.modules[moduleNum].topicTextToAdd.split(/\r|\n/)
         this.course2.modules[moduleNum].topicTextToAdd = ""
         tempTopicList.forEach((topic_title, index_topic) => {
           if (topic_title != '') {
+            topicsAdded += 1
             tempTopicObj.title = topic_title
             this.course2.modules[moduleNum].topics.push(JSON.parse(JSON.stringify(tempTopicObj)))
           }
         });
         $('#add_topics_form' + moduleNum).collapse('hide')
+        this.showToast('Topics Created', topicsAdded + ' topic(s) have been created.', '')
       },
-      addObjectives: function () {
+      createObjectives: function () {
+        let objectivesAdded = 0
         let tempObjectivesList = this.addObjectivesText.split(/\r|\n/)
         tempObjectivesList.forEach((objective_text, index_objective) => {
           if (objective_text != '') {
+            objectivesAdded += 1
             this.course2.objectives.push({
               'objective_text': objective_text
             })
           }
         });
         this.addObjectivesText = ''
+
+        this.showToast('Objectives Created', objectivesAdded + ' objective(s) have been created.', '')
+
         // $('#add_objectives_form').collapse('hide')
+        // TODO are all the alert box warning necessary?
+      },
+      updateObjective: function (index_objective) {
+        this.modal.title = "Update Objective"
+        this.currentObjective = index_objective
+        $('#objectivesModal').modal('toggle')
+      },
+      deleteObjective: function (index_objective) {
+        console.log(index_objective)
+        this.currentObjective = index_objective
+        this.course2.modules.forEach(function (module, index_module) {
+          module.topics.forEach(function (topic, index_topic) {
+            if (topic.id_objective == index_objective) {
+              topic.id_objective = -1
+            } else if (topic.id_objective > index_objective) {
+              topic.id_objective = topic.id_objective - 1
+            }
+          })
+        })
+        this.course2.objectives.splice(index_objective, 1)
+        $('#objectivesModal').modal('toggle')
+        this.showToast('Objective Deleted', ' 1 objective has been deleted.', '')
       },
       moveModule: function (moduleNum, direction) {
         let element = this.course2.modules[moduleNum];
@@ -696,6 +796,7 @@
         if (confirm("Are you sure you want to delete this module and all it's topics?") ==
           true) {
           this.course2.modules.splice(moduleNum, 1)
+          this.showToast('Modules Deleted', '1 module has been deleted.', '')
         }
       },
       moveTopic: function (moduleNum, topicNum, direction) {
@@ -703,11 +804,13 @@
         this.course2.modules[moduleNum].topics.splice(topicNum, 1);
         this.course2.modules[moduleNum].topics.splice(topicNum + direction, 0,
           element); //moves up if direction is -1
+        this.showToast('Topic Updated', '1 Topic has been moved.', '')
       },
       deleteTopic: function (moduleNum, topicNum) {
         if (confirm("Are you sure you want to delete this topic and all it's data?") ==
           true) {
           this.course2.modules[moduleNum].topics.splice(topicNum, 1)
+          this.showToast('Topic Deleted', '1 topic has been deleted.', '')
         }
       },
       saveLoad: function (action) {
@@ -715,6 +818,7 @@
           if (confirm("This will clear any current course data and load the pasted project.") ==
             true) {
             this.course2 = JSON.parse(this.courseBackupString)
+            this.showToast('Course Loaded', 'Course has been loaded.', '')
           }
           $('#saveLoad').modal('toggle')
         } else {
@@ -732,6 +836,7 @@
         let filename = (this.course2.title == '') ? 'BluePrinterApp' : this.course2.title
         filename += theDate.join('') + ".doc";
         download(filename, text);
+        this.showToast('File Saved', 'File has been saved, please check your downloads folder.', '')
       },
       openFromFile: function () {
         let input = document.getElementById('file-input')
@@ -756,6 +861,7 @@
         }
         if (typeof Storage !== "undefined") { //browser supports local storage
           localStorage[courseName] = JSON.stringify(this.course2);
+          this.showToast('Course Saved', 'Course has been saved to this browser.', '')
         } else {
           alert("Sorry, your browser does not support web storage.  Changes will not be saved");
         }
@@ -776,6 +882,7 @@
         if (localStorage[storageName]) {
           if (confirm("Are you sure you want to remove this course from the browser.") == true) {
             localStorage.removeItem(storageName);
+            this.showToast('Course Deleted', storageName + ' has been deleted from the browser.', '')
           }
         }
         this.listLocalStorageCourses()
@@ -783,9 +890,10 @@
       deleteAllFromBrowser: function () {
         if (confirm("Are you sure you want to remove all courses from the browser?") == true) {
           localStorage.clear()
+          this.showToast('Courses Deleted', 'All courses have been deleted from the browser.', '')
         }
         this.listLocalStorageCourses()
-        // $('#loadFromBrowser').modal('toggle')
+        $('#loadFromBrowser').modal('toggle')
       },
       listLocalStorageCourses: function () {
         let browserCourses = []
@@ -797,12 +905,14 @@
       resetApp: function () {
         if (confirm("This will clear any current course data and reset the app.") == true) {
           this.course2 = JSON.parse(JSON.stringify(courseStarter))
+          this.showToast('Course Reset', 'Course has been reset to a blank.', '')
         }
       },
       loadExample: function () {
         if (confirm("This will clear any current course data and load the example course.") ==
           true) {
           this.course2 = JSON.parse(JSON.stringify(exampleCourse));
+          this.showToast('Example Loaded', 'Example course has been loaded.', '')
         }
       },
       wordCount: function (textString) {
@@ -810,6 +920,7 @@
         return wom ? wom.length : 0
       },
       exportPPTOutline: function () {
+        // TODO slide for course title and info
         this.modal.title = 'PowerPoint Outline'
         let outline =
           '<p>Copy the text below into ms-word and save. Then create new slides in PPT from outline and use your Word file.</p><hr>'
@@ -907,9 +1018,10 @@
         outline += Array.of('Time', 'Length', 'Description', 'Presenter').join('</th><th scope="col">')
         outline += '</th></tr></thead><tbody>'
         this.course2.modules.forEach((module, index_module) => {
-          console.log('module title '+module.title)
+          console.log('module title ' + module.title)
           outline += '<tr><td>'
-          outline += Array.of(' - ', ':' + module.duration, 'Module ' + (index_module+1) + ': ' + module.title + ' ' + module.description, module.instructor).join(
+          outline += Array.of(' - ', ':' + module.duration, 'Module ' + (index_module + 1) + ': ' + module
+            .title + ' ' + module.description, module.instructor).join(
             '</th><td>')
           outline += '</td></tr>'
         })
