@@ -131,7 +131,6 @@
           <h2 class="justify-content-md-center">
             <a data-toggle="collapse" href="#course_form" role="button" aria-expanded="true" aria-controls="course_form"
               class="text-body">Course</a>
-            <!-- <a href="#" class="pull-right">more..</a> -->
           </h2>
           <div id="course_form" class="collapse show">
             <div :class="{'bg-danger text-white':(course2.title == '')}" class="form-group">
@@ -170,7 +169,7 @@
                 </div>
               </div>
             </div>
-            <small><a href="#" class="pull-right">more..</a></small>
+            <small><a title="Coming Soon" href="#" class="pull-right">more..</a></small>
           </div>
           <!-- end of course info -->
           <!-- Module List -->
@@ -328,8 +327,8 @@
                     class="d-flex justify-content-between align-items-center">
                     Topic Slide Text
                     <small><span>{{validateText(course2.modules[index_module].topics[index_topic].slide_text,course2.desiredSlideWords).message}}</span>
-                      ({{wordCount(course2.modules[index_module].topics[index_topic].slide_text)}}
-                      words)</small></label>
+                      <span data-toggle="modal" data-target="#settingsModal">({{wordCount(course2.modules[index_module].topics[index_topic].slide_text)}}
+                      words)</span></small></label>
                   <textarea :id="'topic_slide_text'+index_module+index_topic" name="topic_slide_text" cols="40" rows="3"
                     aria-describedby="topic_slide_textHelpBlock" class="form-control"
                     v-model="course2.modules[index_module].topics[index_topic].slide_text"></textarea>
@@ -340,8 +339,8 @@
                     class="d-flex justify-content-between align-items-center">
                     Topic Participant Notes
                     <small><span>{{validateText(course2.modules[index_module].topics[index_topic].participant_notes,course2.desiredPGWords).message}}</span>
-                      ({{wordCount(course2.modules[index_module].topics[index_topic].participant_notes)}}
-                      words)</small></label>
+                      <span data-toggle="modal" data-target="#settingsModal">({{wordCount(course2.modules[index_module].topics[index_topic].participant_notes)}}
+                      words)</span></small></label>
                   <textarea :id="'topic_participant_notes'+index_module+index_topic" name="topic_participant_notes"
                     cols="40" rows="4" aria-describedby="topic_participant_notesHelpBlock" class="form-control"
                     v-model="course2.modules[index_module].topics[index_topic].participant_notes"></textarea>
@@ -352,8 +351,8 @@
                     class="d-flex justify-content-between align-items-center">
                     Topic Instructor Notes
                     <small><span>{{validateText(course2.modules[index_module].topics[index_topic].instructor_notes,course2.desiredIGWords).message}}</span>
-                      ({{wordCount(course2.modules[index_module].topics[index_topic].instructor_notes)}}
-                      words)</small></label>
+                      <span data-toggle="modal" data-target="#settingsModal">({{wordCount(course2.modules[index_module].topics[index_topic].instructor_notes)}}
+                      words)</span></small></label>
                   <textarea :id="'topic_instructor_notes'+index_module+index_topic" name="topic_instructor_notes"
                     cols="40" rows="2" aria-describedby="topic_instructor_notesHelpBlock" class="form-control"
                     v-model="course2.modules[index_module].topics[index_topic].instructor_notes"></textarea>
@@ -662,7 +661,7 @@
       max: 8
     },
     objectives: [],
-    flaggedValues: 'TODO,test'
+    flaggedValues: 'TODO'
   };
   var app = new Vue({
     el: '#app',
@@ -1056,20 +1055,21 @@
         let valCount = this.wordCount(val)
         let valid = true;
         let message = ''
-        var spaceReg = /\n{2,}|\s{2,}/
-        let extraSpaces = val.match(spaceReg)
+        var spaceReg = /[^\S\r\n]{2,}|[\n]{2,}/
+        let extraSpaces = val.search(spaceReg)
+        // console.log('extra space ' + extraSpaces)
         if (valCount < desiredWords.min || valCount > desiredWords.max) {
           valid = false
           message += 'Word Count out of range. (' + desiredWords.min + '-' + desiredWords.max + ')'
         }
-        if (extraSpaces) {
+        if (extraSpaces > -1) {
           valid = false
           message += ' Contains extra spacing'
         }
         
         this.course2.flaggedValues.split(/,/).forEach((item, index_index) => {
 
-            console.log("item ::" + item+'::')
+            // console.log("item ::" + item+'::')
           if (val.match(new RegExp(item, 'im')) && item!='') {
             valid = false
             message += ' Contains ' + item
@@ -1144,59 +1144,62 @@
 
 
   var exampleCourse = {
-    "title": "Need for Safety",
-    "client": "DAW",
-    "duration": "4",
-    "modules": [{
-        "title": "Introduction",
-        "subtitle": "Overview and Welcome",
-        "instructor": "Kevin",
-        "duration": "15",
-        "description": "Introduction to the course and course overview.",
-        "topics": [{
-            "title": "Welcome",
-            "slide_text": "Thank you for joining our course",
-            "participant_notes": "We are glad you are here.",
-            "instructor_notes": "Introduce the instructors and the course goals.",
-            "id_objective": 0,
-            "exercise": {
-              "has_exercise": false,
-              "title": "",
-              "description": ""
-            },
-            "media": {
-              "details": "DAW logo",
-              "required": [
-                "graphic"
-              ]
-            }
+  "title": "Need for Safety",
+  "client": "DAW",
+  "duration": "4",
+  "modules": [
+    {
+      "title": "Introduction",
+      "subtitle": "Overview and Welcome",
+      "instructor": "Kevin",
+      "duration": "15",
+      "description": "Introduction to the course and course overview.",
+      "topics": [
+        {
+          "title": "Welcome",
+          "slide_text": "Thank you for joining our course",
+          "participant_notes": "We are glad you are here.",
+          "instructor_notes": "Introduce the instructors and the course goals.",
+          "id_objective": 0,
+          "exercise": {
+            "has_exercise": false,
+            "title": "",
+            "description": ""
           },
-          {
-            "title": "Overview",
-            "slide_text": "The Next Four Days",
-            "participant_notes": "For the next four days we will be discussing safety and why need to be safe.",
-            "instructor_notes": "Briefly the discuss the main points of the course modules.",
-            "id_objective": 1,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Introduce Yourself",
-              "description": "Turn to those at your table and introduce your current title, duties, and how long you've been in your current position."
-            },
-            "media": {
-              "details": "",
-              "required": []
-            }
+          "media": {
+            "details": "DAW logo",
+            "required": [
+              "graphic"
+            ]
           }
-        ],
-        "topicTextToAdd": ""
-      },
-      {
-        "title": "Understanding Hazards",
-        "subtitle": "Watch Out!",
-        "instructor": "Sally",
-        "duration": "45",
-        "description": "Discussion of hazards and their signs",
-        "topics": [{
+        },
+        {
+          "title": "Overview",
+          "slide_text": "The Next Four Days",
+          "participant_notes": "For the next four days we will be discussing safety and why need to be safe.",
+          "instructor_notes": "Briefly the discuss the main points of the course modules.",
+          "id_objective": 1,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Introduce Yourself",
+            "description": "Turn to those at your table and introduce your current title, duties, and how long you've been in your current position."
+          },
+          "media": {
+            "details": "",
+            "required": []
+          }
+        }
+      ],
+      "topicTextToAdd": ""
+    },
+    {
+      "title": "Understanding Hazards",
+      "subtitle": "Watch Out!",
+      "instructor": "Sally",
+      "duration": "45",
+      "description": "Discussion of hazards and their signs",
+      "topics": [
+        {
           "title": "Need for Caution",
           "slide_text": "Leverage\nAgile\nframeworks",
           "participant_notes": "Leverage agile frameworks to provide a robust synopsis for high level overviews. Iterative approaches to corporate strategy foster collaborative thinking to further the overall value proposition.",
@@ -1213,522 +1216,532 @@
               "animation"
             ]
           }
-        }],
-        "topicTextToAdd": ""
-      },
-      {
-        "title": "Lorem",
-        "subtitle": "Nullam a magna neque",
-        "instructor": "Dale",
-        "duration": "35",
-        "description": "",
-        "topics": [{
-            "title": "Mauris in ligula vestibulum",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Sed non velit",
-              "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
-            },
-            "media": {
-              "details": "Donec ac est vel quam mattis pretium non at erat.",
-              "required": [
-                "video"
-              ]
-            }
-          },
-          {
-            "title": "Nunc id nunc mollis",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": false,
-              "title": "",
-              "description": ""
-            },
-            "media": {
-              "details": "",
-              "required": [
-                "graphic"
-              ]
-            }
-          },
-          {
-            "title": "Proin volutpat sapien vel tellus",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Donec Ultrices",
-              "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
-            },
-            "media": {
-              "details": "",
-              "required": []
-            }
-          }
-        ],
-        "topicTextToAdd": ""
-      },
-      {
-        "title": "Lorem",
-        "subtitle": "Nullam a magna neque",
-        "instructor": "Dale",
-        "duration": "35",
-        "description": "",
-        "topics": [{
-            "title": "Mauris in ligula vestibulum",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Sed non velit",
-              "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
-            },
-            "media": {
-              "details": "Donec ac est vel quam mattis pretium non at erat.",
-              "required": [
-                "video"
-              ]
-            }
-          },
-          {
-            "title": "Nunc id nunc mollis",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": false,
-              "title": "",
-              "description": ""
-            },
-            "media": {
-              "details": "",
-              "required": [
-                "graphic"
-              ]
-            }
-          },
-          {
-            "title": "Proin volutpat sapien vel tellus",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Donec Ultrices",
-              "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
-            },
-            "media": {
-              "details": "",
-              "required": []
-            }
-          }
-        ],
-        "topicTextToAdd": ""
-      },
-      {
-        "title": "Magna",
-        "subtitle": "Nullam a magna neque",
-        "instructor": "Dale",
-        "duration": "35",
-        "description": "Integer et dolor nec est imperdiet interdum.",
-        "topics": [{
-            "title": "Mauris in ligula vestibulum",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Sed non velit",
-              "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
-            },
-            "media": {
-              "details": "Donec ac est vel quam mattis pretium non at erat.",
-              "required": [
-                "video"
-              ]
-            }
-          },
-          {
-            "title": "Nunc id nunc mollis",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": false,
-              "title": "",
-              "description": ""
-            },
-            "media": {
-              "details": "",
-              "required": [
-                "graphic"
-              ]
-            }
-          },
-          {
-            "title": "Proin volutpat sapien vel tellus",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Donec Ultrices",
-              "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
-            },
-            "media": {
-              "details": "",
-              "required": []
-            }
-          }
-        ],
-        "topicTextToAdd": ""
-      },
-      {
-        "title": "Neque",
-        "subtitle": "Nullam a magna neque",
-        "instructor": "Dale",
-        "duration": "35",
-        "description": "Phasellus auctor purus ac consectetur placerat",
-        "topics": [{
-            "title": "Mauris in ligula vestibulum",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Sed non velit",
-              "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
-            },
-            "media": {
-              "details": "Donec ac est vel quam mattis pretium non at erat.",
-              "required": [
-                "video"
-              ]
-            }
-          },
-          {
-            "title": "Nunc id nunc mollis",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": false,
-              "title": "",
-              "description": ""
-            },
-            "media": {
-              "details": "",
-              "required": [
-                "graphic"
-              ]
-            }
-          },
-          {
-            "title": "Proin volutpat sapien vel tellus",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Donec Ultrices",
-              "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
-            },
-            "media": {
-              "details": "",
-              "required": []
-            }
-          }
-        ],
-        "topicTextToAdd": ""
-      },
-      {
-        "title": "Sodales",
-        "subtitle": "Phasellus eu sodales nisi",
-        "instructor": "Smith",
-        "duration": "45",
-        "description": "Phasellus auctor purus ac consectetur placerat",
-        "topics": [{
-            "title": "Mauris in ligula vestibulum",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Sed non velit",
-              "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
-            },
-            "media": {
-              "details": "Donec ac est vel quam mattis pretium non at erat.",
-              "required": [
-                "video"
-              ]
-            }
-          },
-          {
-            "title": "Nunc id nunc mollis",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": false,
-              "title": "",
-              "description": ""
-            },
-            "media": {
-              "details": "",
-              "required": [
-                "graphic"
-              ]
-            }
-          },
-          {
-            "title": "Proin volutpat sapien vel tellus",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Donec Ultrices",
-              "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
-            },
-            "media": {
-              "details": "",
-              "required": []
-            }
-          }
-        ],
-        "topicTextToAdd": ""
-      },
-      {
-        "title": "Dotri",
-        "subtitle": "Praesent at magna posuere",
-        "instructor": "Aenean",
-        "duration": "80",
-        "description": "Maecenas lobortis est sed libero scelerisque venenatis.",
-        "topics": [{
-            "title": "Mauris in ligula vestibulum",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Sed non velit",
-              "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
-            },
-            "media": {
-              "details": "Donec ac est vel quam mattis pretium non at erat.",
-              "required": [
-                "video"
-              ]
-            }
-          },
-          {
-            "title": "Nunc id nunc mollis",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": false,
-              "title": "",
-              "description": ""
-            },
-            "media": {
-              "details": "",
-              "required": [
-                "graphic"
-              ]
-            }
-          },
-          {
-            "title": "Proin volutpat sapien vel tellus",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Donec Ultrices",
-              "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
-            },
-            "media": {
-              "details": "",
-              "required": []
-            }
-          }
-        ],
-        "topicTextToAdd": ""
-      },
-      {
-        "title": "Nic Pellenti",
-        "subtitle": "Donec iaculis massa sed",
-        "instructor": "Curae",
-        "duration": "90",
-        "description": "Integer et dolor nec est imperdiet interdum.",
-        "topics": [{
-            "title": "Mauris in ligula vestibulum",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Sed non velit",
-              "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
-            },
-            "media": {
-              "details": "Donec ac est vel quam mattis pretium non at erat.",
-              "required": [
-                "video"
-              ]
-            }
-          },
-          {
-            "title": "Nunc id nunc mollis",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": false,
-              "title": "",
-              "description": ""
-            },
-            "media": {
-              "details": "",
-              "required": [
-                "graphic"
-              ]
-            }
-          },
-          {
-            "title": "Proin volutpat sapien vel tellus",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Donec Ultrices",
-              "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
-            },
-            "media": {
-              "details": "",
-              "required": []
-            }
-          }
-        ],
-        "topicTextToAdd": ""
-      },
-      {
-        "title": "Curabituri",
-        "subtitle": "",
-        "instructor": "",
-        "duration": "",
-        "description": "Nullam non purus id mauris tristique suscipit eu quis nisl.",
-        "topics": [{
-            "title": "Mauris in ligula vestibulum",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Sed non velit",
-              "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
-            },
-            "media": {
-              "details": "Donec ac est vel quam mattis pretium non at erat.",
-              "required": [
-                "video"
-              ]
-            }
-          },
-          {
-            "title": "Nunc id nunc mollis",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": false,
-              "title": "",
-              "description": ""
-            },
-            "media": {
-              "details": "",
-              "required": [
-                "graphic"
-              ]
-            }
-          },
-          {
-            "title": "Proin volutpat sapien vel tellus",
-            "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
-            "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
-            "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
-            "id_objective": 2,
-            "exercise": {
-              "has_exercise": true,
-              "title": "Donec Ultrices",
-              "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
-            },
-            "media": {
-              "details": "",
-              "required": []
-            }
-          }
-        ],
-        "topicTextToAdd": ""
-      }
-    ],
-    "desiredSlideWords": {
-      "min": 2,
-      "max": "25"
+        }
+      ],
+      "topicTextToAdd": ""
     },
-    "desiredPGWords": {
-      "min": 3,
-      "max": "40"
+    {
+      "title": "Lorem",
+      "subtitle": "Nullam a magna neque",
+      "instructor": "Dale",
+      "duration": "35",
+      "description": "",
+      "topics": [
+        {
+          "title": "Mauris in ligula vestibulum",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Sed non velit",
+            "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
+          },
+          "media": {
+            "details": "Donec ac est vel quam mattis pretium non at erat.",
+            "required": [
+              "video"
+            ]
+          }
+        },
+        {
+          "title": "Nunc id nunc mollis",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": false,
+            "title": "",
+            "description": ""
+          },
+          "media": {
+            "details": "",
+            "required": [
+              "graphic"
+            ]
+          }
+        },
+        {
+          "title": "Proin volutpat sapien vel tellus",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Donec Ultrices",
+            "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
+          },
+          "media": {
+            "details": "",
+            "required": []
+          }
+        }
+      ],
+      "topicTextToAdd": ""
     },
-    "desiredIGWords": {
-      "min": 4,
-      "max": "15"
+    {
+      "title": "Vestibi",
+      "subtitle": "Nullam a magna neque",
+      "instructor": "Dale",
+      "duration": "35",
+      "description": "",
+      "topics": [
+        {
+          "title": "Mauris in ligula vestibulum",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Sed non velit",
+            "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
+          },
+          "media": {
+            "details": "Donec ac est vel quam mattis pretium non at erat.",
+            "required": [
+              "video"
+            ]
+          }
+        },
+        {
+          "title": "Nunc id nunc mollis",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": false,
+            "title": "",
+            "description": ""
+          },
+          "media": {
+            "details": "",
+            "required": [
+              "graphic"
+            ]
+          }
+        },
+        {
+          "title": "Proin volutpat sapien vel tellus",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Donec Ultrices",
+            "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
+          },
+          "media": {
+            "details": "",
+            "required": []
+          }
+        }
+      ],
+      "topicTextToAdd": ""
     },
-    "objectives": [{
-        "objective_text": "Introduce the module"
-      },
-      {
-        "objective_text": "Define caution"
-      },
-      {
-        "objective_text": "Ipsum"
-      }
-    ],
-    flaggedValues: 'TODO',
-  };
+    {
+      "title": "Magna",
+      "subtitle": "Nullam a magna neque",
+      "instructor": "Dale",
+      "duration": "35",
+      "description": "Integer et dolor nec est imperdiet interdum.",
+      "topics": [
+        {
+          "title": "Mauris in ligula vestibulum",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Sed non velit",
+            "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
+          },
+          "media": {
+            "details": "Donec ac est vel quam mattis pretium non at erat.",
+            "required": [
+              "video"
+            ]
+          }
+        },
+        {
+          "title": "Nunc id nunc mollis",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": false,
+            "title": "",
+            "description": ""
+          },
+          "media": {
+            "details": "",
+            "required": [
+              "graphic"
+            ]
+          }
+        },
+        {
+          "title": "Proin volutpat sapien vel tellus",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Donec Ultrices",
+            "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
+          },
+          "media": {
+            "details": "",
+            "required": []
+          }
+        }
+      ],
+      "topicTextToAdd": ""
+    },
+    {
+      "title": "Neque",
+      "subtitle": "Nullam a magna neque",
+      "instructor": "Dale",
+      "duration": "35",
+      "description": "Phasellus auctor purus ac consectetur placerat",
+      "topics": [
+        {
+          "title": "Mauris in ligula vestibulum",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Sed non velit",
+            "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
+          },
+          "media": {
+            "details": "Donec ac est vel quam mattis pretium non at erat.",
+            "required": [
+              "video"
+            ]
+          }
+        },
+        {
+          "title": "Nunc id nunc mollis",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": false,
+            "title": "",
+            "description": ""
+          },
+          "media": {
+            "details": "",
+            "required": [
+              "graphic"
+            ]
+          }
+        },
+        {
+          "title": "Proin volutpat sapien vel tellus",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Donec Ultrices",
+            "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
+          },
+          "media": {
+            "details": "",
+            "required": []
+          }
+        }
+      ],
+      "topicTextToAdd": ""
+    },
+    {
+      "title": "Sodales",
+      "subtitle": "Phasellus eu sodales nisi",
+      "instructor": "Smith",
+      "duration": "45",
+      "description": "Phasellus auctor purus ac consectetur placerat",
+      "topics": [
+        {
+          "title": "Mauris in ligula vestibulum",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Sed non velit",
+            "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
+          },
+          "media": {
+            "details": "Donec ac est vel quam mattis pretium non at erat.",
+            "required": [
+              "video"
+            ]
+          }
+        },
+        {
+          "title": "Nunc id nunc mollis",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": false,
+            "title": "",
+            "description": ""
+          },
+          "media": {
+            "details": "",
+            "required": [
+              "graphic"
+            ]
+          }
+        },
+        {
+          "title": "Proin volutpat sapien vel tellus",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Donec Ultrices",
+            "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
+          },
+          "media": {
+            "details": "",
+            "required": []
+          }
+        }
+      ],
+      "topicTextToAdd": ""
+    },
+    {
+      "title": "Dotri",
+      "subtitle": "Praesent at magna posuere",
+      "instructor": "Aenean",
+      "duration": "80",
+      "description": "Maecenas lobortis est sed libero scelerisque venenatis.",
+      "topics": [
+        {
+          "title": "Mauris in ligula vestibulum",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Sed non velit",
+            "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
+          },
+          "media": {
+            "details": "Donec ac est vel quam mattis pretium non at erat.",
+            "required": [
+              "video"
+            ]
+          }
+        },
+        {
+          "title": "Nunc id nunc mollis",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": false,
+            "title": "",
+            "description": ""
+          },
+          "media": {
+            "details": "",
+            "required": [
+              "graphic"
+            ]
+          }
+        },
+        {
+          "title": "Proin volutpat sapien vel tellus",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Donec Ultrices",
+            "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
+          },
+          "media": {
+            "details": "",
+            "required": []
+          }
+        }
+      ],
+      "topicTextToAdd": ""
+    },
+    {
+      "title": "Nic Pellenti",
+      "subtitle": "Donec iaculis massa sed",
+      "instructor": "Curae",
+      "duration": "90",
+      "description": "Integer et dolor nec est imperdiet interdum.",
+      "topics": [
+        {
+          "title": "Mauris in ligula vestibulum",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Sed non velit",
+            "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
+          },
+          "media": {
+            "details": "Donec ac est vel quam mattis pretium non at erat.",
+            "required": [
+              "video"
+            ]
+          }
+        },
+        {
+          "title": "Nunc id nunc mollis",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": false,
+            "title": "",
+            "description": ""
+          },
+          "media": {
+            "details": "",
+            "required": [
+              "graphic"
+            ]
+          }
+        },
+        {
+          "title": "Proin volutpat sapien vel tellus",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Donec Ultrices",
+            "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
+          },
+          "media": {
+            "details": "",
+            "required": []
+          }
+        }
+      ],
+      "topicTextToAdd": ""
+    },
+    {
+      "title": "Curabituri",
+      "subtitle": "",
+      "instructor": "",
+      "duration": "",
+      "description": "Nullam non purus id mauris tristique suscipit eu quis nisl.",
+      "topics": [
+        {
+          "title": "Mauris in ligula vestibulum",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Sed non velit",
+            "description": "Integer ultrices condimentum risus, ac facilisis enim pellentesque ut. Aenean eget arcu in ex ultrices dictum et in orci. Fusce pulvinar et sapien maximus finibus. Fusce nec luctus justo. Donec rutrum mattis ipsum, at semper eros aliquam et. Phasellus consectetur venenatis imperdiet. Mauris et sem suscipit neque dictum scelerisque. Nullam faucibus felis augue, ut lacinia ligula fermentum eu. Praesent in dapibus lacus, a vulputate quam."
+          },
+          "media": {
+            "details": "Donec ac est vel quam mattis pretium non at erat.",
+            "required": [
+              "video"
+            ]
+          }
+        },
+        {
+          "title": "Nunc id nunc mollis",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum aliquam.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": false,
+            "title": "",
+            "description": ""
+          },
+          "media": {
+            "details": "",
+            "required": [
+              "graphic"
+            ]
+          }
+        },
+        {
+          "title": "Proin volutpat sapien vel tellus",
+          "slide_text": "Pellentesque pretium quam vel placerat porttitor.\nSuspendisse eget nibh luctus, sollicitudin orci eu, ornare velit.\nVivamus et lorem nec nibh bibendum.",
+          "participant_notes": "Nam non commodo dui, vitae laoreet ex. Curabitur interdum, leo vitae dictum gravida, mauris risus posuere eros, ut pulvinar neque justo quis libero. Nullam eget nisl accumsan, vehicula erat ac, molestie enim. Ut quam magna, pretium facilisis quam id.",
+          "instructor_notes": "Curabitur rutrum faucibus fermentum. Vestibulum in nunc blandit, viverra lectus in, auctor est.",
+          "id_objective": 2,
+          "exercise": {
+            "has_exercise": true,
+            "title": "Donec Ultrices",
+            "description": "Donec ultrices egestas volutpat. Phasellus posuere lobortis erat, sit amet mollis dui viverra ut. Fusce tempor massa velit. Sed imperdiet dui at pellentesque vehicula."
+          },
+          "media": {
+            "details": "",
+            "required": []
+          }
+        }
+      ],
+      "topicTextToAdd": ""
+    }
+  ],
+  "desiredSlideWords": {
+    "min": 2,
+    "max": "25"
+  },
+  "desiredPGWords": {
+    "min": 3,
+    "max": "40"
+  },
+  "desiredIGWords": {
+    "min": 4,
+    "max": "15"
+  },
+  "objectives": [
+    {
+      "objective_text": "Introduce the module"
+    },
+    {
+      "objective_text": "Define caution"
+    },
+    {
+      "objective_text": "Ipsum"
+    }
+  ],
+  "flaggedValues": "TODO"
+};
 
   function download(filename, text) {
     var element = document.createElement("a");
