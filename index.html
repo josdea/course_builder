@@ -40,12 +40,16 @@
     #file-input {
       opacity: 0;
     }
+    .container-fluid{
+      margin-top: 4em;
+    }
+
   </style>
 </head>
 
 <body>
   <div id="app">
-    <nav class="navbar navbar-expand-md navbar-light bg-light">
+    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainnavbar"
         aria-controls="mainnavbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -130,7 +134,7 @@
           <!-- Course Info  -->
           <h2 class="justify-content-md-center">
             <a data-toggle="collapse" href="#course_form" role="button" aria-expanded="true" aria-controls="course_form"
-              class="text-body">Course</a>
+              class="text-body" title="Toggle course details">Course</a>
           </h2>
           <div id="course_form" class="collapse show">
             <div :class="{'bg-danger text-white':(course2.title == '')}" class="form-group">
