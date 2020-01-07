@@ -40,16 +40,12 @@
     #file-input {
       opacity: 0;
     }
-    .container-fluid{
-      margin-top: 4em;
-    }
-
   </style>
 </head>
 
 <body>
   <div id="app">
-    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainnavbar"
         aria-controls="mainnavbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -105,9 +101,9 @@
               <a class="dropdown-item" href="#" v-on:click="exportModuleTopicOutline">Module / Topic Outline</a>
               <a class="dropdown-item" href="#" v-on:click="exportAgenda">Agenda</a>
               <a class="dropdown-item" href="#" v-on:click="exportCSV">to Excel File (csv)</a>
+              <a class="dropdown-item" href="#" v-on:click="exportObjectivesReport">Objectives Report</a>
               <a class="dropdown-item" href="#">Analysis Document (coming soon)</a>
               <a class="dropdown-item" href="#">Design Document (coming soon)</a>
-              <a class="dropdown-item" href="#">Objectives Report (coming soon)</a>
               <a class="dropdown-item" href="#">Media / Graphics Report (coming soon)</a>
               <a class="dropdown-item" href="#">Course Stats (coming later)</a>
             </div>
@@ -118,7 +114,8 @@
               Settings
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink5">
-              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#settingsModal">Max / Min Words</a>
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#settingsModal"
+                title="Select to update min and max word counts">Max / Min Words</a>
               <a class="dropdown-item" href="#" v-on:click="updateFlaggedValues">Specify Flagged Values</a>
               <a class="dropdown-item" href="#">Mechanics Checker (coming soon)</a>
               <a class="dropdown-item" href="#">Modify Vocabulary (coming later)</a>
@@ -134,7 +131,7 @@
           <!-- Course Info  -->
           <h2 class="justify-content-md-center">
             <a data-toggle="collapse" href="#course_form" role="button" aria-expanded="true" aria-controls="course_form"
-              class="text-body" title="Toggle course details">Course</a>
+              class="text-body">Course</a>
           </h2>
           <div id="course_form" class="collapse show">
             <div :class="{'bg-danger text-white':(course2.title == '')}" class="form-group">
@@ -217,11 +214,10 @@
               href="#" class="list-group-item d-flex justify-content-between align-items-center">
               {{index_objective+1}}. {{objective.objective_text}}
               <span class="badge badge-primary badge-pill"
-                title="Used in this many topics">{{objectivesUsage[index_objective]}}</span>
+                title="Used in this many topics">{{objectivesUsage.usage[index_objective]}}</span>
             </a>
           </div>
           <!-- End of objectives list -->
-          <!-- TODO maybe topic list in each module is a link to the spot on the far right -->
           <br>
           <hr>
         </div>
@@ -331,8 +327,8 @@
                     class="d-flex justify-content-between align-items-center">
                     Topic Slide Text
                     <small><span>{{validateText(course2.modules[index_module].topics[index_topic].slide_text,course2.desiredSlideWords).message}}</span>
-                      <span data-toggle="modal"
-                        data-target="#settingsModal">({{wordCount(course2.modules[index_module].topics[index_topic].slide_text)}}
+                      <span data-toggle="modal" data-target="#settingsModal"
+                        title="Select to update min and max word counts">({{wordCount(course2.modules[index_module].topics[index_topic].slide_text)}}
                         words)</span></small></label>
                   <textarea :id="'topic_slide_text'+index_module+index_topic" name="topic_slide_text" cols="40" rows="3"
                     aria-describedby="topic_slide_textHelpBlock" class="form-control"
@@ -344,8 +340,8 @@
                     class="d-flex justify-content-between align-items-center">
                     Topic Participant Notes
                     <small><span>{{validateText(course2.modules[index_module].topics[index_topic].participant_notes,course2.desiredPGWords).message}}</span>
-                      <span data-toggle="modal"
-                        data-target="#settingsModal">({{wordCount(course2.modules[index_module].topics[index_topic].participant_notes)}}
+                      <span data-toggle="modal" data-target="#settingsModal"
+                        title="Select to update min and max word counts">({{wordCount(course2.modules[index_module].topics[index_topic].participant_notes)}}
                         words)</span></small></label>
                   <textarea :id="'topic_participant_notes'+index_module+index_topic" name="topic_participant_notes"
                     cols="40" rows="4" aria-describedby="topic_participant_notesHelpBlock" class="form-control"
@@ -357,8 +353,8 @@
                     class="d-flex justify-content-between align-items-center">
                     Topic Instructor Notes
                     <small><span>{{validateText(course2.modules[index_module].topics[index_topic].instructor_notes,course2.desiredIGWords).message}}</span>
-                      <span data-toggle="modal"
-                        data-target="#settingsModal">({{wordCount(course2.modules[index_module].topics[index_topic].instructor_notes)}}
+                      <span data-toggle="modal" data-target="#settingsModal"
+                        title="Select to update min and max word counts">({{wordCount(course2.modules[index_module].topics[index_topic].instructor_notes)}}
                         words)</span></small></label>
                   <textarea :id="'topic_instructor_notes'+index_module+index_topic" name="topic_instructor_notes"
                     cols="40" rows="2" aria-describedby="topic_instructor_notesHelpBlock" class="form-control"
@@ -403,7 +399,6 @@
                         class="form-check-input" value="true">
                       <label :for="'has_exercise_0'+index_module+index_topic" class="form-check-label">Topic has
                         Exercise?</label>
-                        <!-- TODO perhaps put this form field beside media required -->
                     </div>
                   </div>
                 </div>
@@ -451,8 +446,9 @@
           <div class="modal-body">
             <p>Copy the text below to backup all information on this page. Paste into the box to load
               previously copied material.</p>
-            <!-- TODO make textbox fill modal -->
+              <div class="text-center">
             <textarea name="" id="" cols="60" rows="20" v-model="courseBackupString"></textarea>
+          </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -564,6 +560,7 @@
             </div>
             <button v-on:click="deleteObjective(currentObjective)" type="button" class="btn btn-sm btn-danger">Delete
               Objective</button>
+            <p v-html="modal.body"></p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -652,6 +649,7 @@
   <!-- end of vueapp-->
 </body>
 <script>
+  "use strict";
   var courseStarter = {
     title: '',
     client: '',
@@ -670,7 +668,7 @@
       max: 8
     },
     objectives: [],
-    flaggedValues: 'TODO'
+    flaggedValues: 'TODO' // No action required but is a flagged value
   };
   var app = new Vue({
     el: '#app',
@@ -695,15 +693,20 @@
     },
     computed: {
       objectivesUsage: function () {
-        let objectiveReport = new Array(this.course2.objectives.length).fill(0)
+        let objectiveReport = {
+          usage: new Array(this.course2.objectives.length).fill(0),
+          topicsUsed: new Array(this.course2.objectives.length).fill('')
+        }
+
         this.course2.modules.forEach(function (module, index_module) {
           module.topics.forEach(function (topic, index_topic) {
-            topicTitle = topic.title
             if (topic.id_objective != -1) {
-              if (isNaN(objectiveReport[topic.id_objective])) {
-                objectiveReport[topic.id_objective] == 0
+              if (isNaN(objectiveReport['usage'][topic.id_objective])) {
+                objectiveReport['usage'][topic.id_objective] == 0
               }
-              objectiveReport[topic.id_objective] += 1
+              objectiveReport.usage[topic.id_objective] += 1
+              objectiveReport.topicsUsed[topic.id_objective] += ((index_module + 1) + '.' + (
+                index_topic + 1) + ' ' + topic.title + '\n')
             }
           })
         })
@@ -713,16 +716,13 @@
     created: function () {
       this.course2 = JSON.parse(JSON.stringify(courseStarter))
       this.saveBeforeLeaving()
-
     },
     methods: {
       showToast: function (title, body, small) {
         this.toast.title = title
         this.toast.body = body
         this.toast.small = small
-
         $('.toast').toast('show');
-
       },
       saveBeforeLeaving: function () {
         window.addEventListener('beforeunload', () => {
@@ -742,7 +742,6 @@
         }, false)
       },
       addModules: function () {
-
         let tempModuleObj = JSON.parse(JSON.stringify(courseSchema.modules[0]))
         tempModuleObj.topics = []
         let modulesAdded = 0
@@ -755,7 +754,6 @@
             this.course2.modules.push(JSON.parse(JSON.stringify(tempModuleObj)))
           }
         });
-        // $('#add_modules_form').collapse('hide')
         this.showToast('Modules Created', modulesAdded + ' module(s) have been created.', '')
       },
       addTopics: function (moduleNum) {
@@ -785,19 +783,15 @@
           }
         });
         this.addObjectivesText = ''
-
         this.showToast('Objectives Created', objectivesAdded + ' objective(s) have been created.', '')
-
-        // $('#add_objectives_form').collapse('hide')
-        // TODO are all the alert box warning necessary?
       },
       updateObjective: function (index_objective) {
         this.modal.title = "Update Objective"
+        this.modal.body = 'Used in the following topics <br>' + this.objectivesUsage.topicsUsed[index_objective]
         this.currentObjective = index_objective
         $('#objectivesModal').modal('toggle')
       },
       deleteObjective: function (index_objective) {
-        console.log(index_objective)
         this.currentObjective = index_objective
         this.course2.modules.forEach(function (module, index_module) {
           module.topics.forEach(function (topic, index_topic) {
@@ -900,7 +894,7 @@
             }
           }
         } else {
-          alert("Sorry, your browser does not support web storage.  Changes will not be saved");
+          alert("Sorry, your browser does not support web storage.");
         }
       },
       deleteFromBrowser: function (storageName) {
@@ -945,10 +939,11 @@
         return wom ? wom.length : 0
       },
       exportPPTOutline: function () {
-        // TODO slide for course title and info
         this.modal.title = 'PowerPoint Outline'
         let outline =
           '<p>Copy the text below into ms-word and save. Then create new slides in PPT from outline and use your Word file.</p><hr>'
+        outline += '<h1>' + this.course2.title + '</h1>'
+        outline += '<h2>' + this.course2.client + '</h2>'
         let slideTextArr = []
         let moduleObjectives = []
         this.course2.modules.forEach((module, index_module) => {
@@ -964,7 +959,6 @@
             slideTextArr = topic.slide_text.split(/\r|\n/)
             slideTextArr.forEach(function (slideLine, index_slide_line) {
               outline += '<h2>' + slideLine + '</h2>'
-              // TODO export exercise as slide
             })
             if (topic.exercise.has_exercise) {
               outline += '<h1>Exercise: ' + topic.exercise.title + '</h1>'
@@ -980,7 +974,7 @@
       exportModuleTopicOutline: function () {
         this.modal.title = 'Module Topic Outline'
         let outline = '<ol>'
-        let slideTextArr = []
+        // let slideTextArr = []
         let moduleObjectives = []
         this.course2.modules.forEach((module, index_module) => {
           outline += '<li>Module ' + (index_module + 1) + ' - ' + module.title + '</li>'
@@ -993,9 +987,28 @@
         this.modal.body = outline
         $('#reusableModal').modal('toggle')
       },
+      exportObjectivesReport: function () {
+        this.modal.title = 'Objectives Report'
+        let outline = ''
+        let slideTextArr = []
+        let moduleObjectives = []
+        this.course2.modules.forEach((module, index_module) => {
+          outline += '<h1>Module ' + (index_module + 1) + ' - ' + module.title + '</h1>'
+          moduleObjectives = this.getObjectivesByModule(index_module)
+          moduleObjectives.forEach((objective, index_objective) => {
+            outline += '<h2>' + (objective + 1) + '. ' + this.course2.objectives[objective]
+              .objective_text + '</h2>'
+          })
+        })
+        this.modal.body = outline
+        $('#reusableModal').modal('toggle')
+      },
       exportCSV: function () {
         let rowArr = []
         let csvText = 'Course Title,'
+        let objectiveText = ''
+        let moduleObjectives = []
+
         csvText += this.course2.title
         csvText += '\n'
         csvText += 'Client,'
@@ -1004,34 +1017,48 @@
         csvText += 'Duration,'
         csvText += this.course2.duration + ' days'
         csvText += '\n'
-        csvText += 'Note: Columns containing "%0" characters represent new lines. Find and replace to fix'
+        csvText +=
+          'Note: Columns containing "%0A" characters represent new lines, "%2C" for commas, and "%2F" for "/". Find and replace to fix'
         csvText += '\n'
         csvText += '\n'
         csvText +=
-          'Module,Module Subtitle,Description,Module Instructor,Module Duration(minutes),Topic Title,Objective,Slide Text,PG Notes,IG Notes,Has Exercise,Exercise Title,Exercise Description,Media Required,Media Details'
+          'Module,Module Subtitle,Description,Module Instructor,Module Duration(minutes),Topic Title,Objective,Slide Text,PG Notes,IG Notes,Has Exercise,Exercise Title,Exercise Description,Media Required,Media Details,Module Objectives'
         this.course2.modules.forEach((module, index_module) => {
+          this.getObjectivesByModule(index_module).forEach((objective, index_objective) => {
+            moduleObjectives.push((objective + 1) + '. ' + this.course2.objectives[objective]
+              .objective_text)
+            moduleObjectives.push((objective + 1) + '. ' + this.course2.objectives[objective]
+              .objective_text)
+          })
           module.topics.forEach((topic, index_module) => {
             csvText += '\n'
+            if (topic.id_objective == -1) {
+              objectiveText = ''
+            } else {
+              objectiveText = this.course2.objectives[topic.id_objective].objective_text
+            }
             rowArr.push(
-              module.title,
-              module.subtitle,
-              (encodeURIComponent(module.description)).replace(/%20/gi, ' '),
-              module.instructor,
-              module.duration,
-              topic.title,
-              this.course2.objectives[topic.id_objective].objective_text,
-              (encodeURIComponent(topic.slide_text)).replace(/%20/gi, ' '),
-              (encodeURIComponent(topic.participant_notes)).replace(/%20/gi, ' '),
-              (encodeURIComponent(topic.instructor_notes)).replace(/%20/gi, ' '),
+              module.title.trim(),
+              module.subtitle.trim(),
+              (encodeURIComponent(module.description)).replace(/%20/gi, ' ').trim(),
+              module.instructor.trim(),
+              module.duration.trim(),
+              topic.title.trim(),
+              objectiveText.trim(),
+              (encodeURIComponent(topic.slide_text)).replace(/%20/gi, ' ').trim(),
+              (encodeURIComponent(topic.participant_notes)).replace(/%20/gi, ' ').trim(),
+              (encodeURIComponent(topic.instructor_notes)).replace(/%20/gi, ' ').trim(),
               topic.exercise.has_exercise,
-              topic.exercise.title,
-              (encodeURIComponent(topic.exercise.description)).replace(/%20/gi, ' '),
-              topic.media.required.join(' / '),
-              topic.media.details
+              topic.exercise.title.trim(),
+              (encodeURIComponent(topic.exercise.description)).replace(/%20/gi, ' ').trim(),
+              topic.media.required.join(' / ').trim(),
+              topic.media.details.trim(),
+              (encodeURIComponent(moduleObjectives.join('\n'))).replace(/%20/gi, ' ').trim()
             )
             csvText += rowArr.join(',')
             rowArr = []
           })
+          moduleObjectives = []
         })
         let d = new Date();
         let theDate = [d.getFullYear(), d.getMonth() + 1, d.getDate(), '_', d.getHours(), d.getMinutes(), d
@@ -1049,7 +1076,6 @@
         outline += Array.of('Time', 'Length', 'Description', 'Presenter').join('</th><th scope="col">')
         outline += '</th></tr></thead><tbody>'
         this.course2.modules.forEach((module, index_module) => {
-          console.log('module title ' + module.title)
           outline += '<tr><td>'
           outline += Array.of(' - ', ':' + module.duration, 'Module ' + (index_module + 1) + ': ' + module
             .title + ' ' + module.description, module.instructor).join(
@@ -1066,7 +1092,6 @@
         let message = ''
         var spaceReg = /[^\S\r\n]{2,}|[\n]{2,}/
         let extraSpaces = val.search(spaceReg)
-        // console.log('extra space ' + extraSpaces)
         if (valCount < desiredWords.min || valCount > desiredWords.max) {
           valid = false
           message += 'Word Count out of range. (' + desiredWords.min + '-' + desiredWords.max + ')'
@@ -1075,10 +1100,7 @@
           valid = false
           message += ' Contains extra spacing'
         }
-
         this.course2.flaggedValues.split(/,/).forEach((item, index_index) => {
-
-          // console.log("item ::" + item+'::')
           if (val.match(new RegExp(item, 'im')) && item != '') {
             valid = false
             message += ' Contains ' + item
@@ -1131,7 +1153,7 @@
           required: []
         }
       }],
-      topicTextToAdd: '' //TODO remove the need for this in the course
+      topicTextToAdd: ''
     }],
     desiredSlideWords: {
       min: 3,
@@ -1148,7 +1170,7 @@
     objectives: [{
       objective_text: ''
     }],
-    flaggedValues: 'TODO',
+    flaggedValues: 'TODO', // No action required but is a flagged value
   };
 
 
