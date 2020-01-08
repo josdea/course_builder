@@ -11,7 +11,7 @@
   <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
     integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <style>
+    <style>
     h2 {
       font-size: 1.4rem
     }
@@ -50,7 +50,8 @@
         aria-controls="mainnavbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <a data-toggle="collapse" href="#first-col" class="navbar-brand" title="Toggle First Column">The Blueprint(er)</a>
+      <a data-toggle="collapse" href="#first-col" class="navbar-brand" title="Toggle Left Column Collapse">The
+        Blueprint(er)</a>
       <div class="collapse navbar-collapse" id="mainnavbar">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
           <li class="nav-item">
@@ -88,7 +89,7 @@
               Import
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink3">
-              <a class="dropdown-item" href="#">from Module / Topic Outline (coming soon)</a>
+              <a class="dropdown-item" href="#">from Module / Topic Outline (coming later)</a>
               <a class="dropdown-item" href="#">from Excel (csv) (coming later)</a>
               <a class="dropdown-item" href="#">from PowerPoint Outline (coming later)</a>
             </div>
@@ -102,9 +103,9 @@
               <a class="dropdown-item" href="#" v-on:click="exportAgenda">Agenda</a>
               <a class="dropdown-item" href="#" v-on:click="exportCSV">to Excel File (csv)</a>
               <a class="dropdown-item" href="#" v-on:click="exportObjectivesReport">Objectives Report</a>
-              <a class="dropdown-item" href="#">Analysis Document (coming soon)</a>
-              <a class="dropdown-item" href="#">Design Document (coming soon)</a>
-              <a class="dropdown-item" href="#">Media / Graphics Report (coming soon)</a>
+              <a class="dropdown-item" href="#">Analysis Document (coming later)</a>
+              <a class="dropdown-item" href="#">Design Document (coming later)</a>
+              <a class="dropdown-item" href="#">Media / Graphics Report (coming later)</a>
               <a class="dropdown-item" href="#">Course Stats (coming later)</a>
             </div>
           </li>
@@ -117,7 +118,7 @@
               <a class="dropdown-item" href="#" data-toggle="modal" data-target="#settingsModal"
                 title="Select to update min and max word counts">Max / Min Words</a>
               <a class="dropdown-item" href="#" v-on:click="updateFlaggedValues">Specify Flagged Values</a>
-              <a class="dropdown-item" href="#">Mechanics Checker (coming soon)</a>
+              <a class="dropdown-item" href="#">Mechanics Checker (coming later)</a>
               <a class="dropdown-item" href="#">Modify Vocabulary (coming later)</a>
               <a class="dropdown-item" href="#">Specify Required Fields (coming later)</a>
             </div>
@@ -126,12 +127,12 @@
       </div>
     </nav>
     <div class="container-fluid">
-      <div class="row justify-content-md-center">
+      <div class="row ">
         <div id="first-col" class="col-sm-12 col-md-6 col-lg-4 col-xl-3 collapse show">
           <!-- Course Info  -->
-          <h2 class="justify-content-md-center">
+          <h2 class="">
             <a data-toggle="collapse" href="#course_form" role="button" aria-expanded="true" aria-controls="course_form"
-              class="text-body">Course</a>
+              class="text-body" title="Toggle Collapse Course Details">Course</a>
           </h2>
           <div id="course_form" class="collapse show">
             <div :class="{'bg-danger text-white':(course2.title == '')}" class="form-group">
@@ -170,26 +171,26 @@
                 </div>
               </div>
             </div>
-            <small><a title="Coming Soon" href="#" class="pull-right">more..</a></small>
+            <small><a title="coming later" href="#" class="pull-right">more..</a></small>
           </div>
           <!-- end of course info -->
           <!-- Module List -->
           <h2 class="d-flex justify-content-between align-items-center">
-            <a title="Toggle Middle Column" data-toggle="collapse" href="#middle-col" class="text-body">Modules</a>
+            <a title="Toggle Middle Column Collapse" data-toggle="collapse" href="#middle-col"
+              class="text-body">Modules</a>
           </h2>
           <!-- add modules form -->
           <div id="add_modules_form" class="form-group">
             <label class="d-flex justify-content-between align-items-center" for="module_titles">Add Module
               Titles (each on a new line) <button v-if="addModulesText !=''" v-on:click="addModules"
-                class="btn btn-success btn-sm" role="button" data-toggle="collapse"
-                href="#add_modules_form">Add</button></label>
+                class="btn btn-success btn-sm" role="button" href="#add_modules_form">Add</button></label>
             <textarea v-on:keyup.enter="addModules" v-model="addModulesText" id="module_titles" name="module_titles"
               cols="40" rows="2" class="form-control"></textarea>
           </div>
           <!-- end of add modules form -->
           <div class="list-group">
             <a v-for="(module, index_module) in course2.modules" :href="'#module'+index_module"
-              class="list-group-item d-flex justify-content-between align-items-center">
+              class="list-group-item d-flex justify-content-between align-items-center" title="Scroll to this module">
               {{index_module+1}}. {{module.title}}
               <span class="badge badge-primary badge-pill"
                 title="contains this many topics">{{module.topics.length}}</span>
@@ -225,7 +226,8 @@
           <div v-for="(module, index_module) in course2.modules" class="module_form">
             <h3 :id="'module'+index_module" class="d-flex justify-content-between align-items-center">
               <a data-toggle="collapse" :href="'#module_details_form'+index_module" role="button" aria-expanded="true"
-                :aria-controls="'module_details_form'+index_module">Module {{index_module+1}}
+                :aria-controls="'module_details_form'+index_module" title="Toggle Module Collapse">Module
+                {{index_module+1}}
               </a>
               <div class="module_actions">
                 <small>
@@ -260,7 +262,7 @@
               </div>
               <div class="form-group">
                 <label :for="'module_description'+index_module">Module Description</label> <br>
-                <textarea :id="'module_description'+index_module" name="module_description" cols="40" rows="2"
+                <textarea :id="'module_description'+index_module" name="module_description" cols="40" rows="1"
                   class="form-control" v-model="module.description"></textarea>
               </div>
               <!-- Topics List -->
@@ -283,7 +285,7 @@
               <ul class="list-group">
                 <li v-for="(topic, index_topic) in module.topics"
                   class="list-group-item d-flex justify-content-between align-items-center">
-                  <a :href="'#m'+index_module+'t'+index_topic">{{topic.title}}</a>
+                  <a :href="'#m'+index_module+'t'+index_topic" title="Scroll to this topic">{{topic.title}}</a>
                   <div class="module_actions">
                     <small>
                       <i v-on:click="deleteTopic(index_module,index_topic)" class="fa fa-trash"></i>
@@ -326,9 +328,10 @@
                   <label :for="'topic_slide_text'+index_module+index_topic"
                     class="d-flex justify-content-between align-items-center">
                     Topic Slide Text
-                    <small><span>{{validateText(course2.modules[index_module].topics[index_topic].slide_text,course2.desiredSlideWords).message}}</span>
-                      <span data-toggle="modal" data-target="#settingsModal"
-                        title="Select to update min and max word counts">({{wordCount(course2.modules[index_module].topics[index_topic].slide_text)}}
+                    <small><span data-toggle="modal" data-target="#settingsModal"
+                        title="Select to update min and max word counts">{{validateText(course2.modules[index_module].topics[index_topic].slide_text,course2.desiredSlideWords).message}}</span>
+                      <span
+                        :title="'Current Average: ' + wordCountByType('slide_text').avg">({{wordCount(course2.modules[index_module].topics[index_topic].slide_text)}}
                         words)</span></small></label>
                   <textarea :id="'topic_slide_text'+index_module+index_topic" name="topic_slide_text" cols="40" rows="3"
                     aria-describedby="topic_slide_textHelpBlock" class="form-control"
@@ -339,9 +342,10 @@
                   <label :for="'topic_participant_notes'+index_module+index_topic"
                     class="d-flex justify-content-between align-items-center">
                     Topic Participant Notes
-                    <small><span>{{validateText(course2.modules[index_module].topics[index_topic].participant_notes,course2.desiredPGWords).message}}</span>
-                      <span data-toggle="modal" data-target="#settingsModal"
-                        title="Select to update min and max word counts">({{wordCount(course2.modules[index_module].topics[index_topic].participant_notes)}}
+                    <small><span data-toggle="modal" data-target="#settingsModal"
+                        title="Select to update min and max word counts">{{validateText(course2.modules[index_module].topics[index_topic].participant_notes,course2.desiredPGWords).message}}</span>
+                      <span
+                        :title="'Current Average: ' + wordCountByType('participant_notes').avg">({{wordCount(course2.modules[index_module].topics[index_topic].participant_notes)}}
                         words)</span></small></label>
                   <textarea :id="'topic_participant_notes'+index_module+index_topic" name="topic_participant_notes"
                     cols="40" rows="4" aria-describedby="topic_participant_notesHelpBlock" class="form-control"
@@ -352,9 +356,10 @@
                   <label :for="'topic_instructor_notes'+index_module+index_topic"
                     class="d-flex justify-content-between align-items-center">
                     Topic Instructor Notes
-                    <small><span>{{validateText(course2.modules[index_module].topics[index_topic].instructor_notes,course2.desiredIGWords).message}}</span>
-                      <span data-toggle="modal" data-target="#settingsModal"
-                        title="Select to update min and max word counts">({{wordCount(course2.modules[index_module].topics[index_topic].instructor_notes)}}
+                    <small><span data-toggle="modal" data-target="#settingsModal"
+                        title="Select to update min and max word counts">{{validateText(course2.modules[index_module].topics[index_topic].instructor_notes,course2.desiredIGWords).message}}</span>
+                      <span
+                        :title="'Current Average: ' + wordCountByType('instructor_notes').avg">({{wordCount(course2.modules[index_module].topics[index_topic].instructor_notes)}}
                         words)</span></small></label>
                   <textarea :id="'topic_instructor_notes'+index_module+index_topic" name="topic_instructor_notes"
                     cols="40" rows="2" aria-describedby="topic_instructor_notesHelpBlock" class="form-control"
@@ -446,9 +451,9 @@
           <div class="modal-body">
             <p>Copy the text below to backup all information on this page. Paste into the box to load
               previously copied material.</p>
-              <div class="text-center">
-            <textarea name="" id="" cols="60" rows="20" v-model="courseBackupString"></textarea>
-          </div>
+            <div class="text-center">
+              <textarea name="" id="" cols="60" rows="20" v-model="courseBackupString"></textarea>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -470,46 +475,53 @@
             </button>
           </div>
           <div class="modal-body">
+            <h1>Word Counts</h1>
+            <h2>Slide Text</h2>
+            <p>Average: {{wordCountByType('slide_text').avg}} | SD: {{wordCountByType('slide_text').sd}}</p>
             <div class="row">
               <div class="form-group col">
-                <label for="slide_text_min_words">Slide Text Minimum Words</label>
+                <label for="slide_text_min_words">Slide Text Minimum Words </label>
                 <input v-model="course2.desiredSlideWords.min" id="slide_text_min_words" name="slide_text_min_words"
-                  type="text" class="form-control">
+                  type="number" step="1" class="form-control">
               </div>
               <div class="form-group col">
                 <label for="slide_text_max_words">Slide Text Maximum Words</label>
                 <input v-model="course2.desiredSlideWords.max" id="slide_text_max_words" name="slide_text_max_words"
-                  type="text" class="form-control">
+                  type="number" step="1" class="form-control">
               </div>
             </div>
+            <h2>Participant Notes</h2>
+            <p>Average: {{wordCountByType('participant_notes').avg}} | SD: {{wordCountByType('participant_notes').sd}}
+            </p>
             <div class="row">
               <div class="form-group col">
                 <label for="participant_notes_min_words">Participant Notes Minimum Words</label>
                 <input v-model="course2.desiredPGWords.min" id="participant_notes_min_words"
-                  name="participant_notes_min_words" type="text" class="form-control">
+                  name="participant_notes_min_words" type="number" step="1" class="form-control">
               </div>
               <div class="form-group col">
                 <label for="participant_notes_max_words">Participant Notes Maximum Words</label>
                 <input v-model="course2.desiredPGWords.max" id="participant_notes_max_words"
-                  name="participant_notes_max_words" type="text" class="form-control">
+                  name="participant_notes_max_words" type="number" step="1" class="form-control">
               </div>
             </div>
+            <h2>Instructor Notes</h2>
+            <p>Average: {{wordCountByType('instructor_notes').avg}} | SD: {{wordCountByType('instructor_notes').sd}}</p>
             <div class="row">
               <div class="form-group col">
                 <label for="instructor_notes_min_words">Instructor Notes Minimum Words</label>
                 <input v-model="course2.desiredIGWords.min" id="instructor_notes_min_words"
-                  name="instructor_notes_min_words" type="text" class="form-control">
+                  name="instructor_notes_min_words" type="number" step="1" class="form-control">
               </div>
               <div class="form-group col">
                 <label for="instructor_notes_max_words">Instructor Notes Maximum Words</label>
                 <input v-model="course2.desiredIGWords.max" id="instructor_notes_max_words"
-                  name="instructor_notes_max_words" type="text" class="form-control">
+                  name="instructor_notes_max_words" type="number" step="1" class="form-control">
               </div>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <!-- <button type="button" class="btn btn-primary" v-on:click="saveLoad('load')">Load</button> -->
           </div>
         </div>
       </div>
@@ -656,16 +668,16 @@
     duration: '',
     modules: [],
     desiredSlideWords: {
-      min: 2,
-      max: 10
+      min: 3,
+      max: 20
     },
     desiredPGWords: {
-      min: 3,
-      max: 15
+      min: 5,
+      max: 50
     },
     desiredIGWords: {
-      min: 4,
-      max: 8
+      min: 3,
+      max: 15
     },
     objectives: [],
     flaggedValues: 'TODO' // No action required but is a flagged value
@@ -673,7 +685,6 @@
   var app = new Vue({
     el: '#app',
     data: {
-      // screenheight: window.screen.availHeight-170,
       course2: {},
       addModulesText: '',
       addObjectivesText: '',
@@ -689,7 +700,6 @@
         title: '',
         body: ''
       }
-      // topicTextToAdd: '',
     },
     computed: {
       objectivesUsage: function () {
@@ -714,8 +724,16 @@
       }
     },
     created: function () {
+      console.log("Vue Created")
       this.course2 = JSON.parse(JSON.stringify(courseStarter))
       this.saveBeforeLeaving()
+    },
+    updated: function () {
+      console.log("Vue Updated") //TODO detect that things have been changed
+    },
+    mounted: function () {
+      console.log("Vue Mounted")
+
     },
     methods: {
       showToast: function (title, body, small) {
@@ -731,12 +749,12 @@
             .getMinutes(),
             ':', d.getSeconds()
           ]
-          if (this.course2.modules[0] || this.course2.objectives[
-              0]) { //autosave if there are some modules or objectives
+          if ((this.course2.modules[0] || this.course2.objectives[
+            0])) { //autosave if there are some modules or objectives
             if (this.course2.title != '') {
-              this.saveToBrowser('autosave_' + theDate.join('') + '_' + this.course2.title)
+              this.saveToBrowser(this.course2.title + '_autosave_' + theDate.join(''))
             } else {
-              this.saveToBrowser(theDate.join('') + '_autoSave')
+              this.saveToBrowser('_' + theDate.join('') + '_autoSave')
             }
           }
         }, false)
@@ -748,9 +766,10 @@
         let tempModuleList = this.addModulesText.split(/\r|\n/)
         this.addModulesText = ""
         tempModuleList.forEach((module_title, index_module) => {
-          if (module_title != '') {
+          module_title = this.validateAllCaps(module_title)
+          if (module_title != '' && module_title != null) {
             modulesAdded += 1
-            tempModuleObj.title = module_title
+            tempModuleObj.title = module_title.trim()
             this.course2.modules.push(JSON.parse(JSON.stringify(tempModuleObj)))
           }
         });
@@ -762,23 +781,36 @@
         let tempTopicList = this.course2.modules[moduleNum].topicTextToAdd.split(/\r|\n/)
         this.course2.modules[moduleNum].topicTextToAdd = ""
         tempTopicList.forEach((topic_title, index_topic) => {
-          if (topic_title != '') {
+          topic_title = this.validateAllCaps(topic_title)
+          if (topic_title != '' && topic_title != null) {
             topicsAdded += 1
-            tempTopicObj.title = topic_title
+            tempTopicObj.title = topic_title.trim()
             this.course2.modules[moduleNum].topics.push(JSON.parse(JSON.stringify(tempTopicObj)))
           }
         });
         $('#add_topics_form' + moduleNum).collapse('hide')
         this.showToast('Topics Created', topicsAdded + ' topic(s) have been created.', '')
       },
+      validateAllCaps: function (text) {
+        if (text.match(/[A-Z]{2,}/g)) {
+          text = prompt("You have entered multiple capital letters in a row, was this intentional?", text);
+        }
+        return text
+      },
       createObjectives: function () {
         let objectivesAdded = 0
         let tempObjectivesList = this.addObjectivesText.split(/\r|\n/)
         tempObjectivesList.forEach((objective_text, index_objective) => {
-          if (objective_text != '') {
+
+          // if(objective_text.match(/[A-Z]{2,}/g)){
+          //   objective_text = prompt("You have entered multiple capital letters in a row, was this intentional?", objective_text);
+          // }
+          objective_text = this.validateAllCaps(objective_text)
+
+          if (objective_text != '' && objective_text != null) {
             objectivesAdded += 1
             this.course2.objectives.push({
-              'objective_text': objective_text
+              'objective_text': objective_text.trim()
             })
           }
         });
@@ -787,7 +819,11 @@
       },
       updateObjective: function (index_objective) {
         this.modal.title = "Update Objective"
-        this.modal.body = 'Used in the following topics <br>' + this.objectivesUsage.topicsUsed[index_objective]
+        if (this.objectivesUsage.topicsUsed[index_objective]) {
+          this.modal.body = 'Used in the following topics <br>' + this.objectivesUsage.topicsUsed[index_objective]
+        } else {
+          this.modal.body = 'Used in the following topics <br>None'
+        }
         this.currentObjective = index_objective
         $('#objectivesModal').modal('toggle')
       },
@@ -810,6 +846,7 @@
         let element = this.course2.modules[moduleNum];
         this.course2.modules.splice(moduleNum, 1);
         this.course2.modules.splice(moduleNum + direction, 0, element); // direction -1 moves up
+        this.showToast('Module Updated', '1 Module has been moved.', '')
       },
       deleteModule: function (moduleNum) {
         if (confirm("Are you sure you want to delete this module and all it's topics?") ==
@@ -868,6 +905,7 @@
           reader.onload = (e) => {
             var contents = e.target.result;
             this.course2 = JSON.parse(contents);
+            this.showToast('File', 'File Loaded.', '')
           };
           reader.readAsText(file);
         })
@@ -891,6 +929,7 @@
           if (localStorage[storageName]) { // user has been here before
             if (confirm("This will clear any current course data and load the course you selected.") == true) {
               this.course2 = JSON.parse(localStorage[storageName])
+              this.showToast('File', 'File Loaded.', '')
             }
           }
         } else {
@@ -919,7 +958,7 @@
         for (var i = 0; i < localStorage.length; i++) {
           browserCourses.push(localStorage.key(i))
         }
-        this.localStorage = browserCourses
+        this.localStorage = browserCourses.sort()
       },
       resetApp: function () {
         if (confirm("This will clear any current course data and reset the app.") == true) {
@@ -931,12 +970,49 @@
         if (confirm("This will clear any current course data and load the example course.") ==
           true) {
           this.course2 = JSON.parse(JSON.stringify(exampleCourse));
-          this.showToast('Example Loaded', 'Example course has been loaded.', '')
         }
       },
       wordCount: function (textString) {
         var wom = textString.match(/\S+/g);
         return wom ? wom.length : 0
+      },
+      wordCountByType: function (key) {
+        let data = []
+        let currentCount = 0
+        let stats = {}
+        let avg = 0
+        let sd = 0
+
+        let getMean = function (data) {
+          return data.reduce(function (a, b) {
+            return Number(a) + Number(b);
+          }, 0) / data.length;
+        };
+
+        let getSD = function (data) {
+          let m = getMean(data);
+          return Math.sqrt(data.reduce(function (sq, n) {
+            return sq + Math.pow(n - m, 2);
+          }, 0) / (data.length - 1));
+        };
+
+        this.course2.modules.forEach((module, index_module) => {
+          module.topics.forEach((topic, index_topic) => {
+            if (key in topic) {
+              currentCount = this.wordCount(topic[key])
+              data.push(currentCount)
+            }
+          })
+        })
+        avg = getMean(data).toFixed(1)
+        stats.avg = isNaN(avg) ? 0 : avg
+
+        sd = getSD(data).toFixed(1)
+        stats.sd = isNaN(sd) ? 0 : sd
+
+        return stats
+
+
       },
       exportPPTOutline: function () {
         this.modal.title = 'PowerPoint Outline'
@@ -1008,6 +1084,11 @@
         let csvText = 'Course Title,'
         let objectiveText = ''
         let moduleObjectives = []
+        let courseObjectives = []
+
+        this.course2.objectives.forEach((objective, index_objective) => {
+          courseObjectives.push(objective.objective_text)
+        })
 
         csvText += this.course2.title
         csvText += '\n'
@@ -1016,6 +1097,9 @@
         csvText += '\n'
         csvText += 'Duration,'
         csvText += this.course2.duration + ' days'
+        csvText += '\n'
+        csvText += 'Course Objectives,'
+        csvText += (encodeURIComponent(courseObjectives.join('\n'))).replace(/%20/gi, ' ')
         csvText += '\n'
         csvText +=
           'Note: Columns containing "%0A" characters represent new lines, "%2C" for commas, and "%2F" for "/". Find and replace to fix'
@@ -1027,8 +1111,8 @@
           this.getObjectivesByModule(index_module).forEach((objective, index_objective) => {
             moduleObjectives.push((objective + 1) + '. ' + this.course2.objectives[objective]
               .objective_text)
-            moduleObjectives.push((objective + 1) + '. ' + this.course2.objectives[objective]
-              .objective_text)
+            // moduleObjectives.push((objective + 1) + '. ' + this.course2.objectives[objective]
+            //   .objective_text)
           })
           module.topics.forEach((topic, index_module) => {
             csvText += '\n'
@@ -1067,6 +1151,7 @@
         let filename = (this.course2.title == '') ? 'BluePrinterApp' : this.course2.title
         filename += theDate.join('') + ".csv";
         download(filename, csvText);
+        this.showToast('File Saved', 'File has been saved, please check your downloads folder.', '')
       },
       exportAgenda: function () {
         this.modal.title = "Agenda"
@@ -1156,8 +1241,8 @@
       topicTextToAdd: ''
     }],
     desiredSlideWords: {
-      min: 3,
-      max: 12
+      min: 4,
+      max: 20
     },
     desiredPGWords: {
       min: 10,
@@ -1175,7 +1260,7 @@
 
 
   var exampleCourse = {
-    "title": "Need for Safety",
+    "title": "Need for Safety2",
     "client": "DAW",
     "duration": "4",
     "modules": [{
@@ -1780,5 +1865,4 @@
   integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
   integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
 </html>
