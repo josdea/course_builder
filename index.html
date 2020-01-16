@@ -395,6 +395,8 @@
                   <textarea v-model="course2.modules[index_module].topics[index_topic].media.details"
                     :id="'media_details'+index_module+index_topic" name="media_details" cols="40" rows="2"
                     class="form-control"></textarea>
+                    <input type="file" :ref="'myFiles' + index_module+index_topic" :name="index_module + '-' + index_topic" accept="image/*" @change="onFileChange(index_module,index_topic)">
+                    <p v-if="'fileName' in course2.modules[index_module].topics[index_topic].media">File Name: {{course2.modules[index_module].topics[index_topic].media.fileName}}</p>
                 </div>
                 <div class="form-group">
                   <div>
@@ -736,6 +738,13 @@
 
     },
     methods: {
+      onFileChange: function (index_module, index_topic){
+        // debugger;
+      let inputFile = this.$refs['myFiles'+index_module+index_topic][0].files[0].name
+
+        this.course2.modules[index_module].topics[index_topic].media.fileName = inputFile
+
+    },
       showToast: function (title, body, small) {
         this.toast.title = title
         this.toast.body = body
@@ -1085,6 +1094,7 @@
         let objectiveText = ''
         let moduleObjectives = []
         let courseObjectives = []
+        let fileName = ''
 
         this.course2.objectives.forEach((objective, index_objective) => {
           courseObjectives.push(objective.objective_text)
@@ -1102,11 +1112,10 @@
         csvText += (encodeURIComponent(courseObjectives.join('\n'))).replace(/%20/gi, ' ')
         csvText += '\n'
         csvText +=
-          'Note: Columns containing "%0A" characters represent new lines, "%2C" for commas, and "%2F" for "/". Find and replace to fix'
-        csvText += '\n'
+          'Note: Columns containing "%0A" characters represent new lines, "%2C" for commas, "%3A" for colons, "%3B" for semicolons, and "%2F" for "/". Find and replace to fix'
         csvText += '\n'
         csvText +=
-          'Module,Module Subtitle,Description,Module Instructor,Module Duration(minutes),Topic Title,Objective,Slide Text,PG Notes,IG Notes,Has Exercise,Exercise Title,Exercise Description,Media Required,Media Details,Module Objectives'
+          'Module,Module Subtitle,Description,Module Instructor,Module Duration(minutes),Topic Title,Objective,Slide Text,PG Notes,IG Notes,Has Exercise,Exercise Title,Exercise Description,Media Required,Media Details,Module Objectives, File Name'
         this.course2.modules.forEach((module, index_module) => {
           this.getObjectivesByModule(index_module).forEach((objective, index_objective) => {
             moduleObjectives.push((objective + 1) + '. ' + this.course2.objectives[objective]
@@ -1121,23 +1130,29 @@
             } else {
               objectiveText = this.course2.objectives[topic.id_objective].objective_text
             }
+            if ('fileName' in topic.media){
+              fileName = topic.media.fileName
+            }else{
+              fileName = ''
+            }
             rowArr.push(
-              module.title.trim(),
-              module.subtitle.trim(),
+              encodeURIComponent(module.title.trim()).replace(/%20/gi, ' ').trim(),
+              encodeURIComponent(module.subtitle.trim()).replace(/%20/gi, ' ').trim(),
               (encodeURIComponent(module.description)).replace(/%20/gi, ' ').trim(),
-              module.instructor.trim(),
-              module.duration.trim(),
-              topic.title.trim(),
-              objectiveText.trim(),
+              encodeURIComponent(module.instructor.trim()).replace(/%20/gi, ' ').trim(),
+              encodeURIComponent(module.duration.trim()).replace(/%20/gi, ' ').trim(),
+              encodeURIComponent(topic.title.trim()).replace(/%20/gi, ' ').trim(),
+              encodeURIComponent(objectiveText.trim()).replace(/%20/gi, ' ').trim(),
               (encodeURIComponent(topic.slide_text)).replace(/%20/gi, ' ').trim(),
               (encodeURIComponent(topic.participant_notes)).replace(/%20/gi, ' ').trim(),
               (encodeURIComponent(topic.instructor_notes)).replace(/%20/gi, ' ').trim(),
               topic.exercise.has_exercise,
-              topic.exercise.title.trim(),
+              encodeURIComponent(topic.exercise.title.trim()).replace(/%20/gi, ' ').trim(),
               (encodeURIComponent(topic.exercise.description)).replace(/%20/gi, ' ').trim(),
               topic.media.required.join(' / ').trim(),
-              topic.media.details.trim(),
-              (encodeURIComponent(moduleObjectives.join('\n'))).replace(/%20/gi, ' ').trim()
+              encodeURIComponent(topic.media.details.trim()).replace(/%20/gi, ' ').trim(),
+              (encodeURIComponent(moduleObjectives.join('\n'))).replace(/%20/gi, ' ').trim(),
+              fileName
             )
             csvText += rowArr.join(',')
             rowArr = []
@@ -1260,7 +1275,7 @@
 
 
   var exampleCourse = {
-    "title": "Need for Safety2",
+    "title": "Need for Safety",
     "client": "DAW",
     "duration": "4",
     "modules": [{
