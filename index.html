@@ -13,15 +13,15 @@
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <style>
     h2 {
-      font-size: 1.4rem
+      font-size: 1.3rem
     }
-
+    
     h3 {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
     }
 
     h4 {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
 
     .form-group,
@@ -40,6 +40,15 @@
     #file-input {
       opacity: 0;
     }
+    i{
+      margin-right: 3px;
+    }
+    .module_form {
+    line-height: 2px;
+}
+.topicslist{
+  padding-bottom:1rem;
+}
   </style>
 </head>
 
@@ -185,14 +194,15 @@
               Titles (each on a new line) <button v-if="addModulesText !=''" v-on:click="addModules"
                 class="btn btn-success btn-sm" role="button" href="#add_modules_form">Add</button></label>
             <textarea v-on:keyup.enter="addModules" v-model="addModulesText" id="module_titles" name="module_titles"
-              cols="40" rows="2" class="form-control"></textarea>
+              cols="40" rows="1" class="form-control"></textarea>
           </div>
           <!-- end of add modules form -->
           <div class="list-group">
-            <a v-for="(module, index_module) in course2.modules" :href="'#module'+index_module"
+            <a v-for="(module, index_module) in course2.modules" :href="'#module'+(index_module+1)"
               class="list-group-item d-flex justify-content-between align-items-center" title="Scroll to this module">
               {{index_module+1}}. {{module.title}}
               <span class="badge badge-primary badge-pill"
+              :class="{'badge-warning ':(module.topics.length == 0)}"
                 title="contains this many topics">{{module.topics.length}}</span>
             </a>
           </div>
@@ -212,7 +222,8 @@
           <!-- end of add objectives form -->
           <div class="list-group">
             <a v-for="(objective, index_objective) in course2.objectives" v-on:click="updateObjective(index_objective)"
-              href="#" class="list-group-item d-flex justify-content-between align-items-center">
+              href="#" class="list-group-item d-flex justify-content-between align-items-center"
+              :class="{'bg-warning text-white':(!validateFlaggedValues(objective.objective_text).valid)}">
               {{index_objective+1}}. {{objective.objective_text}}
               <span class="badge badge-primary badge-pill"
                 title="Used in this many topics">{{objectivesUsage.usage[index_objective]}}</span>
@@ -224,16 +235,13 @@
         </div>
         <div id="middle-col" class="col-sm-12 col-md-6 col-lg-4 col-xl-3 collapse show">
           <div v-for="(module, index_module) in course2.modules" class="module_form">
-            <h3 :id="'module'+index_module" class="d-flex justify-content-between align-items-center">
+            <h3 :id="'module'+(index_module+1)" class="d-flex justify-content-between align-items-center">
               <a data-toggle="collapse" :href="'#module_details_form'+index_module" role="button" aria-expanded="true"
-                :aria-controls="'module_details_form'+index_module" title="Toggle Module Collapse">Module
-                {{index_module+1}}
-              </a>
+                :aria-controls="'module_details_form'+index_module" :title="module.title">{{index_module+1}}. {{module.title.substring(0,20) + '...'}}</a>
+                <!-- <small :title="module.title">{{module.title.substring(0,20) + '...'}}</small> -->
               <div class="module_actions">
                 <small>
-                  <i v-on:click="deleteModule(index_module)" class="fa fa-trash"></i>
-                  <i v-if="index_module != 0" v-on:click="moveModule(index_module, -1)" class="fa fa-arrow-up"></i>
-                  <i v-if="index_module != course2.modules.length-1" v-on:click="moveModule(index_module, 1)"
+                  <i v-on:click="deleteModule(index_module)" class="fa fa-trash"></i><i v-if="index_module != 0" v-on:click="moveModule(index_module, -1)" class="fa fa-arrow-up"></i><i v-if="index_module != course2.modules.length-1" v-on:click="moveModule(index_module, 1)"
                     class="fa fa-arrow-down"></i>
                 </small>
               </div>
@@ -260,9 +268,12 @@
                   </div>
                 </div>
               </div>
-              <div class="form-group">
-                <label :for="'module_description'+index_module">Module Description</label> <br>
-                <textarea :id="'module_description'+index_module" name="module_description" cols="40" rows="1"
+              <div class="form-group"
+              :class="{'bg-warning text-white':(!validateFlaggedValues(module.description).valid)}">
+                <label :for="'module_description'+index_module" class="d-flex justify-content-between align-items-center">Module Description<small><span>{{validateFlaggedValues(module.description).message}}</span>
+                </small>
+                </label> 
+                <textarea :id="'module_description'+index_module" name="module_description" cols="40" rows="2"
                   class="form-control" v-model="module.description"></textarea>
               </div>
               <!-- Topics List -->
@@ -279,19 +290,17 @@
                     v-on:click="addTopics(index_module)" class="btn btn-success btn-sm"
                     role="button">Add</button></label>
                 <textarea v-model="module.topicTextToAdd" :id="'topic_text'+index_module" name="objective_text"
-                  cols="40" rows="2" class="form-control"></textarea>
+                  cols="40" rows="5" class="form-control"></textarea>
               </div>
               <!-- end of add topics form -->
-              <ul class="list-group">
+              <ul class="list-group topicslist">
                 <li v-for="(topic, index_topic) in module.topics"
                   class="list-group-item d-flex justify-content-between align-items-center">
-                  <a :href="'#m'+index_module+'t'+index_topic" title="Scroll to this topic">{{topic.title}}</a>
+                  <a :href="'#m'+(index_module+1)+'t'+(index_topic+1)" title="Scroll to this topic">{{topic.title}}</a>
                   <div class="module_actions">
                     <small>
-                      <i v-on:click="deleteTopic(index_module,index_topic)" class="fa fa-trash"></i>
-                      <i v-if="index_topic != 0" v-on:click="moveTopic(index_module, index_topic, -1)"
-                        class="fa fa-arrow-up"></i>
-                      <i v-if="index_topic != course2.modules[index_module].topics.length-1"
+                      <i v-on:click="deleteTopic(index_module,index_topic)" class="fa fa-trash"></i><i v-if="index_topic != 0" v-on:click="moveTopic(index_module, index_topic, -1)"
+                        class="fa fa-arrow-up"></i><i v-if="index_topic != course2.modules[index_module].topics.length-1"
                         v-on:click="moveTopic(index_module, index_topic, 1)" class="fa fa-arrow-down"></i>
                     </small>
                   </div>
@@ -305,9 +314,9 @@
         <div id="third-col" class="col-sm-12 col-md-12 col-lg col-xl">
           <div v-for="(module, index_module) in course2.modules">
             <div v-if="module.topics.length>0" :id="'module_details_form'+index_module" class="collapse show">
-              <h2> Module {{index_module+1}} - {{module.title}}</h2>
+              <h2>Module {{index_module+1}} - {{module.title}}</h2>
               <div v-for="(topic, index_topic) in module.topics">
-                <h3 :id="'m'+index_module+'t'+index_topic">Topic {{index_module+1}}.{{index_topic + 1}}</h3>
+                <h3 :id="'m'+(index_module+1)+'t'+(index_topic+1)">Topic {{index_module+1}}.{{index_topic + 1}}</h3>
                 <div class="form-group" :class="{'bg-danger text-white':(topic.title == '')}">
                   <input :id="'topic_title'+index_module+index_topic" name="topic_title" placeholder="Topic Title"
                     type="text" class="form-control" v-model="topic.title">
@@ -348,7 +357,7 @@
                         :title="'Current Average: ' + wordCountByType('participant_notes').avg">({{wordCount(course2.modules[index_module].topics[index_topic].participant_notes)}}
                         words)</span></small></label>
                   <textarea :id="'topic_participant_notes'+index_module+index_topic" name="topic_participant_notes"
-                    cols="40" rows="4" aria-describedby="topic_participant_notesHelpBlock" class="form-control"
+                    cols="40" rows="6" aria-describedby="topic_participant_notesHelpBlock" class="form-control"
                     v-model="course2.modules[index_module].topics[index_topic].participant_notes"></textarea>
                 </div>
                 <div class="form-group"
@@ -479,7 +488,7 @@
           <div class="modal-body">
             <h1>Word Counts</h1>
             <h2>Slide Text</h2>
-            <p>Average: {{wordCountByType('slide_text').avg}} | SD: {{wordCountByType('slide_text').sd}}</p>
+            <p>Average: {{wordCountByType('slide_text').avg}} | SD: {{wordCountByType('slide_text').sd}} | Min: {{wordCountByType('slide_text').min}} | Max: {{wordCountByType('slide_text').max}}</p>
             <div class="row">
               <div class="form-group col">
                 <label for="slide_text_min_words">Slide Text Minimum Words </label>
@@ -493,7 +502,7 @@
               </div>
             </div>
             <h2>Participant Notes</h2>
-            <p>Average: {{wordCountByType('participant_notes').avg}} | SD: {{wordCountByType('participant_notes').sd}}
+            <p>Average: {{wordCountByType('participant_notes').avg}} | SD: {{wordCountByType('participant_notes').sd}}  | Min: {{wordCountByType('participant_notes').min}} | Max: {{wordCountByType('participant_notes').max}}
             </p>
             <div class="row">
               <div class="form-group col">
@@ -508,7 +517,7 @@
               </div>
             </div>
             <h2>Instructor Notes</h2>
-            <p>Average: {{wordCountByType('instructor_notes').avg}} | SD: {{wordCountByType('instructor_notes').sd}}</p>
+            <p>Average: {{wordCountByType('instructor_notes').avg}} | SD: {{wordCountByType('instructor_notes').sd}}  | Min: {{wordCountByType('instructor_notes').min}} | Max: {{wordCountByType('instructor_notes').max}}</p>
             <div class="row">
               <div class="form-group col">
                 <label for="instructor_notes_min_words">Instructor Notes Minimum Words</label>
@@ -564,10 +573,18 @@
             </button>
           </div>
           <div class="modal-body">
-            <div v-if="course2.objectives[currentObjective]" class="form-group">
-              <label for="objective_editor">Objective Text</label>
-              <input id="objective_editor" name="objective" placeholder="Objective Text" type="text"
-                class="form-control" v-model="course2.objectives[currentObjective].objective_text">
+            <div v-if="course2.objectives[currentObjective]" class="form-group"
+            :class="{'bg-warning text-white':(!validateFlaggedValues(course2.objectives[currentObjective].objective_text).valid)}">
+              <label for="objective_editor" class="d-flex justify-content-between align-items-center">Objective Text
+                <small><span>{{validateFlaggedValues(course2.objectives[currentObjective].objective_text).message}}</span>
+                </small>
+
+              </label>
+              <textarea name="objective_editor" id="objective_editor" cols="60" rows="4" 
+              v-model="course2.objectives[currentObjective].objective_text" 
+              class="form-control"></textarea>
+              <!-- <input id="objective_editor" name="objective" placeholder="Objective Text" type="text"
+                class="form-control" v-model="course2.objectives[currentObjective].objective_text"> -->
 
               <small v-if="objectivesUsage[currentObjective] > 0"><br>Deleting will reset the objective for the
                 ({{objectivesUsage[currentObjective]}}) topics that reference it.</small>
@@ -682,7 +699,7 @@
       max: 15
     },
     objectives: [],
-    flaggedValues: 'TODO' // No action required but is a flagged value
+    flaggedValues: 'TODO,Understand,Learn,acknowledge,be aware of' // No action required but is a flagged value
   };
   var app = new Vue({
     el: '#app',
@@ -769,7 +786,7 @@
         }, false)
       },
       addModules: function () {
-        let tempModuleObj = JSON.parse(JSON.stringify(courseSchema.modules[0]))
+        let tempModuleObj = JSON.parse(JSON.stringify(courseSchema.modules[0])) //TODO create a class for this purpose
         tempModuleObj.topics = []
         let modulesAdded = 0
         let tempModuleList = this.addModulesText.split(/\r|\n/)
@@ -860,8 +877,10 @@
       deleteModule: function (moduleNum) {
         if (confirm("Are you sure you want to delete this module and all it's topics?") ==
           true) {
+          // $('module_details_form'+moduleNum).collapse('hide')
           this.course2.modules.splice(moduleNum, 1)
           this.showToast('Modules Deleted', '1 module has been deleted.', '')
+          
         }
       },
       moveTopic: function (moduleNum, topicNum, direction) {
@@ -991,6 +1010,8 @@
         let stats = {}
         let avg = 0
         let sd = 0
+        let max = -1
+        let min = -1
 
         let getMean = function (data) {
           return data.reduce(function (a, b) {
@@ -1013,6 +1034,14 @@
             }
           })
         })
+        
+        data.sort((a, b) => a - b);
+        min = data[0]
+        stats.min = min
+        
+        max = data[data.length-1]
+        stats.max = max
+
         avg = getMean(data).toFixed(1)
         stats.avg = isNaN(avg) ? 0 : avg
 
@@ -1096,6 +1125,29 @@
         let courseObjectives = []
         let fileName = ''
 
+        let cleanup = function(item){
+          item = item.trim()
+          // item = encodeURIComponent(item)
+          // item = item.replace(/%20/gi, ' ')
+          // item = item.replace(/%C2%A0/gi, ' ') //non breaking space
+          // item = item.replace(/%3A/gi, ':')
+          // item = item.replace(/%3B/gi, ';')
+          // item = item.replace(/%2F/gi, '/')
+          // item = item.replace(/%3F/gi, '?')
+          // item = item.replace(/%3D/gi, '=')
+          // item = item.replace(/%24/gi, '?')
+          item = item.replace(/[^\x20-\x7E]/g, '')
+          item = item.replace(/‐/gi, '-')
+          item = item.replace(/,/gi, '%2C')
+          // item = item.replace(/Â/gi, '')
+          item = item.replace(/\n/gi, '%0A')
+          item = item.replace(/[\u2018\u2019]/g, "'") //TODO does this work
+          item = item.replace(/[\u201C\u201D]/g, '"')
+
+
+          return item
+        }
+
         this.course2.objectives.forEach((objective, index_objective) => {
           courseObjectives.push(objective.objective_text)
         })
@@ -1109,7 +1161,7 @@
         csvText += this.course2.duration + ' days'
         csvText += '\n'
         csvText += 'Course Objectives,'
-        csvText += (encodeURIComponent(courseObjectives.join('\n'))).replace(/%20/gi, ' ')
+        csvText += cleanup(courseObjectives.join('\n'))
         csvText += '\n'
         csvText +=
           'Note: Columns containing "%0A" characters represent new lines, "%2C" for commas, "%3A" for colons, "%3B" for semicolons, and "%2F" for "/". Find and replace to fix'
@@ -1128,7 +1180,7 @@
             if (topic.id_objective == -1) {
               objectiveText = ''
             } else {
-              objectiveText = this.course2.objectives[topic.id_objective].objective_text
+              objectiveText = (topic.id_objective + 1) + ". " + this.course2.objectives[topic.id_objective].objective_text
             }
             if ('fileName' in topic.media){
               fileName = topic.media.fileName
@@ -1136,22 +1188,22 @@
               fileName = ''
             }
             rowArr.push(
-              encodeURIComponent(module.title.trim()).replace(/%20/gi, ' ').trim(),
-              encodeURIComponent(module.subtitle.trim()).replace(/%20/gi, ' ').trim(),
-              (encodeURIComponent(module.description)).replace(/%20/gi, ' ').trim(),
-              encodeURIComponent(module.instructor.trim()).replace(/%20/gi, ' ').trim(),
-              encodeURIComponent(module.duration.trim()).replace(/%20/gi, ' ').trim(),
-              encodeURIComponent(topic.title.trim()).replace(/%20/gi, ' ').trim(),
-              encodeURIComponent(objectiveText.trim()).replace(/%20/gi, ' ').trim(),
-              (encodeURIComponent(topic.slide_text)).replace(/%20/gi, ' ').trim(),
-              (encodeURIComponent(topic.participant_notes)).replace(/%20/gi, ' ').trim(),
-              (encodeURIComponent(topic.instructor_notes)).replace(/%20/gi, ' ').trim(),
+              cleanup(module.title),
+              cleanup(module.subtitle),
+              cleanup(module.description),
+              cleanup(module.instructor),
+              cleanup(module.duration),
+              cleanup(topic.title),
+              cleanup(objectiveText),
+              cleanup(topic.slide_text),
+              cleanup(topic.participant_notes),
+              cleanup(topic.instructor_notes),
               topic.exercise.has_exercise,
-              encodeURIComponent(topic.exercise.title.trim()).replace(/%20/gi, ' ').trim(),
-              (encodeURIComponent(topic.exercise.description)).replace(/%20/gi, ' ').trim(),
+              cleanup(topic.exercise.title),
+              cleanup(topic.exercise.description),
               topic.media.required.join(' / ').trim(),
-              encodeURIComponent(topic.media.details.trim()).replace(/%20/gi, ' ').trim(),
-              (encodeURIComponent(moduleObjectives.join('\n'))).replace(/%20/gi, ' ').trim(),
+              cleanup(topic.media.details),
+              cleanup(moduleObjectives.join('\n')),
               fileName
             )
             csvText += rowArr.join(',')
@@ -1166,7 +1218,7 @@
         let filename = (this.course2.title == '') ? 'BluePrinterApp' : this.course2.title
         filename += theDate.join('') + ".csv";
         download(filename, csvText);
-        this.showToast('File Saved', 'File has been saved, please check your downloads folder.', '')
+        this.showToast('File Saved', 'File has been saved, please check your downloads folder. Modules with zero topics were skipped', '')
       },
       exportAgenda: function () {
         this.modal.title = "Agenda"
@@ -1201,7 +1253,28 @@
           message += ' Contains extra spacing'
         }
         this.course2.flaggedValues.split(/,/).forEach((item, index_index) => {
-          if (val.match(new RegExp(item, 'im')) && item != '') {
+          if (val.match(new RegExp(item.trim(), 'im')) && item != '') {
+            valid = false
+            message += ' Contains ' + item
+          }
+        });
+        return {
+          'message': message,
+          'valid': valid
+        }
+      },
+      validateFlaggedValues: function(val){
+        let valid = true;
+        let message = ''
+        var spaceReg = /[^\S\r\n]{2,}|[\n]{2,}/
+        let extraSpaces = val.search(spaceReg)
+       
+        if (extraSpaces > -1) {
+          valid = false
+          message += 'Contains extra spacing'
+        }
+        this.course2.flaggedValues.split(/,/).forEach((item, index_index) => {
+          if (val.match(new RegExp(item.trim(), 'im')) && item != '') {
             valid = false
             message += ' Contains ' + item
           }
@@ -1218,11 +1291,11 @@
       getObjectivesByModule: function (moduleNum) {
         let objectiveList = []
         this.course2.modules[moduleNum].topics.forEach(function (topic, index_topic) {
-          if (topic.id_objective != -1 && objectiveList.indexOf(topic.id_objective)) {
+          if (topic.id_objective != -1 && objectiveList.indexOf(topic.id_objective) == -1) {
             objectiveList.push(topic.id_objective)
           }
         })
-        return objectiveList
+        return objectiveList.sort((a, b) => a - b)
       }
     }
   });
