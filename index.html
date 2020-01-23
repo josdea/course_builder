@@ -11,11 +11,11 @@
   <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
     integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <style>
+  <style>
     h2 {
       font-size: 1.3rem
     }
-    
+
     h3 {
       font-size: 1.2rem;
     }
@@ -40,15 +40,18 @@
     #file-input {
       opacity: 0;
     }
-    i{
+
+    i {
       margin-right: 3px;
     }
+
     .module_form {
-    line-height: 2px;
-}
-.topicslist{
-  padding-bottom:1rem;
-}
+      line-height: 2px;
+    }
+
+    .topicslist {
+      padding-bottom: 1rem;
+    }
   </style>
 </head>
 
@@ -110,7 +113,7 @@
               <a class="dropdown-item" href="#" v-on:click="exportPPTOutline">PowerPoint Outline</a>
               <a class="dropdown-item" href="#" v-on:click="exportModuleTopicOutline">Module / Topic Outline</a>
               <a class="dropdown-item" href="#" v-on:click="exportAgenda">Agenda</a>
-              <a class="dropdown-item" href="#" v-on:click="exportCSV">to Excel File (csv)</a>
+              <a class="dropdown-item" href="#" v-on:click="exportCSV2">to Excel File (csv)</a>
               <a class="dropdown-item" href="#" v-on:click="exportObjectivesReport">Objectives Report</a>
               <a class="dropdown-item" href="#">Analysis Document (coming later)</a>
               <a class="dropdown-item" href="#">Design Document (coming later)</a>
@@ -201,8 +204,7 @@
             <a v-for="(module, index_module) in course2.modules" :href="'#module'+(index_module+1)"
               class="list-group-item d-flex justify-content-between align-items-center" title="Scroll to this module">
               {{index_module+1}}. {{module.title}}
-              <span class="badge badge-primary badge-pill"
-              :class="{'badge-warning ':(module.topics.length == 0)}"
+              <span class="badge badge-primary badge-pill" :class="{'badge-warning ':(module.topics.length == 0)}"
                 title="contains this many topics">{{module.topics.length}}</span>
             </a>
           </div>
@@ -237,11 +239,14 @@
           <div v-for="(module, index_module) in course2.modules" class="module_form">
             <h3 :id="'module'+(index_module+1)" class="d-flex justify-content-between align-items-center">
               <a data-toggle="collapse" :href="'#module_details_form'+index_module" role="button" aria-expanded="true"
-                :aria-controls="'module_details_form'+index_module" :title="module.title">{{index_module+1}}. {{module.title.substring(0,20) + '...'}}</a>
-                <!-- <small :title="module.title">{{module.title.substring(0,20) + '...'}}</small> -->
+                :aria-controls="'module_details_form'+index_module" :title="module.title">{{index_module+1}}.
+                {{module.title.substring(0,20) + '...'}}</a>
+              <!-- <small :title="module.title">{{module.title.substring(0,20) + '...'}}</small> -->
               <div class="module_actions">
                 <small>
-                  <i v-on:click="deleteModule(index_module)" class="fa fa-trash"></i><i v-if="index_module != 0" v-on:click="moveModule(index_module, -1)" class="fa fa-arrow-up"></i><i v-if="index_module != course2.modules.length-1" v-on:click="moveModule(index_module, 1)"
+                  <i v-on:click="deleteModule(index_module)" class="fa fa-trash"></i><i v-if="index_module != 0"
+                    v-on:click="moveModule(index_module, -1)" class="fa fa-arrow-up"></i><i
+                    v-if="index_module != course2.modules.length-1" v-on:click="moveModule(index_module, 1)"
                     class="fa fa-arrow-down"></i>
                 </small>
               </div>
@@ -269,10 +274,12 @@
                 </div>
               </div>
               <div class="form-group"
-              :class="{'bg-warning text-white':(!validateFlaggedValues(module.description).valid)}">
-                <label :for="'module_description'+index_module" class="d-flex justify-content-between align-items-center">Module Description<small><span>{{validateFlaggedValues(module.description).message}}</span>
-                </small>
-                </label> 
+                :class="{'bg-warning text-white':(!validateFlaggedValues(module.description).valid)}">
+                <label :for="'module_description'+index_module"
+                  class="d-flex justify-content-between align-items-center">Module
+                  Description<small><span>{{validateFlaggedValues(module.description).message}}</span>
+                  </small>
+                </label>
                 <textarea :id="'module_description'+index_module" name="module_description" cols="40" rows="2"
                   class="form-control" v-model="module.description"></textarea>
               </div>
@@ -299,8 +306,10 @@
                   <a :href="'#m'+(index_module+1)+'t'+(index_topic+1)" title="Scroll to this topic">{{topic.title}}</a>
                   <div class="module_actions">
                     <small>
-                      <i v-on:click="deleteTopic(index_module,index_topic)" class="fa fa-trash"></i><i v-if="index_topic != 0" v-on:click="moveTopic(index_module, index_topic, -1)"
-                        class="fa fa-arrow-up"></i><i v-if="index_topic != course2.modules[index_module].topics.length-1"
+                      <i v-on:click="deleteTopic(index_module,index_topic)" class="fa fa-trash"></i><i
+                        v-if="index_topic != 0" v-on:click="moveTopic(index_module, index_topic, -1)"
+                        class="fa fa-arrow-up"></i><i
+                        v-if="index_topic != course2.modules[index_module].topics.length-1"
                         v-on:click="moveTopic(index_module, index_topic, 1)" class="fa fa-arrow-down"></i>
                     </small>
                   </div>
@@ -397,16 +406,29 @@
                     </div>
                   </div>
                 </div>
+
                 <div v-if="course2.modules[index_module].topics[index_topic].media.required.length !=0"
                   :id="'media_details'+index_module+index_topic" class="form-group">
                   <label class="d-flex justify-content-between align-items-center"
-                    :for="'media_details'+index_module+index_topic">Media Details</label>
+                    :for="'media_details'+index_module+index_topic">Media Details (developer comments)</label>
                   <textarea v-model="course2.modules[index_module].topics[index_topic].media.details"
                     :id="'media_details'+index_module+index_topic" name="media_details" cols="40" rows="2"
                     class="form-control"></textarea>
-                    <input type="file" :ref="'myFiles' + index_module+index_topic" :name="index_module + '-' + index_topic" accept="image/*" @change="onFileChange(index_module,index_topic)">
-                    <p v-if="'fileName' in course2.modules[index_module].topics[index_topic].media">File Name: {{course2.modules[index_module].topics[index_topic].media.fileName}}</p>
+                  <input type="file" :ref="'myFiles' + index_module+index_topic"
+                    :name="index_module + '-' + index_topic" accept="image/*"
+                    @change="onFileChange(index_module,index_topic)">
+                  <p v-if="'fileName' in course2.modules[index_module].topics[index_topic].media">File Name:
+                    {{course2.modules[index_module].topics[index_topic].media.fileName}}</p>
+                  <div v-if="course2.modules[index_module].topics[index_topic].media.required.includes('graphic')"
+                    :id="'media_alttext'+index_module+index_topic">
+                    <label class="d-flex justify-content-between align-items-center"
+                      :for="'media_alttext'+index_module+index_topic">Graphic Alternate Text</label>
+                    <textarea v-model="course2.modules[index_module].topics[index_topic].media.alttext"
+                      :id="'media_alttext'+index_module+index_topic" name="media_alttext" cols="40" rows="1"
+                      class="form-control"></textarea>
+                  </div>
                 </div>
+
                 <div class="form-group">
                   <div>
                     <div class="form-check form-check-inline">
@@ -488,7 +510,8 @@
           <div class="modal-body">
             <h1>Word Counts</h1>
             <h2>Slide Text</h2>
-            <p>Average: {{wordCountByType('slide_text').avg}} | SD: {{wordCountByType('slide_text').sd}} | Min: {{wordCountByType('slide_text').min}} | Max: {{wordCountByType('slide_text').max}}</p>
+            <p>Average: {{wordCountByType('slide_text').avg}} | SD: {{wordCountByType('slide_text').sd}} | Min:
+              {{wordCountByType('slide_text').min}} | Max: {{wordCountByType('slide_text').max}}</p>
             <div class="row">
               <div class="form-group col">
                 <label for="slide_text_min_words">Slide Text Minimum Words </label>
@@ -502,7 +525,8 @@
               </div>
             </div>
             <h2>Participant Notes</h2>
-            <p>Average: {{wordCountByType('participant_notes').avg}} | SD: {{wordCountByType('participant_notes').sd}}  | Min: {{wordCountByType('participant_notes').min}} | Max: {{wordCountByType('participant_notes').max}}
+            <p>Average: {{wordCountByType('participant_notes').avg}} | SD: {{wordCountByType('participant_notes').sd}} |
+              Min: {{wordCountByType('participant_notes').min}} | Max: {{wordCountByType('participant_notes').max}}
             </p>
             <div class="row">
               <div class="form-group col">
@@ -517,7 +541,8 @@
               </div>
             </div>
             <h2>Instructor Notes</h2>
-            <p>Average: {{wordCountByType('instructor_notes').avg}} | SD: {{wordCountByType('instructor_notes').sd}}  | Min: {{wordCountByType('instructor_notes').min}} | Max: {{wordCountByType('instructor_notes').max}}</p>
+            <p>Average: {{wordCountByType('instructor_notes').avg}} | SD: {{wordCountByType('instructor_notes').sd}} |
+              Min: {{wordCountByType('instructor_notes').min}} | Max: {{wordCountByType('instructor_notes').max}}</p>
             <div class="row">
               <div class="form-group col">
                 <label for="instructor_notes_min_words">Instructor Notes Minimum Words</label>
@@ -574,15 +599,14 @@
           </div>
           <div class="modal-body">
             <div v-if="course2.objectives[currentObjective]" class="form-group"
-            :class="{'bg-warning text-white':(!validateFlaggedValues(course2.objectives[currentObjective].objective_text).valid)}">
+              :class="{'bg-warning text-white':(!validateFlaggedValues(course2.objectives[currentObjective].objective_text).valid)}">
               <label for="objective_editor" class="d-flex justify-content-between align-items-center">Objective Text
                 <small><span>{{validateFlaggedValues(course2.objectives[currentObjective].objective_text).message}}</span>
                 </small>
 
               </label>
-              <textarea name="objective_editor" id="objective_editor" cols="60" rows="4" 
-              v-model="course2.objectives[currentObjective].objective_text" 
-              class="form-control"></textarea>
+              <textarea name="objective_editor" id="objective_editor" cols="60" rows="4"
+                v-model="course2.objectives[currentObjective].objective_text" class="form-control"></textarea>
               <!-- <input id="objective_editor" name="objective" placeholder="Objective Text" type="text"
                 class="form-control" v-model="course2.objectives[currentObjective].objective_text"> -->
 
@@ -755,13 +779,9 @@
 
     },
     methods: {
-      onFileChange: function (index_module, index_topic){
-        // debugger;
-      let inputFile = this.$refs['myFiles'+index_module+index_topic][0].files[0].name
-
+      onFileChange: function (index_module, index_topic) {
         this.course2.modules[index_module].topics[index_topic].media.fileName = inputFile
-
-    },
+      },
       showToast: function (title, body, small) {
         this.toast.title = title
         this.toast.body = body
@@ -776,7 +796,7 @@
             ':', d.getSeconds()
           ]
           if ((this.course2.modules[0] || this.course2.objectives[
-            0])) { //autosave if there are some modules or objectives
+              0])) { //autosave if there are some modules or objectives
             if (this.course2.title != '') {
               this.saveToBrowser(this.course2.title + '_autosave_' + theDate.join(''))
             } else {
@@ -786,7 +806,8 @@
         }, false)
       },
       addModules: function () {
-        let tempModuleObj = JSON.parse(JSON.stringify(courseSchema.modules[0])) //TODO create a class for this purpose
+        let tempModuleObj = JSON.parse(JSON.stringify(courseSchema.modules[
+          0])) //TODO create a class for this purpose
         tempModuleObj.topics = []
         let modulesAdded = 0
         let tempModuleList = this.addModulesText.split(/\r|\n/)
@@ -828,9 +849,6 @@
         let tempObjectivesList = this.addObjectivesText.split(/\r|\n/)
         tempObjectivesList.forEach((objective_text, index_objective) => {
 
-          // if(objective_text.match(/[A-Z]{2,}/g)){
-          //   objective_text = prompt("You have entered multiple capital letters in a row, was this intentional?", objective_text);
-          // }
           objective_text = this.validateAllCaps(objective_text)
 
           if (objective_text != '' && objective_text != null) {
@@ -880,7 +898,7 @@
           // $('module_details_form'+moduleNum).collapse('hide')
           this.course2.modules.splice(moduleNum, 1)
           this.showToast('Modules Deleted', '1 module has been deleted.', '')
-          
+
         }
       },
       moveTopic: function (moduleNum, topicNum, direction) {
@@ -1034,12 +1052,12 @@
             }
           })
         })
-        
+
         data.sort((a, b) => a - b);
         min = data[0]
         stats.min = min
-        
-        max = data[data.length-1]
+
+        max = data[data.length - 1]
         stats.max = max
 
         avg = getMean(data).toFixed(1)
@@ -1092,11 +1110,11 @@
         let moduleObjectives = []
         this.course2.modules.forEach((module, index_module) => {
           outline += '<li>Module ' + (index_module + 1) + ' - ' + module.title + '</li>'
-          outline += (module.topics.length != 0) ? '<ul>' : ''
+          outline += (module.topics.length != 0) ? '<ol>' : ''
           module.topics.forEach((topic, index_module) => {
             outline += '<li>' + topic.title + '</li>'
           })
-          outline += (module.topics.length != 0) ? '</ul>' : ''
+          outline += (module.topics.length != 0) ? '</ol>' : ''
         })
         this.modal.body = outline
         $('#reusableModal').modal('toggle')
@@ -1125,7 +1143,7 @@
         let courseObjectives = []
         let fileName = ''
 
-        let cleanup = function(item){
+        let cleanup = function (item) {
           item = item.trim()
           // item = encodeURIComponent(item)
           // item = item.replace(/%20/gi, ' ')
@@ -1136,6 +1154,7 @@
           // item = item.replace(/%3F/gi, '?')
           // item = item.replace(/%3D/gi, '=')
           // item = item.replace(/%24/gi, '?')
+          item = item.replace(/’/g, "'")
           item = item.replace(/[^\x20-\x7E]/g, '')
           item = item.replace(/‐/gi, '-')
           item = item.replace(/,/gi, '%2C')
@@ -1180,11 +1199,12 @@
             if (topic.id_objective == -1) {
               objectiveText = ''
             } else {
-              objectiveText = (topic.id_objective + 1) + ". " + this.course2.objectives[topic.id_objective].objective_text
+              objectiveText = (topic.id_objective + 1) + ". " + this.course2.objectives[topic
+                .id_objective].objective_text
             }
-            if ('fileName' in topic.media){
+            if ('fileName' in topic.media) {
               fileName = topic.media.fileName
-            }else{
+            } else {
               fileName = ''
             }
             rowArr.push(
@@ -1218,7 +1238,124 @@
         let filename = (this.course2.title == '') ? 'BluePrinterApp' : this.course2.title
         filename += theDate.join('') + ".csv";
         download(filename, csvText);
-        this.showToast('File Saved', 'File has been saved, please check your downloads folder. Modules with zero topics were skipped', '')
+        this.showToast('File Saved',
+          'File has been saved, please check your downloads folder. Modules with zero topics were skipped', '')
+      },
+      exportCSV2: function () {
+        let csvArr = []
+        let rowArr = []
+        let csvText = ''
+        let headersArr = [
+          "Course Title",
+          "Course Client",
+          "Course Duration",
+          "Course Objectives",
+          "Module Number",
+          "Module Title",
+          "Module Subtitle",
+          "Module Description",
+          "Module Instructor",
+          "Module Duration",
+          "Module Objectives",
+          "Topic Number",
+          "Topic Title",
+          "Topic Objective",
+          "Topic Slide Text",
+          "Topic PG Notes",
+          "Topic IG Notes",
+          "Topic Has Exercise",
+          "Topic Exercise Title",
+          "Topic Exercise Description",
+          "Topic Media Required",
+          "Topic Media Details",
+          "Topic Media File Name",
+          "Topic Media Alt Text"
+        ]
+        csvArr.push(headersArr.join(','))
+        let objectiveText = ''
+        let moduleObjectives = []
+        let courseObjectives = []
+        let fileName = ''
+
+        let cleanup = function (item) {
+          item = item.trim()
+          item = item.replace(/\n/gi, '%0A')
+          item = item.replace(/[^\x20-\x7E]/g, '')
+          item = item.replace(/‐/gi, '-')
+          item = item.replace(/,/gi, '%2C')
+          item = item.replace(/[\u2018\u2019]/g, "'") //TODO does this work
+          item = item.replace(/[\u201C\u201D]/g, '"')
+          return item
+        }
+        this.course2.objectives.forEach((objective, index_objective) => {
+          courseObjectives.push(objective.objective_text)
+        })
+        this.course2.modules.forEach((module, index_module) => {
+          this.getObjectivesByModule(index_module).forEach((objective, index_objective) => {
+            moduleObjectives.push((objective + 1) + '. ' + this.course2.objectives[objective]
+              .objective_text)
+          })
+          module.topics.forEach((topic, index_topic) => {
+            // csvText += '\n'
+            if (topic.id_objective == -1) {
+              objectiveText = ''
+            } else {
+              objectiveText = (topic.id_objective + 1) + ". " + this.course2.objectives[topic
+                .id_objective].objective_text
+            }
+            if ('fileName' in topic.media) {
+              fileName = topic.media.fileName
+            } else {
+
+              this.course2.modules[index_module].topics[index_topic].media.filename = ''
+            }
+
+            if ('alttext' in topic.media) {
+              // fileName = topic.media.fileName
+            } else {
+              this.course2.modules[index_module].topics[index_topic].media.alttext = ''
+            }
+            rowArr.push(
+              cleanup(this.course2.title),
+              cleanup(this.course2.client),
+              cleanup(this.course2.duration) + ' days',
+              cleanup(courseObjectives.join('\n')),
+              index_module + 1,
+              cleanup(module.title),
+              cleanup(module.subtitle),
+              cleanup(module.description),
+              cleanup(module.instructor),
+              cleanup(module.duration),
+              cleanup(moduleObjectives.join('\n')),
+              index_topic + 1,
+              cleanup(topic.title),
+              cleanup(objectiveText),
+              cleanup(topic.slide_text),
+              cleanup(topic.participant_notes),
+              cleanup(topic.instructor_notes),
+              topic.exercise.has_exercise,
+              cleanup(topic.exercise.title),
+              cleanup(topic.exercise.description),
+              topic.media.required.join(' / ').trim(),
+              cleanup(topic.media.details),
+              fileName,
+              cleanup(topic.media.alttext)
+            )
+            csvArr.push(rowArr.join(','))
+            rowArr = []
+          })
+          moduleObjectives = []
+        })
+        csvText = csvArr.join('\n')
+        let d = new Date();
+        let theDate = [d.getFullYear(), d.getMonth() + 1, d.getDate(), '_', d.getHours(), d.getMinutes(), d
+          .getSeconds()
+        ]
+        let filename = (this.course2.title == '') ? 'BluePrinterApp' : this.course2.title
+        filename += theDate.join('') + ".csv";
+        download(filename, csvText);
+        this.showToast('File Saved',
+          'File has been saved, please check your downloads folder. Modules with zero topics were skipped', '')
       },
       exportAgenda: function () {
         this.modal.title = "Agenda"
@@ -1263,12 +1400,12 @@
           'valid': valid
         }
       },
-      validateFlaggedValues: function(val){
+      validateFlaggedValues: function (val) {
         let valid = true;
         let message = ''
         var spaceReg = /[^\S\r\n]{2,}|[\n]{2,}/
         let extraSpaces = val.search(spaceReg)
-       
+
         if (extraSpaces > -1) {
           valid = false
           message += 'Contains extra spacing'
@@ -1323,6 +1460,7 @@
         },
         media: {
           details: '',
+          alttext: '',
           required: []
         }
       }],
@@ -1370,9 +1508,11 @@
             },
             "media": {
               "details": "DAW logo",
+              "alttext": "An Example Logo",
               "required": [
                 "graphic"
-              ]
+              ],
+              "filename": ""
             }
           },
           {
@@ -1388,7 +1528,9 @@
             },
             "media": {
               "details": "",
-              "required": []
+              "required": [],
+              "filename": "",
+              "alttext": ""
             }
           }
         ],
@@ -1415,7 +1557,9 @@
             "details": "Safety animation related to cautious behavior",
             "required": [
               "animation"
-            ]
+            ],
+            "filename": "",
+            "alttext": ""
           }
         }],
         "topicTextToAdd": ""
@@ -1441,7 +1585,9 @@
               "details": "Donec ac est vel quam mattis pretium non at erat.",
               "required": [
                 "video"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1459,7 +1605,9 @@
               "details": "",
               "required": [
                 "graphic"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1475,7 +1623,9 @@
             },
             "media": {
               "details": "",
-              "required": []
+              "required": [],
+              "filename": "",
+              "alttext": ""
             }
           }
         ],
@@ -1502,7 +1652,9 @@
               "details": "Donec ac est vel quam mattis pretium non at erat.",
               "required": [
                 "video"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1520,7 +1672,9 @@
               "details": "",
               "required": [
                 "graphic"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1536,7 +1690,9 @@
             },
             "media": {
               "details": "",
-              "required": []
+              "required": [],
+              "filename": "",
+              "alttext": ""
             }
           }
         ],
@@ -1563,7 +1719,9 @@
               "details": "Donec ac est vel quam mattis pretium non at erat.",
               "required": [
                 "video"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1581,7 +1739,9 @@
               "details": "",
               "required": [
                 "graphic"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1597,7 +1757,9 @@
             },
             "media": {
               "details": "",
-              "required": []
+              "required": [],
+              "filename": "",
+              "alttext": ""
             }
           }
         ],
@@ -1624,7 +1786,9 @@
               "details": "Donec ac est vel quam mattis pretium non at erat.",
               "required": [
                 "video"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1642,7 +1806,9 @@
               "details": "",
               "required": [
                 "graphic"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1658,7 +1824,9 @@
             },
             "media": {
               "details": "",
-              "required": []
+              "required": [],
+              "filename": "",
+              "alttext": ""
             }
           }
         ],
@@ -1685,7 +1853,9 @@
               "details": "Donec ac est vel quam mattis pretium non at erat.",
               "required": [
                 "video"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1703,7 +1873,9 @@
               "details": "",
               "required": [
                 "graphic"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1719,7 +1891,9 @@
             },
             "media": {
               "details": "",
-              "required": []
+              "required": [],
+              "filename": "",
+              "alttext": ""
             }
           }
         ],
@@ -1746,7 +1920,9 @@
               "details": "Donec ac est vel quam mattis pretium non at erat.",
               "required": [
                 "video"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1764,7 +1940,9 @@
               "details": "",
               "required": [
                 "graphic"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1780,7 +1958,9 @@
             },
             "media": {
               "details": "",
-              "required": []
+              "required": [],
+              "filename": "",
+              "alttext": ""
             }
           }
         ],
@@ -1807,7 +1987,9 @@
               "details": "Donec ac est vel quam mattis pretium non at erat.",
               "required": [
                 "video"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1825,7 +2007,9 @@
               "details": "",
               "required": [
                 "graphic"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1841,7 +2025,9 @@
             },
             "media": {
               "details": "",
-              "required": []
+              "required": [],
+              "filename": "",
+              "alttext": ""
             }
           }
         ],
@@ -1868,7 +2054,9 @@
               "details": "Donec ac est vel quam mattis pretium non at erat.",
               "required": [
                 "video"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1886,7 +2074,9 @@
               "details": "",
               "required": [
                 "graphic"
-              ]
+              ],
+              "filename": "",
+              "alttext": ""
             }
           },
           {
@@ -1902,7 +2092,9 @@
             },
             "media": {
               "details": "",
-              "required": []
+              "required": [],
+              "filename": "",
+              "alttext": ""
             }
           }
         ],
@@ -1953,4 +2145,5 @@
   integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
   integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 </html>
