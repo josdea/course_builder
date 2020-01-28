@@ -1213,10 +1213,10 @@
         let cleanup = function (item) {
           item = item.trim()
           item = item.replace(/\n/gi, '%0A')
+          item = item.replace(/[\u2018\u2019]/g, "'") //replaces weird apostrophe
           item = item.replace(/[^\x20-\x7E]/g, '')
           item = item.replace(/‐/gi, '-')
           item = item.replace(/,/gi, '%2C')
-          item = item.replace(/[\u2018\u2019]/g, "'") //TODO does this work
           item = item.replace(/[\u201C\u201D]/g, '"')
           return item
         }
@@ -1259,7 +1259,7 @@
               cleanup(topic.exercise.description),
               topic.media.required.join(' / ').trim(),
               cleanup(topic.media.details),
-              fileName,
+              topic.media.fileName,
               cleanup(topic.media.alttext)
             )
             csvArr.push(rowArr.join(','))
